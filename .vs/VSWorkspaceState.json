@@ -1,0 +1,14 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\data",
+    "\\data\\meshes",
+    "\\data\\shaders",
+    "\\data\\textures",
+    "\\src",
+    "\\src\\framework",
+    "\\src\\framework\\entities",
+    "\\src\\game"
+  ],
+  "PreviewInSolutionExplorer": false
+}
