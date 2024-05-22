@@ -64,7 +64,7 @@ Game::Game(int window_width, int window_height, SDL_Window* window)
 	//// Example of shader loading using the shaders manager
 	//shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs");
 
-	sphereMesh = Mesh::Get("data/meshes/bomber.obj");
+	sphereMesh = Mesh::Get("data/meshes/B-2.obj");
 	sphereTexture = Texture::Get("data/textures/texture.tga"); // Load a texture
 	basicShader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs"); // Load a basic shader
 
@@ -79,8 +79,8 @@ Game::Game(int window_width, int window_height, SDL_Window* window)
 	SDL_ShowCursor(!mouse_locked); //hide or show the mouse
 
 	//Entity* root = new Entity();
-	scene = new Scene();
-	scene->parseScene("data/meshes/scene.scene");
+	//scene = new Scene();
+	//scene->parseScene("data/scene.scene");
 
 	//// Agrega el jugador a la escena
 	//Mesh* playerMesh = Mesh::Get("data/meshes/player.obj");

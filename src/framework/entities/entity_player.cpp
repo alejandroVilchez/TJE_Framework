@@ -9,7 +9,7 @@ float speed_mult = 1.0f;
 Vector3 velocity = Vector3(0.0f, 0.0f, 0.0f); 
 
 EntityPlayer::EntityPlayer() {
-    // Constructor implementation (if needed)
+
 }
 
 EntityPlayer::~EntityPlayer() {

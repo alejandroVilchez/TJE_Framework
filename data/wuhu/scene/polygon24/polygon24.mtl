@@ -1,0 +1,12 @@
+# Blender 4.1.1 MTL File: 'Wuhu Island.blend'
+# www.blender.org
+
+newmtl mt_zb_w_hamon
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ni 1.450000
+illum 2
+map_Kd jog_w_hamon.png
+map_Ke jog_w_hamon.png
+map_d jog_w_hamon.png
