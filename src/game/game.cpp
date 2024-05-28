@@ -19,12 +19,14 @@ Shader* shader = NULL;
 float angle = 0;
 float mouse_speed = 100.0f;
 
-Mesh* sphereMesh = nullptr; // Load a cube mesh
-Texture* sphereTexture = nullptr;
+Mesh* playerMesh = nullptr; // Load a cube mesh
+Texture* playerTexture = nullptr;
 Shader* basicShader = nullptr;
-Material sphereMaterial;
-//Scene* scene;
-EntityMesh* sphereEntity;
+Material playerMaterial;
+Scene* scene;
+EntityPlayer* playerEntity;
+
+
 
 //Entity* root;
 //Scene* scene;
@@ -64,23 +66,28 @@ Game::Game(int window_width, int window_height, SDL_Window* window)
 	//// Example of shader loading using the shaders manager
 	//shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs");
 
-	sphereMesh = Mesh::Get("data/meshes/B-2.obj");
-	sphereTexture = Texture::Get("data/textures/texture.tga"); // Load a texture
+	playerMesh = Mesh::Get("data/meshes/B2.obj");
+	playerTexture = Texture::Get("data/textures/texture.tga"); // Load a texture
 	basicShader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs"); // Load a basic shader
 
-	sphereMaterial.shader = basicShader;
-	sphereMaterial.diffuse = sphereTexture;
+	playerMaterial.shader = basicShader;
+	playerMaterial.diffuse = playerTexture;
+	
+	Vector3 position = (0.0f, 0.0f, 0.0f);
+	playerEntity = new EntityPlayer(position);//EntityMesh(playerMesh, playerMaterial, "Player");
 
-	sphereEntity = new EntityMesh(sphereMesh, sphereMaterial, "Sphere");
-
-	sphereEntity->model.translate(0.0f, 0.0f, 0.0f); // Set initial position
+	playerEntity->mesh = playerMesh;
+	playerEntity->material = playerMaterial;
+	playerEntity->name = "Player";
+	float angle_in_rad = 1.5707963268f; //90 degrees
+	playerEntity->model.rotateGlobal(angle_in_rad, Vector3(1.0f, 0.0f, 0.0f)); // No se aplica
 
 	// Hide the cursor
 	SDL_ShowCursor(!mouse_locked); //hide or show the mouse
 
 	//Entity* root = new Entity();
-	//scene = new Scene();
-	//scene->parseScene("data/scene.scene");
+	scene = new Scene();
+	scene->parseScene("data/myscene.scene");
 
 	//// Agrega el jugador a la escena
 	//Mesh* playerMesh = Mesh::Get("data/meshes/player.obj");
@@ -160,7 +167,7 @@ void Game::render(void)
 	// Draw the floor grid
 	drawGrid();
 
-	sphereEntity->render(camera);
+	playerEntity->render(camera);
 
 	// Render the FPS, Draw Calls, etc
 	drawText(2, 2, getGPUStats(), Vector3(1, 1, 1), 2);
@@ -177,18 +184,19 @@ void Game::update(double seconds_elapsed)
 	angle += (float)seconds_elapsed * 10.0f;
 
 	// Mouse input to rotate the cam
-	if (Input::isMousePressed(SDL_BUTTON_LEFT) || mouse_locked) //is left button pressed?
-	{
-		camera->rotate(Input::mouse_delta.x * 0.005f, Vector3(0.0f,-1.0f,0.0f));
-		camera->rotate(Input::mouse_delta.y * 0.005f, camera->getLocalVector( Vector3(-1.0f,0.0f,0.0f)));
-	}
-
-	// Async input to move the camera around
-	if (Input::isKeyPressed(SDL_SCANCODE_LSHIFT) ) speed *= 10; //move faster with left shift
-	if (Input::isKeyPressed(SDL_SCANCODE_W) || Input::isKeyPressed(SDL_SCANCODE_UP)) camera->move(Vector3(0.0f, 0.0f, 1.0f) * speed);
-	if (Input::isKeyPressed(SDL_SCANCODE_S) || Input::isKeyPressed(SDL_SCANCODE_DOWN)) camera->move(Vector3(0.0f, 0.0f,-1.0f) * speed);
-	if (Input::isKeyPressed(SDL_SCANCODE_A) || Input::isKeyPressed(SDL_SCANCODE_LEFT)) camera->move(Vector3(1.0f, 0.0f, 0.0f) * speed);
-	if (Input::isKeyPressed(SDL_SCANCODE_D) || Input::isKeyPressed(SDL_SCANCODE_RIGHT)) camera->move(Vector3(-1.0f,0.0f, 0.0f) * speed);
+	//if (input::ismousepressed(sdl_button_left) || mouse_locked) //is left button pressed?
+	//{
+	//	camera->rotate(input::mouse_delta.x * 0.005f, vector3(0.0f,-1.0f,0.0f));
+	//	camera->rotate(input::mouse_delta.y * 0.005f, camera->getlocalvector( vector3(-1.0f,0.0f,0.0f)));
+	//}
+	playerEntity->playerPOV(camera, seconds_elapsed);
+	playerEntity->update(seconds_elapsed);
+	//// Async input to move the camera around
+	//if (Input::isKeyPressed(SDL_SCANCODE_LSHIFT) ) speed *= 10; //move faster with left shift
+	//if (Input::isKeyPressed(SDL_SCANCODE_W) || Input::isKeyPressed(SDL_SCANCODE_UP)) camera->move(Vector3(0.0f, 0.0f, 1.0f) * speed);
+	//if (Input::isKeyPressed(SDL_SCANCODE_S) || Input::isKeyPressed(SDL_SCANCODE_DOWN)) camera->move(Vector3(0.0f, 0.0f,-1.0f) * speed);
+	//if (Input::isKeyPressed(SDL_SCANCODE_A) || Input::isKeyPressed(SDL_SCANCODE_LEFT)) camera->move(Vector3(1.0f, 0.0f, 0.0f) * speed);
+	//if (Input::isKeyPressed(SDL_SCANCODE_D) || Input::isKeyPressed(SDL_SCANCODE_RIGHT)) camera->move(Vector3(-1.0f,0.0f, 0.0f) * speed);
 }
 
 //Keyboard event handler (sync input)

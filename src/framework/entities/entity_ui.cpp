@@ -12,7 +12,10 @@
 // };
 
 // void EntityUI::render(Camera* camera2d){
-//     glDisable(GL_DEPTH_TEST);
+//     if(!3d){
+//         glDisable(GL_DEPTH_TEST);
+//     }
+
 //     glDisable(GL_CULL_FACE);
 
 //     glEnable(GL_BLEND);
@@ -23,12 +26,12 @@
 // 	material.shader->enable();
 
 //     //World* world = World::get_instance();
-
+     
 
 // 	material.shader->setUniform("u_model", model);
 // 	material.shader->setUniform("u_viewprojection", viewProj);
 // 	material.shader->setUniform("u_color", material.color));
-//     material.shader->setUniform("u_mask", mask));
+//  material.shader->setUniform("u_mask", mask));
     
 
 

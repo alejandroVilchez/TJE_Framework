@@ -1,0 +1,6 @@
+//
+//
+//class PlayStage{
+//
+//    void renderMinimap();
+//};
