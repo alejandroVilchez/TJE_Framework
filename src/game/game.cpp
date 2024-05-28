@@ -80,7 +80,7 @@ Game::Game(int window_width, int window_height, SDL_Window* window)
 	playerEntity->material = playerMaterial;
 	playerEntity->name = "Player";
 	float angle_in_rad = 1.5707963268f; //90 degrees
-	playerEntity->model.rotateGlobal(angle_in_rad, Vector3(1.0f, 0.0f, 0.0f)); // No se aplica
+	playerEntity->model.setRotation(angle_in_rad, Vector3(0.0f, 1.0f, 0.0f)); // No se aplica
 
 	// Hide the cursor
 	SDL_ShowCursor(!mouse_locked); //hide or show the mouse
@@ -189,8 +189,9 @@ void Game::update(double seconds_elapsed)
 	//	camera->rotate(input::mouse_delta.x * 0.005f, vector3(0.0f,-1.0f,0.0f));
 	//	camera->rotate(input::mouse_delta.y * 0.005f, camera->getlocalvector( vector3(-1.0f,0.0f,0.0f)));
 	//}
-	playerEntity->playerPOV(camera, seconds_elapsed);
 	playerEntity->update(seconds_elapsed);
+	playerEntity->playerPOV(camera, seconds_elapsed);
+
 	//// Async input to move the camera around
 	//if (Input::isKeyPressed(SDL_SCANCODE_LSHIFT) ) speed *= 10; //move faster with left shift
 	//if (Input::isKeyPressed(SDL_SCANCODE_W) || Input::isKeyPressed(SDL_SCANCODE_UP)) camera->move(Vector3(0.0f, 0.0f, 1.0f) * speed);
