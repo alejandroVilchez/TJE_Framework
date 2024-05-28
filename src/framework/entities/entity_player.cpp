@@ -36,6 +36,7 @@ void EntityPlayer::handleInput(float seconds_elapsed) {
     this->position.z += seconds_elapsed * speed;
     if (Input::isKeyPressed(SDL_SCANCODE_W) || Input::isKeyPressed(SDL_SCANCODE_UP)) {
         this->position.y += seconds_elapsed * speed;
+        this->model.setRotation(seconds_elapsed * speed, Vector3(0.0f, 1.0f, 0.0f));
     }
     if (Input::isKeyPressed(SDL_SCANCODE_S) || Input::isKeyPressed(SDL_SCANCODE_DOWN)) {
         this->position.y -= seconds_elapsed * speed;

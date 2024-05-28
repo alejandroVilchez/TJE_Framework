@@ -20,7 +20,7 @@ public:
 
 private:
     //std::vector<Bomb> bombs;
-    float speed = 10.0f;
+    float speed = 1.0f;
     float camera_yaw = 0.0f;
     float camera_pitch = 0.0f;
 };
