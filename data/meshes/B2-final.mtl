@@ -1,0 +1,24 @@
+# Blender 4.1.1 MTL File: 'None'
+# www.blender.org
+
+newmtl B-2-airframe
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd B-2/B2BaseColor.png
+map_Ns B-2/B2Roughness.png
+map_refl B-2/B2Metallic.png
+map_Bump -bm 1.000000 B-2/B2Normal.png
+
+newmtl B-2-canopy
+Ns 899.999939
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2

@@ -13,8 +13,8 @@ class EntityPlayer : public EntityMesh {
 public:
     Vector3 position;
     EntityPlayer(Vector3 position);
-    void update(float seconds_elapsed);
-    void handleInput(float seconds_elapsed);
+    void update(float seconds_elapsed, EntityMesh* skybox);
+    void handleInput(float seconds_elapsed, EntityMesh* skybox);
     void playerPOV(Camera* camera, float seconds_elapsed);
     //void dropBomb();
 

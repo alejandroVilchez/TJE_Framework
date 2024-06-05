@@ -14,8 +14,8 @@ EntityPlayer::EntityPlayer(Vector3 position) /*: EntityMesh(position), speed(10.
     model.setTranslation(position);
 }
 
-void EntityPlayer::update(float seconds_elapsed) {
-    handleInput(seconds_elapsed);
+void EntityPlayer::update(float seconds_elapsed, EntityMesh* skybox) {
+    handleInput(seconds_elapsed, skybox);
 
     // Actualiza la posición del jugador basado en la velocidad
     // y el deltaTime
@@ -31,28 +31,33 @@ void EntityPlayer::update(float seconds_elapsed) {
     //    }), bombs.end());
 }
 
-void EntityPlayer::handleInput(float seconds_elapsed) {
+void EntityPlayer::handleInput(float seconds_elapsed, EntityMesh* skybox) {
 
     
     // Aquí se manejarían las entradas del usuario para mover el avión
-    this->position -= model.frontVector() * seconds_elapsed * speed;
+    
     if (Input::isKeyPressed(SDL_SCANCODE_W) || Input::isKeyPressed(SDL_SCANCODE_UP)) {
-        //this->position.y += seconds_elapsed * speed;
-        this->model.rotate(seconds_elapsed * rotation_speed, Vector3(0.0f, 0.0f, 1.0f));
+        this->model.rotate(seconds_elapsed * rotation_speed, Vector3(-1.0f, 0.0f, 0.0f));
+
     }
     if (Input::isKeyPressed(SDL_SCANCODE_S) || Input::isKeyPressed(SDL_SCANCODE_DOWN)) {
-        this->model.rotate(seconds_elapsed * rotation_speed, Vector3(0.0f, 0.0f, -1.0f));
+        this->model.rotate(seconds_elapsed * rotation_speed, Vector3(1.0f, 0.0f, 0.0f));
+
     }
     if (Input::isKeyPressed(SDL_SCANCODE_A) || Input::isKeyPressed(SDL_SCANCODE_LEFT)) {
-        this->model.rotate(seconds_elapsed * rotation_speed, Vector3(1.0f, 0.0f, 0.0f));
+        this->model.rotate(seconds_elapsed * rotation_speed, Vector3(0.0f, 0.0f, 1.0f));
+
     }
     if (Input::isKeyPressed(SDL_SCANCODE_D) || Input::isKeyPressed(SDL_SCANCODE_RIGHT)) {
-        this->model.rotate(seconds_elapsed * rotation_speed, Vector3(-1.0f, 0.0f, 0.0f));
+        this->model.rotate(seconds_elapsed * rotation_speed, Vector3(0.0f, 0.0f, -1.0f));
+
     }
     if (Input::isKeyPressed(SDL_SCANCODE_SPACE)) {
         //dropBomb();
     }
+    this->position += model.frontVector() * seconds_elapsed * speed;
     model.translate(this->position);
+    skybox->model.translate(this->position);
     //model.setTranslation(this->position);
 
 }
@@ -64,10 +69,11 @@ void EntityPlayer::playerPOV(Camera* camera, float seconds_elapsed) {
         camera_pitch += Input::mouse_delta.y * 0.005f;
         camera_pitch = clamp(camera_pitch, -M_PI * 0.5f, M_PI * 0.5f);
     }
-
-    /*camera_yaw += Input::mouse_delta.x * 0.005f;
-    camera_pitch += Input::mouse_delta.y * 0.005f;
-    camera_pitch = clamp(camera_pitch, -M_PI * 0.5f, M_PI * 0.5f);*/
+    else {
+        // Slowly return to the plane's forward direction when the mouse is not pressed
+        camera_yaw *= 0.95f;
+        camera_pitch *= 0.95f;
+    }
 
     Matrix44 mYaw;
     mYaw.setRotation(camera_yaw, Vector3(0, 1, 0));
@@ -75,11 +81,11 @@ void EntityPlayer::playerPOV(Camera* camera, float seconds_elapsed) {
     Matrix44 mPitch;
     mPitch.setRotation(camera_pitch, Vector3(-1, 0, 0));
 
-    Matrix44 final_rotation = (mPitch * mYaw);
-    Vector3 front = final_rotation.frontVector().normalize(); //camara en base al raton
-    //Vector3 front = model.frontVector().normalize(); //camara en base al jugador (no va bien)
-
-
+    //Matrix44 planeRotation = model.rotationOnly();
+    //Vector3 planeFront = model.frontVector();
+    Matrix44 final_rotation = mPitch * mYaw;// * planeRotation;
+    Vector3 front = final_rotation.frontVector().normalize();  //* planeFront;
+    
     Vector3 eye;
     Vector3 center;
 
@@ -89,6 +95,7 @@ void EntityPlayer::playerPOV(Camera* camera, float seconds_elapsed) {
 
 
     camera->lookAt(eye, center, Vector3(0.0f, 1.0f, 0.0f));
+    
     //update our scene:
     Entity::update(seconds_elapsed);
 

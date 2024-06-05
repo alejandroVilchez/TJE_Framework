@@ -2,6 +2,10 @@
     "files.associations": {
         "vector": "cpp",
         "iostream": "cpp",
-        "xiosbase": "cpp"
+        "xiosbase": "cpp",
+        "filesystem": "cpp",
+        "system_error": "cpp",
+        "xmemory": "cpp",
+        "xstring": "cpp"
     }
 }

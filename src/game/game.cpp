@@ -23,10 +23,12 @@ Mesh* playerMesh = nullptr; // Load a cube mesh
 Texture* playerTexture = nullptr;
 Shader* basicShader = nullptr;
 Material playerMaterial;
-Scene* scene;
+//Scene* scene;
 EntityPlayer* playerEntity;
 
-
+Material cubemap;
+Material skyboxMaterial;
+EntityMesh* skybox;
 
 //Entity* root;
 //Scene* scene;
@@ -57,18 +59,32 @@ Game::Game(int window_width, int window_height, SDL_Window* window)
 	camera->lookAt(Vector3(0.f,100.f, 100.f),Vector3(0.f,0.f,0.f), Vector3(0.f,1.f,0.f)); //position the camera and point to 0,0,0
 	camera->setPerspective(70.f,window_width/(float)window_height,0.1f,10000.f); //set the projection, we want to be perspective
 
+
+	basicShader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs"); // Load a basic shader
 	//// Load one texture using the Texture Manager
 	//texture = Texture::Get("data/textures/texture.tga");
-
+	cubemap.diffuse = new Texture();
 	//// Example of loading Mesh from Mesh Manager
-	//mesh = Mesh::Get("data/meshes/sphere.obj");
+	
+	cubemap.diffuse->loadCubemap("landscape", {
+	"data/textures/skybox/right.tga",
+	"data/textures/skybox/left.tga",
+	"data/textures/skybox/bottom.tga",
+	"data/textures/skybox/top.tga",
+	"data/textures/skybox/front.tga",
+	"data/textures/skybox/back.tga"
+		});
+	
+	cubemap.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/cubemap.fs");;
+
+	skybox = new EntityMesh(Mesh::Get("data/meshes/box.ASE"), cubemap, "skybox");
 
 	//// Example of shader loading using the shaders manager
 	//shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs");
 
-	playerMesh = Mesh::Get("data/meshes/B2.obj");
+	playerMesh = Mesh::Get("data/meshes/B2-final.obj");
 	playerTexture = Texture::Get("data/textures/texture.tga"); // Load a texture
-	basicShader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs"); // Load a basic shader
+	
 
 	playerMaterial.shader = basicShader;
 	playerMaterial.diffuse = playerTexture;
@@ -80,24 +96,15 @@ Game::Game(int window_width, int window_height, SDL_Window* window)
 	playerEntity->material = playerMaterial;
 	playerEntity->name = "Player";
 	float angle_in_rad = 1.5707963268f; //90 degrees
-	playerEntity->model.setRotation(angle_in_rad, Vector3(0.0f, 1.0f, 0.0f)); // No se aplica
+	//playerEntity->model.setRotation(angle_in_rad, Vector3(0.0f, 1.0f, 0.0f)); // No se aplica
 
 	// Hide the cursor
 	SDL_ShowCursor(!mouse_locked); //hide or show the mouse
 
 	//Entity* root = new Entity();
-	scene = new Scene();
-	scene->parseScene("data/myscene.scene");
-
-	//// Agrega el jugador a la escena
-	//Mesh* playerMesh = Mesh::Get("data/meshes/player.obj");
-	//Material playerMaterial;
-	//// Cargar el material del jugador aqu� (ejemplo):
-	//// playerMaterial.shader = Shader::Get("data/shaders/player.vs", "data/shaders/player.fs");
-
-	//EntityPlayer* player = new EntityPlayer();//playerMesh, playerMaterial);
-	//player->name = "Player";
-	//root->addChild(player);
+	
+	//scene = new Scene();
+	//scene->parseScene("data/myscene.scene");
 
 }
 
@@ -117,7 +124,8 @@ void Game::render(void)
 	glEnable(GL_DEPTH_TEST);
 	glDisable(GL_CULL_FACE);
    
-	scene->root.render(camera);
+	//scene->root.render(camera);
+	skybox->render(camera);
 
 	//// Create model matrix for cube
 	//Matrix44 m;
@@ -189,7 +197,7 @@ void Game::update(double seconds_elapsed)
 	//	camera->rotate(input::mouse_delta.x * 0.005f, vector3(0.0f,-1.0f,0.0f));
 	//	camera->rotate(input::mouse_delta.y * 0.005f, camera->getlocalvector( vector3(-1.0f,0.0f,0.0f)));
 	//}
-	playerEntity->update(seconds_elapsed);
+	playerEntity->update(seconds_elapsed, skybox);
 	playerEntity->playerPOV(camera, seconds_elapsed);
 
 	//// Async input to move the camera around
