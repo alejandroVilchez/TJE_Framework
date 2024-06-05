@@ -4,6 +4,6 @@ Stage::Stage(){
     isEnd = false;
 }
 
-void Stage::render(Camera* camera){
-    
-}
+//void Stage::render(Camera* camera){
+//    
+//}

@@ -2,7 +2,7 @@
 #include "framework/framework.h"
 #include "framework/utils.h"
 #include "game/game.h"
-#include "entities/entity.h"
+#include "framework/entities/entity.h"
 
 
 enum stage_ID {
@@ -16,6 +16,6 @@ class Stage {
 public:
     bool isEnd;
     Stage();
-    void render(Camera* camera);
-    virtual void update(float seconds_elapsed){};
+    //virtual void render(Camera* camera);
+    //virtual void update(float seconds_elapsed){};
 };

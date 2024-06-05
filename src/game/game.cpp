@@ -23,7 +23,9 @@ Mesh* playerMesh = nullptr; // Load a cube mesh
 Texture* playerTexture = nullptr;
 Shader* basicShader = nullptr;
 Material playerMaterial;
-//Scene* scene;
+
+Scene* scene;
+
 EntityPlayer* playerEntity;
 
 Material cubemap;
@@ -69,8 +71,8 @@ Game::Game(int window_width, int window_height, SDL_Window* window)
 	cubemap.diffuse->loadCubemap("landscape", {
 	"data/textures/skybox/right.tga",
 	"data/textures/skybox/left.tga",
-	"data/textures/skybox/bottom.tga",
 	"data/textures/skybox/top.tga",
+	"data/textures/skybox/bottom.tga",
 	"data/textures/skybox/front.tga",
 	"data/textures/skybox/back.tga"
 		});
@@ -103,8 +105,8 @@ Game::Game(int window_width, int window_height, SDL_Window* window)
 
 	//Entity* root = new Entity();
 	
-	//scene = new Scene();
-	//scene->parseScene("data/myscene.scene");
+	scene = new Scene();
+	scene->parseScene("data/myscene.scene");
 
 }
 
@@ -124,9 +126,10 @@ void Game::render(void)
 	glEnable(GL_DEPTH_TEST);
 	glDisable(GL_CULL_FACE);
    
-	//scene->root.render(camera);
+	scene->root.render(camera);
+	
 	skybox->render(camera);
-
+	
 	//// Create model matrix for cube
 	//Matrix44 m;
 	//m.rotate(angle*DEG2RAD, Vector3(0.0f, 1.0f, 0.0f));
@@ -174,11 +177,18 @@ void Game::render(void)
 
 	// Draw the floor grid
 	drawGrid();
-
+	
 	playerEntity->render(camera);
+	
+	
+	
 
 	// Render the FPS, Draw Calls, etc
 	drawText(2, 2, getGPUStats(), Vector3(1, 1, 1), 2);
+
+	
+
+	
 
 	// Swap between front buffer and back buffer
 	SDL_GL_SwapWindow(this->window);

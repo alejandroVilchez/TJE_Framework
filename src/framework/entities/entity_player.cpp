@@ -16,10 +16,10 @@ EntityPlayer::EntityPlayer(Vector3 position) /*: EntityMesh(position), speed(10.
 
 void EntityPlayer::update(float seconds_elapsed, EntityMesh* skybox) {
     handleInput(seconds_elapsed, skybox);
-
-    // Actualiza la posición del jugador basado en la velocidad
-    // y el deltaTime
-
+    
+    
+    model.translate(this->position);
+    skybox->model.translate(this->position);
     //// Actualiza las bombas
     //for (Bomb& bomb : bombs) {
     //    bomb.update(deltaTime);
@@ -56,8 +56,7 @@ void EntityPlayer::handleInput(float seconds_elapsed, EntityMesh* skybox) {
         //dropBomb();
     }
     this->position += model.frontVector() * seconds_elapsed * speed;
-    model.translate(this->position);
-    skybox->model.translate(this->position);
+    
     //model.setTranslation(this->position);
 
 }
@@ -81,9 +80,9 @@ void EntityPlayer::playerPOV(Camera* camera, float seconds_elapsed) {
     Matrix44 mPitch;
     mPitch.setRotation(camera_pitch, Vector3(-1, 0, 0));
 
-    //Matrix44 planeRotation = model.rotationOnly();
+    Matrix44 planeRotation = model.getRotationOnly();
     //Vector3 planeFront = model.frontVector();
-    Matrix44 final_rotation = mPitch * mYaw;// * planeRotation;
+    Matrix44 final_rotation = mPitch * mYaw; //* planeRotation;
     Vector3 front = final_rotation.frontVector().normalize();  //* planeFront;
     
     Vector3 eye;

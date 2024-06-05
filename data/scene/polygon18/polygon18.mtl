@@ -1,0 +1,12 @@
+# Blender 4.1.1 MTL File: 'Wuhu Island.blend'
+# www.blender.org
+
+newmtl mt_za_water.004
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Ks -s 10 10 10 jog_water_light.png
+map_Ke -s 10 10 10 sea2_dummy.png
