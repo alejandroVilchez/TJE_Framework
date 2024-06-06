@@ -18,8 +18,9 @@ void EntityPlayer::update(float seconds_elapsed, EntityMesh* skybox) {
     handleInput(seconds_elapsed, skybox);
     
     
-    model.translate(this->position);
-    skybox->model.translate(this->position);
+    //model.translate(this->position);
+
+    skybox->model.setTranslation(model.getTranslation());
     //// Actualiza las bombas
     //for (Bomb& bomb : bombs) {
     //    bomb.update(deltaTime);
@@ -55,7 +56,10 @@ void EntityPlayer::handleInput(float seconds_elapsed, EntityMesh* skybox) {
     if (Input::isKeyPressed(SDL_SCANCODE_SPACE)) {
         //dropBomb();
     }
-    this->position += model.frontVector() * seconds_elapsed * speed;
+
+    model.translate(0, 0, seconds_elapsed * speed);
+
+    //this->position += model.frontVector() * seconds_elapsed * speed;
     
     //model.setTranslation(this->position);
 
@@ -82,18 +86,18 @@ void EntityPlayer::playerPOV(Camera* camera, float seconds_elapsed) {
 
     Matrix44 planeRotation = model.getRotationOnly();
     //Vector3 planeFront = model.frontVector();
-    Matrix44 final_rotation = mPitch * mYaw; //* planeRotation;
-    Vector3 front = final_rotation.frontVector().normalize();  //* planeFront;
+    Matrix44 final_rotation = mPitch * mYaw;// *planeRotation;
+    Vector3 front = model.frontVector(); //final_rotation.frontVector().normalize();  //* planeFront;
     
     Vector3 eye;
     Vector3 center;
 
     float orbit_dist = 0.6f;
     eye = model.getTranslation() - front * orbit_dist;
-    center = model.getTranslation() + Vector3(0.0f, 0.1f, 0.0f);
+    center = model * Vector3(0.0f, 0.1f, 0.0f);
 
 
-    camera->lookAt(eye, center, Vector3(0.0f, 1.0f, 0.0f));
+    camera->lookAt(eye, center, model.rotateVector(Vector3(0.0f, 1.0f, 0.0f)));
     
     //update our scene:
     Entity::update(seconds_elapsed);
