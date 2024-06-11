@@ -63,7 +63,7 @@ Game::Game(int window_width, int window_height, SDL_Window* window)
 
 
 	basicShader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs"); // Load a basic shader
-	//// Load one texture using the Texture Manager
+	//Load one texture using the Texture Manager
 	//texture = Texture::Get("data/textures/texture.tga");
 	cubemap.diffuse = new Texture();
 	//// Example of loading Mesh from Mesh Manager
@@ -76,6 +76,7 @@ Game::Game(int window_width, int window_height, SDL_Window* window)
 	"data/textures/skybox/front.tga",
 	"data/textures/skybox/back.tga"
 		});
+
 	
 	cubemap.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/cubemap.fs");;
 
@@ -91,7 +92,7 @@ Game::Game(int window_width, int window_height, SDL_Window* window)
 	playerMaterial.shader = basicShader;
 	playerMaterial.diffuse = playerTexture;
 	
-	Vector3 position = (0.0f, 0.0f, 0.0f);
+	Vector3 position = (0.0f, 0.0f, 15.0f);
 	playerEntity = new EntityPlayer(position);//EntityMesh(playerMesh, playerMaterial, "Player");
 
 	playerEntity->mesh = playerMesh;
