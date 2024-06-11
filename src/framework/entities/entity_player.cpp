@@ -1,15 +1,12 @@
 #include "entity_player.h"
-#include "framework/input.h"
-#include <cmath>
-#include "framework/includes.h"
-#include "framework/camera.h"
+
 
 //float camera_yaw = 0.0f;
 //float speed_mult = 1.0f; 
 //Vector3 velocity = Vector3(0.0f, 0.0f, 0.0f); 
 
-EntityPlayer::EntityPlayer(Vector3 position) /*: EntityMesh(position), speed(10.0f)*/ {
-    // Inicialización adicional si es necesaria
+EntityPlayer::EntityPlayer(Vector3 position) {
+
     this->position = position;
     model.setTranslation(position);
 }
@@ -17,8 +14,6 @@ EntityPlayer::EntityPlayer(Vector3 position) /*: EntityMesh(position), speed(10.
 void EntityPlayer::update(float seconds_elapsed, EntityMesh* skybox) {
     handleInput(seconds_elapsed, skybox);
     
-    
-    //model.translate(this->position);
 
     skybox->model.setTranslation(model.getTranslation());
     //// Actualiza las bombas
@@ -54,40 +49,36 @@ void EntityPlayer::handleInput(float seconds_elapsed, EntityMesh* skybox) {
 
     }
     if (Input::isKeyPressed(SDL_SCANCODE_SPACE)) {
+        model.translate(0, 0, seconds_elapsed * speed * 1.5);
+    }
+    if (Input::isKeyPressed(SDL_SCANCODE_E)) {
         //dropBomb();
     }
-
     model.translate(0, 0, seconds_elapsed * speed);
-
-    //this->position += model.frontVector() * seconds_elapsed * speed;
-    
-    //model.setTranslation(this->position);
 
 }
 
 void EntityPlayer::playerPOV(Camera* camera, float seconds_elapsed) {
     
-    if(Input::isMousePressed(SDL_BUTTON_LEFT) || Input::isMousePressed(SDL_BUTTON_MIDDLE)){
-        camera_yaw += Input::mouse_delta.x * 0.005f;
-        camera_pitch += Input::mouse_delta.y * 0.005f;
-        camera_pitch = clamp(camera_pitch, -M_PI * 0.5f, M_PI * 0.5f);
-    }
-    else {
-        // Slowly return to the plane's forward direction when the mouse is not pressed
-        camera_yaw *= 0.95f;
-        camera_pitch *= 0.95f;
-    }
+    //if(Input::isMousePressed(SDL_BUTTON_LEFT) || Input::isMousePressed(SDL_BUTTON_MIDDLE)){
+    //    camera_yaw += Input::mouse_delta.x * 0.005f;
+    //    camera_pitch += Input::mouse_delta.y * 0.005f;
+    //    camera_pitch = clamp(camera_pitch, -M_PI * 0.5f, M_PI * 0.5f);
+    //}
+    //else {
+    //    // Slowly return to the plane's forward direction when the mouse is not pressed
+    //    camera_yaw *= 0.95f;
+    //    camera_pitch *= 0.95f;
+    //}
 
-    Matrix44 mYaw;
-    mYaw.setRotation(camera_yaw, Vector3(0, 1, 0));
+    //Matrix44 mYaw;
+    //mYaw.setRotation(camera_yaw, Vector3(0, 1, 0));
 
-    Matrix44 mPitch;
-    mPitch.setRotation(camera_pitch, Vector3(-1, 0, 0));
+    //Matrix44 mPitch;
+    //mPitch.setRotation(camera_pitch, Vector3(-1, 0, 0));
 
-    Matrix44 planeRotation = model.getRotationOnly();
-    //Vector3 planeFront = model.frontVector();
-    Matrix44 final_rotation = mPitch * mYaw;// *planeRotation;
-    Vector3 front = model.frontVector(); //final_rotation.frontVector().normalize();  //* planeFront;
+    //Matrix44 final_rotation = mPitch * mYaw;
+    Vector3 front = model.frontVector(); //final_rotation.frontVector().normalize();  
     
     Vector3 eye;
     Vector3 center;
@@ -102,14 +93,13 @@ void EntityPlayer::playerPOV(Camera* camera, float seconds_elapsed) {
     //update our scene:
     Entity::update(seconds_elapsed);
 
-    //EntityPlayer::update(seconds_elapsed);
 }
 
-//void EntityPlayer::dropBomb() {
-//    Vector3 bombPosition = this->position; // La posición inicial de la bomba es la del avión
-//    Vector3 bombVelocity = Vector3(0, -10, 0); // La bomba cae hacia abajo
-//    bombs.push_back(Bomb(bombPosition, bombVelocity));
-//}
+void EntityPlayer::dropBomb() {
+    Vector3 bombPosition = model.getTranslation(); // La posición inicial de la bomba es la del avión
+    //Vector3 bombVelocity = Vector3(0, -10, 0); // La bomba cae hacia abajo
+    //bombs.push_back(Bomb(bombPosition, bombVelocity));
+}
 
 
 

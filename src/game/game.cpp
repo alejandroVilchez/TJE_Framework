@@ -79,7 +79,7 @@ Game::Game(int window_width, int window_height, SDL_Window* window)
 	
 	cubemap.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/cubemap.fs");;
 
-	skybox = new EntityMesh(Mesh::Get("data/meshes/box.ASE"), cubemap, "skybox");
+	skybox = new EntityMesh(Mesh::Get("data/meshes/skybox.obj"), cubemap, "skybox");
 
 	//// Example of shader loading using the shaders manager
 	//shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs");
