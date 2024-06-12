@@ -98,7 +98,7 @@ Game::Game(int window_width, int window_height, SDL_Window* window)
 	playerEntity->mesh = playerMesh;
 	playerEntity->material = playerMaterial;
 	playerEntity->name = "Player";
-	float angle_in_rad = 1.5707963268f; //90 degrees
+	//float angle_in_rad = 1.5707963268f; //90 degrees
 	//playerEntity->model.setRotation(angle_in_rad, Vector3(0.0f, 1.0f, 0.0f)); // No se aplica
 
 	// Hide the cursor
