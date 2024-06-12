@@ -1,10 +1,39 @@
 #include "world.h"
 
-World* World::world;
+float angles = 0;
+float mouse_speeds = 100.0f;
+//
+//Mesh* mesh = NULL;
+//Texture* texture = NULL;
+//Shader* shader = NULL;
+
+//Mesh* playerMesh = nullptr; // Load a cube mesh
+//Texture* playerTexture = nullptr;
+//Shader* basicShader = nullptr;
+//Material playerMaterial;
+
+//Scene* scene;
+//
+//EntityPlayer* playerEntity;
+//
+//Material cubemap;
+//Material skyboxMaterial;
+//EntityMesh* skybox;
+
+World* World::instance;
 
 World::World() {
 
+	instance = this;
+
+	int window_width = Game::instance->window_width;
+	int window_height = Game::instance->window_height;
+
     root = new Entity();
+
+	camera = new Camera();
+	camera->lookAt(Vector3(0.f, 100.f, 100.f), Vector3(0.f, 0.f, 0.f), Vector3(0.f, 1.f, 0.f)); //position the camera and point to 0,0,0
+	camera->setPerspective(70.f, window_width / (float)window_height, 0.1f, 10000.f); //set the projection, we want to be perspective
 
 
     basicShader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs");
@@ -47,22 +76,38 @@ World::World() {
 	scene->parseScene("data/myscene.scene");
 }
 
-void World::render(Camera* camera) {
+void World::render() {
+
+	camera->enable();
+
     root->render(camera);
     if (player) {
         playerEntity->render(camera);
-
     }
+	skybox->render(camera);
 }
 
-void World::update(float elapsed_time, Camera* camera) {
+void World::update(float elapsed_time) {
+
+	float speed = elapsed_time * mouse_speeds; //the speed is defined by the seconds_elapsed so it goes constant
+
+	// Example
+	angles += (float)elapsed_time * 10.0f;
+
 	playerEntity->update(elapsed_time, skybox);
 	playerEntity->playerPOV(camera, elapsed_time);
     root->update(elapsed_time);
 }
 
 void World::cleanRoot() {
-    for (int i = root->children.size() - 1; i >= 0; i--) { //clean root
+    for (size_t i = root->children.size() - 1; i >= 0; i--) { //clean root
         root->removeChild(root->children[i]);
     }
+}
+
+void World::onKeyDown(SDL_KeyboardEvent event) {
+	switch (event.keysym.sym) {
+	case SDLK_ESCAPE: Game::instance->must_exit = true; break; //ESC key, kill the app
+	case SDLK_F1: Shader::ReloadAll(); break;
+	}
 }

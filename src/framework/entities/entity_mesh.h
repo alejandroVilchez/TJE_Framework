@@ -1,3 +1,5 @@
+#pragma once
+
 #include "graphics/material.h"
 #include "entity.h"
 #include "framework/animation.h"
