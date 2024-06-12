@@ -69,12 +69,12 @@ Game::Game(int window_width, int window_height, SDL_Window* window)
 	//// Example of loading Mesh from Mesh Manager
 	
 	cubemap.diffuse->loadCubemap("landscape", {
-	"data/textures/skybox/right.tga",
-	"data/textures/skybox/left.tga",
-	"data/textures/skybox/top.tga",
-	"data/textures/skybox/bottom.tga",
-	"data/textures/skybox/front.tga",
-	"data/textures/skybox/back.tga"
+	"data/textures/skyboxx/right.tga",
+	"data/textures/skyboxx/left.tga",
+	"data/textures/skyboxx/top.tga",
+	"data/textures/skyboxx/bottom.tga",
+	"data/textures/skyboxx/front.tga",
+	"data/textures/skyboxx/back.tga"
 		});
 
 	
