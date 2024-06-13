@@ -33,6 +33,7 @@ public:
 	bool mouse_locked; //tells if the mouse is locked (not seen)
 
 	Scene* scene;
+	World* world;
 
 	Game( int window_width, int window_height, SDL_Window* window );
 
@@ -49,4 +50,13 @@ public:
 	void onGamepadButtonDown(SDL_JoyButtonEvent event);
 	void onGamepadButtonUp(SDL_JoyButtonEvent event);
 	void onResize(int width, int height);
+
+	enum class StageType {
+		INTRO,
+		PLAY,
+		END
+	};
+private:
+	StageType currentStageType;
+	void changeStage(StageType newStage);
 };

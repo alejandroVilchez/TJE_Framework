@@ -22,12 +22,12 @@ float mouse_speeds = 100.0f;
 
 World* World::instance;
 
-World::World() {
+World::World(int window_width, int window_height) {
 
 	instance = this;
 
-	int window_width = Game::instance->window_width;
-	int window_height = Game::instance->window_height;
+	/*int window_width = Game::instance->window_width;
+	int window_height = Game::instance->window_height;*/
 
     root = new Entity();
 
@@ -107,7 +107,7 @@ void World::cleanRoot() {
 
 void World::onKeyDown(SDL_KeyboardEvent event) {
 	switch (event.keysym.sym) {
-	case SDLK_ESCAPE: Game::instance->must_exit = true; break; //ESC key, kill the app
+	//case SDLK_ESCAPE: Game::instance->must_exit = true; break; //ESC key, kill the app
 	case SDLK_F1: Shader::ReloadAll(); break;
 	}
 }

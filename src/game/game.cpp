@@ -36,6 +36,11 @@ Material cubemap;
 Material skyboxMaterial;
 EntityMesh* skybox;
 
+IntroStage* introStage;
+PlayStage* playStage;
+EndStage* endStage;
+Stages* currentStage;
+
 //Entity* root;
 //Scene* scene;
 //EntityPlayer* player;
@@ -59,7 +64,14 @@ Game::Game(int window_width, int window_height, SDL_Window* window)
 	// OpenGL flags
 	glEnable( GL_CULL_FACE ); //render both sides of every triangle
 	glEnable( GL_DEPTH_TEST ); //check the occlusions using the Z buffer
-	stages = new Stages();
+	introStage = new IntroStage();
+	playStage = new PlayStage();
+	endStage = new EndStage();
+
+	currentStage = playStage;
+	currentStageType = StageType::INTRO;
+
+	world = new World(window_width, window_height);
 	// Hide the cursor
 	SDL_ShowCursor(!mouse_locked); //hide or show the mouse
 
@@ -81,7 +93,7 @@ void Game::render(void)
 	glEnable(GL_DEPTH_TEST);
 	glDisable(GL_CULL_FACE);
    
-	stages->render();
+	currentStage->render();
 	//// Create model matrix for cube
 	//Matrix44 m;
 	//m.rotate(angle*DEG2RAD, Vector3(0.0f, 1.0f, 0.0f));
@@ -157,7 +169,7 @@ void Game::update(double seconds_elapsed)
 	//	camera->rotate(input::mouse_delta.x * 0.005f, vector3(0.0f,-1.0f,0.0f));
 	//	camera->rotate(input::mouse_delta.y * 0.005f, camera->getlocalvector( vector3(-1.0f,0.0f,0.0f)));
 	//}
-	stages->update(seconds_elapsed);
+	currentStage->update(seconds_elapsed);
 
 	//// Async input to move the camera around
 	//if (Input::isKeyPressed(SDL_SCANCODE_LSHIFT) ) speed *= 10; //move faster with left shift
@@ -175,10 +187,12 @@ void Game::onKeyDown( SDL_KeyboardEvent event )
 		case SDLK_ESCAPE: must_exit = true; break; //ESC key, kill the app
 		case SDLK_F1: Shader::ReloadAll(); break; 
 		case SDLK_SPACE:
-			if (stages->currentStage == Stages::INTRO)
-				stages->setStage(Stages::PLAY);
-			else if (stages->currentStage == Stages::PLAY)
-				stages->setStage(Stages::END);
+			if (currentStageType == StageType::INTRO)
+				changeStage(StageType::PLAY);
+			else if (currentStageType == StageType::PLAY)
+				changeStage(StageType::END);
+			else if (currentStageType == StageType::END)
+				changeStage(StageType::INTRO);
 			break;
 	}
 }
@@ -227,3 +241,19 @@ void Game::onResize(int width, int height)
 	window_height = height;
 }
 
+void Game::changeStage(StageType newStage)
+{
+	currentStageType = newStage;
+	switch (newStage)
+	{
+	case StageType::INTRO:
+		currentStage = introStage;
+		break;
+	case StageType::PLAY:
+		currentStage = playStage;
+		break;
+	case StageType::END:
+		currentStage = endStage;
+		break;
+	}
+}

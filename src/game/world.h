@@ -7,8 +7,7 @@
 #include "graphics/mesh.h"
 #include "graphics/texture.h"
 #include "graphics/shader.h"
-#include "game/scene.h"
-#include "game/game.h"
+#include "scene.h"
 #include <stdio.h>
 
 
@@ -20,7 +19,7 @@ class World {
 public:
     static World* instance;
 
-    World();
+    World(int window_width, int window_height);
     Matrix44 model;
     Entity* root = nullptr;
 
