@@ -37,7 +37,7 @@ World::World(int window_width, int window_height) {
 
 
     basicShader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs");
-	playerMesh = Mesh::Get("data/meshes/B2-final.obj");
+	playerMesh = Mesh::Get("data/meshes/B2_final_model.obj");
 	cubemap.diffuse = new Texture();
 	//// Example of loading Mesh from Mesh Manager
 
@@ -71,7 +71,16 @@ World::World(int window_width, int window_height) {
 	playerEntity->material = playerMaterial;
 	playerEntity->name = "Player";
 	float angle_in_rad = 1.5707963268f; //90 degrees
-	
+
+	//------- Bomba --------
+	bombMesh = Mesh::Get("data/meshes/missile1.obj");
+	bombTexture = Texture::Get("data/textures/texture.tga"); // load a texture
+
+	bombMaterial.shader = basicShader;
+	bombMaterial.diffuse = bombTexture;
+
+	bombEntity = new EntityMesh(bombMesh, bombMaterial, "bomb");
+
 	scene = new Scene();
 	scene->parseScene("data/myscene.scene");
 }
@@ -85,6 +94,13 @@ void World::render() {
         playerEntity->render(camera);
     }
 	skybox->render(camera);
+
+	if (bombEntity->isLaunched) {
+		bombEntity->render(camera);
+	}
+	if (bombEntity->isExploded) {
+		//render explosion in the position of the bomb
+	}
 }
 
 void World::update(float elapsed_time) {
@@ -94,7 +110,12 @@ void World::update(float elapsed_time) {
 	// Example
 	angles += (float)elapsed_time * 10.0f;
 
-	playerEntity->update(elapsed_time, skybox);
+	playerEntity->update(elapsed_time, skybox, bombEntity);
+
+	//if(bombEntity->launched == true){
+	//	bombEntity->update(elapsed_time);
+	//}
+	
 	playerEntity->playerPOV(camera, elapsed_time);
     root->update(elapsed_time);
 }

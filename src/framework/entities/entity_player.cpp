@@ -11,26 +11,32 @@ EntityPlayer::EntityPlayer(Vector3 position) {
     model.setTranslation(position);
 }
 
-void EntityPlayer::update(float seconds_elapsed, EntityMesh* skybox) {
-    handleInput(seconds_elapsed, skybox);
+void EntityPlayer::update(float seconds_elapsed, EntityMesh* skybox, EntityMesh* bomb) {
+    handleInput(seconds_elapsed, skybox, bomb);
     
 
     skybox->model.setTranslation(model.getTranslation());
-    //// Actualiza las bombas
-    //for (Bomb& bomb : bombs) {
-    //    bomb.update(deltaTime);
-    //}
+ 
+    Vector3 gravity(0.0f, -9.81f, 0.0f);
+    if (bomb->isLaunched) {
+        Vector3 currentPos = bomb->model.getTranslation();
+        Vector3 newPos = currentPos + bomb->velocity * seconds_elapsed + 0.5f * gravity * seconds_elapsed * seconds_elapsed;
+        bomb->velocity = bomb->velocity + gravity * seconds_elapsed;
+        bomb->model.setTranslation(newPos);
 
-    //// Elimina las bombas que hayan explotado o salido del ·rea de juego
-    //bombs.erase(std::remove_if(bombs.begin(), bombs.end(), [](Bomb& bomb) {
-    //    return bomb.hasExploded() || bomb.isOutOfBounds();
-    //    }), bombs.end());
+        // Chequear si la bomba ha tocado el suelo (suponiendo que el suelo est√° en y = 0)
+        if (newPos.y <= 0.0f) {
+            bomb->model.setTranslation(Vector3(newPos.x, 0.0f, newPos.z));
+            bomb->velocity = Vector3(0.0f, 0.0f, 0.0f);
+            bomb->isLaunched = false; // Mark bomb as no longer active
+        }
+    }
 }
 
-void EntityPlayer::handleInput(float seconds_elapsed, EntityMesh* skybox) {
+void EntityPlayer::handleInput(float seconds_elapsed, EntityMesh* skybox, EntityMesh* bomb) {
 
     
-    // AquÌ se manejarÌan las entradas del usuario para mover el aviÛn
+    // AquÔøΩ se manejarÔøΩan las entradas del usuario para mover el aviÔøΩn
     
     if (Input::isKeyPressed(SDL_SCANCODE_W) || Input::isKeyPressed(SDL_SCANCODE_UP)) {
         this->model.rotate(seconds_elapsed * rotation_speed, Vector3(-1.0f, 0.0f, 0.0f));
@@ -48,11 +54,11 @@ void EntityPlayer::handleInput(float seconds_elapsed, EntityMesh* skybox) {
         this->model.rotate(seconds_elapsed * rotation_speed, Vector3(0.0f, 0.0f, -1.0f));
 
     }
-    if (Input::isKeyPressed(SDL_SCANCODE_SPACE)) {
+    if (Input::isKeyPressed(SDL_SCANCODE_LSHIFT)) {
         model.translate(0, 0, seconds_elapsed * speed * 1.5);
     }
     if (Input::isKeyPressed(SDL_SCANCODE_E)) {
-        //dropBomb();
+        dropBomb(bomb);//, seconds_elapsed);
     }
     model.translate(0, 0, seconds_elapsed * speed);
 
@@ -95,51 +101,33 @@ void EntityPlayer::playerPOV(Camera* camera, float seconds_elapsed) {
 
 }
 
-void EntityPlayer::dropBomb() {
-    Vector3 bombPosition = model.getTranslation(); // La posiciÛn inicial de la bomba es la del aviÛn
-    //Vector3 bombVelocity = Vector3(0, -10, 0); // La bomba cae hacia abajo
-    //bombs.push_back(Bomb(bombPosition, bombVelocity));
+void EntityPlayer::dropBomb(EntityMesh* bomb) {
+
+    bomb->model.setTranslation(model.getTranslation()); 
+    bomb->velocity = model.frontVector() * bombSpeed; 
+    bomb->isLaunched = true;
 }
-
-
-
-//void EntityPlayer::update(float seconds_elapsed) {
-//    // Apply rotation based on input
-//    Matrix44 mYaw;
-//    mYaw.setRotation(camera_yaw, Vector3(0, 1, 0));
+//void EntityPlayer::dropBomb(EntityMesh* bomb, float seconds_elapsed) {
+//    bomb->isLaunched = true;
+//    Vector3 gravity(0.0f, -9.81f, 0.0f); // Gravity acceleration
 //
-//    Vector3 front = mYaw.frontVector();
-//    Vector3 right = mYaw.rightVector();
+//    bomb->model.translate(model.getTranslation() - bomb->bombSpeed * seconds_elapsed + 0.5f * gravity * seconds_elapsed * seconds_elapsed);
+//    //position = position + velocity * seconds_elapsed + 0.5f * gravity * seconds_elapsed * seconds_elapsed;
+//    bomb->bombSpeed = bomb->bombSpeed + -9.81f * seconds_elapsed;
 //
-//    Vector3 position = model.getTranslation();
-//
-//    Vector3 move_dir;
-//
-//    // Update movement direction based on input
-//    if (Input::isKeyPressed(SDL_SCANCODE_W)) {
-//        move_dir += front;
-//    }
-//    if (Input::isKeyPressed(SDL_SCANCODE_S)) {
-//        move_dir -= front;
-//    }
-//    if (Input::isKeyPressed(SDL_SCANCODE_A)) {
-//        move_dir -= right;
-//    }
-//    if (Input::isKeyPressed(SDL_SCANCODE_D)) {
-//        move_dir += right;
+//    // Check if the bomb has hit the ground (assuming ground is at y = 0)
+//    this->position = bomb->model.getTranslation();
+//    if (position.y <= 0.0f) {
+//        position.y = 0.0f;
+//        isExploded = true; // Mark the bomb as exploded
+//        isLaunched = false;
 //    }
 //
-//    move_dir.normalize();
-//    move_dir *= speed_mult;
-//    velocity += move_dir;
-//
-//    position += velocity * seconds_elapsed;
-//
-//    // Decrease velocity when not moving
-//    velocity.x *= 0.5f;
-//    velocity.z *= 0.5f;
-//
-//    model.setTranslation(position);
-//
-//    EntityMesh::update(seconds_elapsed);
+//    // Decrease explosion time
+//    bomb->explosionTime -= seconds_elapsed;
+//    if (bomb->explosionTime <= 0.0f) {
+//        isExploded = true; // Mark the bomb as exploded
+//        isLaunched = false;
+//    }
+//    
 //}

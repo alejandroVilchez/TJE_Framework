@@ -3,6 +3,7 @@
 #include "framework/entities/entity.h"
 #include "framework/entities/entity_player.h"
 #include "framework/entities/entity_mesh.h"
+#include "framework/entities/entity_bomb.h"
 #include "framework/camera.h"
 #include "graphics/mesh.h"
 #include "graphics/texture.h"
@@ -36,6 +37,11 @@ public:
     Camera* camera;
 
     EntityPlayer* playerEntity;
+
+    EntityMesh* bombEntity;
+    Mesh* bombMesh;
+    Material bombMaterial;
+    Texture* bombTexture;
 
     Material cubemap;
     Material skyboxMaterial;

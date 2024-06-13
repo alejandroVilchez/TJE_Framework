@@ -2,6 +2,7 @@
 
 #include "entity.h"
 #include "entity_mesh.h"
+#include "entity_bomb.h"
 #include <vector>
 #include "framework/input.h"
 #include <cmath>
@@ -17,16 +18,17 @@
 
 class EntityPlayer : public EntityMesh {
 public:
+    float speed = 5.0f;
     Vector3 position;
     EntityPlayer(Vector3 position);
-    void update(float seconds_elapsed, EntityMesh* skybox);
-    void handleInput(float seconds_elapsed, EntityMesh* skybox);
+    void update(float seconds_elapsed, EntityMesh* skybox, EntityMesh* bomb);
+    void handleInput(float seconds_elapsed, EntityMesh* skybox, EntityMesh* bomb);
     void playerPOV(Camera* camera, float seconds_elapsed);
-    void dropBomb();
+    void dropBomb(EntityMesh* bomb);//, float seconds_elapsed);
 
 private:
     //std::vector<Bomb> bombs;
-    float speed = 5.0f;
+    
     float rotation_speed = 2.0f;
     /*float camera_yaw = 0.0f;
     float camera_pitch = 0.0f;*/
