@@ -1,4 +1,5 @@
 #include "game.h"
+#include "stages.h"
 
 #include "framework/utils.h"
 #include "graphics/mesh.h"
