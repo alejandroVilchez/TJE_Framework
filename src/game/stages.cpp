@@ -54,6 +54,7 @@ PlayStage::~PlayStage() {
 
 void PlayStage::render() {
     Game::instance->world->render();
+    drawText(2, 2, getGPUStats(), Vector3(1, 1, 1), 2);
 }
 
 void PlayStage::update(float elapsed_time) {
@@ -83,7 +84,7 @@ IntroStage::IntroStage() {
 }
 
 IntroStage::~IntroStage() {
-    delete introBackground;
+    //delete introBackground;
 }
 
 void IntroStage::render() {
@@ -91,6 +92,7 @@ void IntroStage::render() {
     shader->setUniform("u_texture", introBackground, 0);
     fullScreenQuad->render(GL_TRIANGLES);
     shader->disable();
+    drawText(2, 2, "press SPACE to continue", Vector3(1, 1, 1), 2);
 }
 
 void IntroStage::update(float elapsed_time) {

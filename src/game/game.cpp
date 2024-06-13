@@ -68,7 +68,7 @@ Game::Game(int window_width, int window_height, SDL_Window* window)
 	playStage = new PlayStage();
 	endStage = new EndStage();
 
-	currentStage = playStage;
+	currentStage = introStage;
 	currentStageType = StageType::INTRO;
 
 	world = new World(window_width, window_height);
@@ -146,7 +146,7 @@ void Game::render(void)
 	
 
 	// Render the FPS, Draw Calls, etc
-	drawText(2, 2, getGPUStats(), Vector3(1, 1, 1), 2);
+	//drawText(2, 2, getGPUStats(), Vector3(1, 1, 1), 2);
 
 	
 
