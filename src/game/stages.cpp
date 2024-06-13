@@ -78,26 +78,97 @@ void EndStage::update(float elapsed_time) {
 }
 
 IntroStage::IntroStage() {
-    introBackground = Texture::Get("data/textures/a.t.o.m.3.tga");
+    this->width = Game::instance->window_width;
+    this->height = Game::instance->window_height;
+    this->howto = false;
+
+
+    // Initialize camera
+    camera = new Camera();
+    camera->lookAt(Vector3(0.f, 2.f, 10.f), Vector3(0.f, 2.f, 0.f), Vector3(0.f, 1.f, 0.f));
+
+    // Load texture
+    introBackground = Texture::Get("data/textures/atom.tga");
+
+    // Load mesh
     fullScreenQuad = Mesh::Get("data/meshes/quad.obj");
+
+    // Load shader
     shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs");
+
+    // Initialize other variables
+    currentSlot = 0;
+    th = 1.0f;
+    end = false;
 }
 
 IntroStage::~IntroStage() {
+    delete camera;
+    delete fullScreenQuad;
     delete introBackground;
+    delete shader;
 }
 
 void IntroStage::render() {
-    introBackground = Texture::Get("data/textures/a.t.o.m.2.tga");
-    fullScreenQuad = Mesh::Get("data/meshes/quad.obj");
-    shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs");
-    shader->enable();
-    shader->setUniform("u_texture", introBackground, 0);
-    fullScreenQuad->render(GL_TRIANGLES);
-    shader->disable();
-    drawText(2, 2, "press SPACE to continue", Vector3(1, 1, 1), 2);
+    // Set the clear color (the background color)
+    glClearColor(0.f, 0.f, 0.f, 1.0f);
+
+    // Clear the window and the depth buffer
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    // Set flags
+    glDisable(GL_BLEND);
+    glEnable(GL_DEPTH_TEST);
+    glDisable(GL_CULL_FACE);
+
+    if (shader) {
+        // Enable shader
+        shader->enable();
+
+        // Upload uniforms
+        shader->setUniform("u_color", Vector4(1, 1, 1, 1));
+        shader->setUniform("u_viewprojection", camera->viewprojection_matrix);
+        shader->setUniform("u_texture", introBackground, 0);
+        shader->setUniform("u_model", model);
+        shader->setUniform("u_time", Game::instance->time);
+
+        // Render the quad
+        fullScreenQuad->render(GL_TRIANGLES);
+
+        // Disable shader
+        shader->disable();
+
+        drawText(width / 2 - 150, height / 2 - 275, "A.T.O.M.", Vector3(1, 1, 1), 7);
+        drawText(width / 2 - 330, height / 2 - 175, "Aeronautic Thermonuclear Ogives Maelstrom", Vector3(1, 1, 1), 3);
+        if (currentSlot == 0)
+            drawText(width / 2 - 115, height / 2, "Start Game", Vector3(1, 0, 0), 4);
+        else
+            drawText(width / 2 - 115, height / 2, "Start Game", Vector3(1, 1, 1), 4);
+        if (currentSlot == 1)
+            drawText(width / 2 - 120, height / 2 + 50, "How to Play", Vector3(1, 0, 0), 4);
+        else
+            drawText(width / 2 - 120, height / 2 + 50, "How to Play", Vector3(1, 1, 1), 4);
+
+    }
 }
 
 void IntroStage::update(float elapsed_time) {
-    // No update needed for the intro stage
+    if (currentSlot > 1)
+        currentSlot = 0;
+    if (currentSlot < 0)
+        currentSlot = 1;
+
+    if (currentSlot == 0 && (Input::wasKeyPressed(SDL_SCANCODE_RETURN) || Input::wasButtonPressed(A_BUTTON))) {
+        end = true;
+    }
+    if (currentSlot == 1 && (Input::wasKeyPressed(SDL_SCANCODE_RETURN) || Input::wasButtonPressed(A_BUTTON))) {
+        howto = true;
+    }
+
+    if (Input::wasKeyPressed(SDL_SCANCODE_DOWN) || Input::wasKeyPressed(SDL_SCANCODE_S) || Input::wasButtonPressed(PAD_DOWN)) {
+        currentSlot += 1;
+    }
+    if (Input::wasKeyPressed(SDL_SCANCODE_UP) || Input::wasKeyPressed(SDL_SCANCODE_W) || Input::wasButtonPressed(PAD_UP)) {
+        currentSlot -= 1;
+    }
 }

@@ -23,6 +23,9 @@ public:
     virtual void update(float elapsed_time);
     void setStage(StageType stage);
     Stages* currentStage;
+    Matrix44 model;
+    int width;
+    int height;
 
 private:
     StageType currentStageType;
@@ -46,6 +49,12 @@ private:
     Texture* introBackground;
     Mesh* fullScreenQuad;
     Shader* shader;
+    Camera* camera;
+    bool intermitent;
+    float th;
+    int currentSlot;
+    bool howto;
+    bool end;
 };
 
 class PlayStage : public Stages {
