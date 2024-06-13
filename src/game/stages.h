@@ -11,12 +11,13 @@ public:
     Stages();
     ~Stages();
 
+    Stage currentStage;
+
     void render();
     void update(float elapsed_time);
     void setStage(Stage stage);
 
 private:
-    Stage currentStage;
     Texture* introBackground;
     Mesh* fullScreenQuad;
     Shader* shader;

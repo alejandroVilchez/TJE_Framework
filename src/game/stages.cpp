@@ -1,8 +1,10 @@
 #include "stages.h"
 #include "world.h" // Include the World class
 
+World* world;
+
 Stages::Stages() {
-    currentStage = INTRO;
+    currentStage = PLAY;
     introBackground = Texture::Get("data/textures/atom.tga");
 
     // Create a full-screen quad mesh
@@ -10,6 +12,8 @@ Stages::Stages() {
 
     // Load a basic shader for rendering the texture
     shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs");
+
+    world = new World();
 }
 
 Stages::~Stages() {
