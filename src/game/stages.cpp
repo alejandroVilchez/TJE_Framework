@@ -78,14 +78,10 @@ void EndStage::update(float elapsed_time) {
 }
 
 IntroStage::IntroStage() {
-    this->width = Game::instance->window_width;
-    this->height = Game::instance->window_height;
-    this->howto = false;
-
-
-    // Initialize camera
     camera = new Camera();
-    camera->lookAt(Vector3(0.f, 2.f, 10.f), Vector3(0.f, 2.f, 0.f), Vector3(0.f, 1.f, 0.f));
+    camera->setOrthographic(-width / 2.0f, width / 2.0f, -height / 2.0f, height / 2.0f, 0.1f, 100.f);
+    camera->lookAt(Vector3(0.f, 0.f, 1.f), Vector3(0.f, 0.f, 0.f), Vector3(0.f, 1.f, 0.f));
+
 
     // Load texture
     introBackground = Texture::Get("data/textures/atom.tga");
@@ -99,7 +95,13 @@ IntroStage::IntroStage() {
     // Initialize other variables
     currentSlot = 0;
     th = 1.0f;
-    end = false;
+    start = false;
+    width = Game::instance->window_width;
+    height = Game::instance->window_height;
+    howto = false;
+
+    model.setIdentity();
+    model.scale(width, height, 1.0f);
 }
 
 IntroStage::~IntroStage() {
@@ -122,10 +124,7 @@ void IntroStage::render() {
     glDisable(GL_CULL_FACE);
 
     if (shader) {
-        // Enable shader
         shader->enable();
-
-        // Upload uniforms
         shader->setUniform("u_color", Vector4(1, 1, 1, 1));
         shader->setUniform("u_viewprojection", camera->viewprojection_matrix);
         shader->setUniform("u_texture", introBackground, 0);
@@ -138,7 +137,7 @@ void IntroStage::render() {
         // Disable shader
         shader->disable();
 
-        drawText(width / 2 - 150, height / 2 - 275, "A.T.O.M.", Vector3(1, 1, 1), 7);
+        drawText(width / 2 - 120, height / 2 - 275, "A.T.O.M.", Vector3(1, 1, 1), 7);
         drawText(width / 2 - 330, height / 2 - 175, "Aeronautic Thermonuclear Ogives Maelstrom", Vector3(1, 1, 1), 3);
         if (currentSlot == 0)
             drawText(width / 2 - 115, height / 2, "Start Game", Vector3(1, 0, 0), 4);
@@ -159,16 +158,16 @@ void IntroStage::update(float elapsed_time) {
         currentSlot = 1;
 
     if (currentSlot == 0 && (Input::wasKeyPressed(SDL_SCANCODE_RETURN) || Input::wasButtonPressed(A_BUTTON))) {
-        end = true;
+        start = true;
     }
     if (currentSlot == 1 && (Input::wasKeyPressed(SDL_SCANCODE_RETURN) || Input::wasButtonPressed(A_BUTTON))) {
         howto = true;
     }
 
     if (Input::wasKeyPressed(SDL_SCANCODE_DOWN) || Input::wasKeyPressed(SDL_SCANCODE_S) || Input::wasButtonPressed(PAD_DOWN)) {
-        currentSlot += 1;
+        currentSlot = (currentSlot + 1) % 2;
     }
     if (Input::wasKeyPressed(SDL_SCANCODE_UP) || Input::wasKeyPressed(SDL_SCANCODE_W) || Input::wasButtonPressed(PAD_UP)) {
-        currentSlot -= 1;
+        currentSlot = (currentSlot + 1) % 2;
     }
 }

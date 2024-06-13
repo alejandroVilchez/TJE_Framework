@@ -54,7 +54,7 @@ private:
     float th;
     int currentSlot;
     bool howto;
-    bool end;
+    bool start;
 };
 
 class PlayStage : public Stages {
