@@ -78,16 +78,19 @@ void EndStage::update(float elapsed_time) {
 }
 
 IntroStage::IntroStage() {
-    introBackground = Texture::Get("data/textures/atom.tga");
+    introBackground = Texture::Get("data/textures/a.t.o.m.3.tga");
     fullScreenQuad = Mesh::Get("data/meshes/quad.obj");
     shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs");
 }
 
 IntroStage::~IntroStage() {
-    //delete introBackground;
+    delete introBackground;
 }
 
 void IntroStage::render() {
+    introBackground = Texture::Get("data/textures/a.t.o.m.2.tga");
+    fullScreenQuad = Mesh::Get("data/meshes/quad.obj");
+    shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs");
     shader->enable();
     shader->setUniform("u_texture", introBackground, 0);
     fullScreenQuad->render(GL_TRIANGLES);
