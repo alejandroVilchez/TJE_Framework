@@ -23,7 +23,6 @@ public:
     World();
     Matrix44 model;
     Entity* root = nullptr;
-    EntityPlayer* player = nullptr;
 
     Mesh* playerMesh;
     Mesh* projectileMesh = nullptr;

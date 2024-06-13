@@ -27,6 +27,9 @@ Material playerMaterial;
 
 Scene* scene;
 
+Stages* stages;
+World* world;
+
 EntityPlayer* playerEntity;
 
 Material cubemap;
@@ -57,58 +60,11 @@ Game::Game(int window_width, int window_height, SDL_Window* window)
 	glEnable( GL_CULL_FACE ); //render both sides of every triangle
 	glEnable( GL_DEPTH_TEST ); //check the occlusions using the Z buffer
 
-	// Create our camera
-	camera = new Camera();
-	camera->lookAt(Vector3(0.f,100.f, 100.f),Vector3(0.f,0.f,0.f), Vector3(0.f,1.f,0.f)); //position the camera and point to 0,0,0
-	camera->setPerspective(70.f,window_width/(float)window_height,0.1f,10000.f); //set the projection, we want to be perspective
-
-
-	basicShader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs"); // Load a basic shader
-	//Load one texture using the Texture Manager
-	//texture = Texture::Get("data/textures/texture.tga");
-	cubemap.diffuse = new Texture();
-	//// Example of loading Mesh from Mesh Manager
-	
-	cubemap.diffuse->loadCubemap("landscape", {
-	"data/textures/skybox1/right.tga",
-	"data/textures/skybox1/left.tga",
-	"data/textures/skybox1/top.tga",
-	"data/textures/skybox1/bottom.tga",
-	"data/textures/skybox1/front.tga",
-	"data/textures/skybox1/back.tga"
-		});
-
-	
-	cubemap.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/cubemap.fs");;
-
-	skybox = new EntityMesh(Mesh::Get("data/meshes/skybox.obj"), cubemap, "skybox");
-
-	//// Example of shader loading using the shaders manager
-	//shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs");
-
-	playerMesh = Mesh::Get("data/meshes/B2_final_model.obj");
-	playerTexture = Texture::Get("data/textures/texture.tga"); // Load a texture
-	
-
-	playerMaterial.shader = basicShader;
-	playerMaterial.diffuse = playerTexture;
-	
-	Vector3 position = (0.0f, 0.0f, 15.0f);
-	playerEntity = new EntityPlayer(position);//EntityMesh(playerMesh, playerMaterial, "Player");
-
-	playerEntity->mesh = playerMesh;
-	playerEntity->material = playerMaterial;
-	playerEntity->name = "Player";
-	//float angle_in_rad = 1.5707963268f; //90 degrees
-	//playerEntity->model.setRotation(angle_in_rad, Vector3(0.0f, 1.0f, 0.0f)); // No se aplica
-
+	world = new World();
 	// Hide the cursor
 	SDL_ShowCursor(!mouse_locked); //hide or show the mouse
 
-	//Entity* root = new Entity();
 	
-	scene = new Scene();
-	scene->parseScene("data/myscene.scene");
 
 }
 
@@ -121,17 +77,12 @@ void Game::render(void)
 	// Clear the window and the depth buffer
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	// Set the camera as default
-	camera->enable();
 	// Set flags
 	glDisable(GL_BLEND);
 	glEnable(GL_DEPTH_TEST);
 	glDisable(GL_CULL_FACE);
    
-	scene->root.render(camera);
-	
-	skybox->render(camera);
-	
+	World::instance->render();
 	//// Create model matrix for cube
 	//Matrix44 m;
 	//m.rotate(angle*DEG2RAD, Vector3(0.0f, 1.0f, 0.0f));
@@ -178,9 +129,7 @@ void Game::render(void)
 	//}
 
 	// Draw the floor grid
-	drawGrid();
-	
-	playerEntity->render(camera);
+	//drawGrid();
 	
 	
 	
@@ -209,8 +158,7 @@ void Game::update(double seconds_elapsed)
 	//	camera->rotate(input::mouse_delta.x * 0.005f, vector3(0.0f,-1.0f,0.0f));
 	//	camera->rotate(input::mouse_delta.y * 0.005f, camera->getlocalvector( vector3(-1.0f,0.0f,0.0f)));
 	//}
-	playerEntity->update(seconds_elapsed, skybox);
-	playerEntity->playerPOV(camera, seconds_elapsed);
+	World::instance->update(seconds_elapsed);
 
 	//// Async input to move the camera around
 	//if (Input::isKeyPressed(SDL_SCANCODE_LSHIFT) ) speed *= 10; //move faster with left shift

@@ -79,9 +79,9 @@ World::World() {
 void World::render() {
 
 	camera->enable();
-
+	scene->root.render(camera);
     root->render(camera);
-    if (player) {
+    if (playerEntity) {
         playerEntity->render(camera);
     }
 	skybox->render(camera);
