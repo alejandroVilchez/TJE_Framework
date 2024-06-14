@@ -12,10 +12,10 @@
 //public:
 //    Vector3 position;
 //    Vector3 velocity;
-//    float explosionTime;
+//    float explosiontime;
 //    bool launched;
 //    bool exploded;
 //
-//    EntityBomb(Vector3 position, Vector3 velocity);
+//    //entitybomb(vector3 position, vector3 velocity);
 //    void update(float seconds_elapsed);
 //};

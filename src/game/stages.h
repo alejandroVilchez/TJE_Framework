@@ -4,6 +4,7 @@
 #include "graphics/mesh.h"
 #include "graphics/shader.h"
 #include "game.h"
+#include "framework/audio.h"
 
 enum class StageTypes {
     INTRO,
@@ -28,6 +29,13 @@ public:
     int width;
     int height;
     Camera* camera2D;
+    Mesh* fullScreenQuad;
+    Shader* shader;
+    Texture* howtoBackground1;
+    Texture* howtoBackground2;
+    Texture* introBackground;
+    HCHANNEL channel1;
+    HCHANNEL channel2;
 
 private:
     StageType currentStageType;
@@ -50,9 +58,6 @@ public:
 
 
 private:
-    Texture* introBackground;
-    Mesh* fullScreenQuad;
-    Shader* shader;
     float th;
     int currentSlot;
     bool howto;
@@ -78,6 +83,7 @@ public:
 
 private:
     float blinkTime;
+    bool firstTexture;
 };
 
 class EndStage : public Stages {

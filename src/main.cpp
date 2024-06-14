@@ -15,6 +15,7 @@
 #include "framework/utils.h"
 #include "framework/input.h"
 #include "game/game.h"
+#include "framework/audio.h"
 
 #include <iostream> //to output
 
@@ -199,11 +200,14 @@ int main(int argc, char **argv)
 
 	Input::init(window);
 
+	Audio::Init();
+
 	//launch the game (game is a global variable)
 	game = new Game(window_width, window_height, window);
 
 	//main loop, application gets inside here till user closes it
 	mainLoop();
+	Audio::Destroy();
 
 	//save state and free memory
 

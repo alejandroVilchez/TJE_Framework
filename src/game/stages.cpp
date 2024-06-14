@@ -6,11 +6,29 @@
 
 
 Stages::Stages() {
-    //introStage = new IntroStage();
-    //playStage = new PlayStage();
-    ////endStage = new EndStage();
-    //setStage(StageType::PLAY);
-    end = false;
+    camera2D = new Camera();
+    camera2D->view_matrix.setIdentity();
+    camera2D->setOrthographic(0, Game::instance->window_width, Game::instance->window_height, 0, -1, 1);
+
+    // Load texture
+    introBackground = Texture::Get("data/textures/atom7.tga");
+    howtoBackground1 = Texture::Get("data/textures/howto.tga");
+    howtoBackground2 = Texture::Get("data/textures/b2atom.tga");
+
+
+
+    // Load mesh
+    fullScreenQuad = Mesh::Get("data/meshes/quad.obj");
+
+    // Load shader
+    shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs");
+
+    width = Game::instance->window_width;
+    height = Game::instance->window_height;
+
+    model.setIdentity();
+    model.translate(width / 2, height / 2, 0);
+    model.scale(width, height, 1.f);
 }
 
 Stages::~Stages() {
@@ -19,6 +37,7 @@ Stages::~Stages() {
     delete howToStage;
     //delete endStage;
     delete currentStage;
+    delete camera2D;
 }
 
 void Stages::render() {
@@ -63,30 +82,12 @@ void EndStage::update(float elapsed_time) {
 }
 
 IntroStage::IntroStage() {
-    camera2D = new Camera();
-    camera2D->view_matrix.setIdentity();
-    camera2D->setOrthographic(0, Game::instance->window_width, Game::instance->window_height, 0, -1, 1);
-
-    // Load texture
-    introBackground = Texture::Get("data/textures/atom7.tga");
-
-    // Load mesh
-    fullScreenQuad = Mesh::Get("data/meshes/quad.obj");
-
-    // Load shader
-    shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs");
 
     // Initialize other variables
     currentSlot = 0;
     th = 1.0f;
     start = false;
-    width = Game::instance->window_width;
-    height = Game::instance->window_height;
-    howto = false;
-
-    model.setIdentity();
-    model.translate(width / 2, height / 2, 0);
-    model.scale(width, height, 1.f);
+    channel1 = Audio::Play("data/audio/music.mp3",1, BASS_SAMPLE_LOOP);
 }
 
 IntroStage::~IntroStage() {
@@ -97,20 +98,19 @@ IntroStage::~IntroStage() {
 }
 
 void IntroStage::render() {
-    // Set the clear color (the background color)
-    glClearColor(0.f, 0.f, 0.f, 1.0f);
+        // Set the clear color (the background color)
+        glClearColor(0.f, 0.f, 0.f, 1.0f);
 
-    // Clear the window and the depth buffer
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        // Clear the window and the depth buffer
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    camera2D->enable();
+        camera2D->enable();
 
-    // Set flags
-    glDisable(GL_BLEND);
-    glEnable(GL_DEPTH_TEST);
-    glDisable(GL_CULL_FACE);
+        // Set flags
+        glDisable(GL_BLEND);
+        glEnable(GL_DEPTH_TEST);
+        glDisable(GL_CULL_FACE);
 
-    if (shader) {
         shader->enable();
         shader->setUniform("u_color", Vector4(1, 1, 1, 1));
         shader->setUniform("u_viewprojection", camera2D->viewprojection_matrix);
@@ -147,7 +147,7 @@ void IntroStage::render() {
         else {
             drawText(width / 2 - 135, height / 2 + 160, "How to Play", Vector3(1, 1, 1), 5);
         }
-    }
+
 }
 
 
@@ -159,31 +159,30 @@ void IntroStage::update(float elapsed_time) {
 
     if (currentSlot == 0 && (Input::wasKeyPressed(SDL_SCANCODE_RETURN) || Input::wasButtonPressed(A_BUTTON))) {
         Game::instance->changeStage(StageType::PLAY);
-        start = true;
+        Audio::Play("data/audio/select.wav");
+        Audio::Stop(channel1);
+        channel2 = Audio::Play("data/audio/bombersound.mp3",1, BASS_SAMPLE_LOOP);
     }
     if (currentSlot == 1 && (Input::wasKeyPressed(SDL_SCANCODE_RETURN) || Input::wasButtonPressed(A_BUTTON))) {
         Game::instance->changeStage(StageType::HOWTO);
-        howto = true;
+        Audio::Play("data/audio/select.wav");
     }
 
     if (Input::wasKeyPressed(SDL_SCANCODE_DOWN) || Input::wasKeyPressed(SDL_SCANCODE_S) || Input::wasButtonPressed(PAD_DOWN)) {
         currentSlot = (currentSlot + 1) % 2;
+        Audio::Play("data/audio/change.wav");
     }
     if (Input::wasKeyPressed(SDL_SCANCODE_UP) || Input::wasKeyPressed(SDL_SCANCODE_W) || Input::wasButtonPressed(PAD_UP)) {
         currentSlot = (currentSlot + 1) % 2;
+        Audio::Play("data/audio/change.wav");
     }
 }
 
 HowToStage::HowToStage() {
-    camera2D = new Camera();
-    camera2D->view_matrix.setIdentity();
-    camera2D->setOrthographic(0, Game::instance->window_width, Game::instance->window_height, 0, -1, 1);
-
     blinkTime = 0.0f;
 }
 
 HowToStage::~HowToStage() {
-    delete camera2D;
 }
 
 void HowToStage::render() {
@@ -200,17 +199,40 @@ void HowToStage::render() {
     glEnable(GL_DEPTH_TEST);
     glDisable(GL_CULL_FACE);
 
+    shader->enable();
+    shader->setUniform("u_color", Vector4(1, 1, 1, 1));
+    if (firstTexture) {
+        shader->setUniform("u_texture", howtoBackground1, 1);
+    }
+    else {
+        shader->setUniform("u_texture", howtoBackground2, 1);
+    }
+    shader->setUniform("u_model", model);
+    shader->setUniform("u_time", Game::instance->time);
+
+    fullScreenQuad->render(GL_TRIANGLES);
+
+    shader->disable();
+
     float blink = sin(blinkTime * 5.0f); // Speed of blinking
     bool isLargeFont = blink > 0;
     int fontSize = isLargeFont ? 5 : 4;
+    int continueXOffset = isLargeFont ? 0 : 50;
 
-    drawText(Game::instance->window_width / 2 - 200, Game::instance->window_height / 2, "Press SPACE to Continue", Vector3(1, 1, 1), fontSize);
+    drawText((width / 2 - 300) + continueXOffset, height / 2 - 250, "Press SPACE to Continue", Vector3(1, 1, 1), fontSize);
 }
 
 void HowToStage::update(float elapsed_time) {
     blinkTime += elapsed_time;
 
     if (Input::wasKeyPressed(SDL_SCANCODE_SPACE)) {
-        Game::instance->changeStage(StageType::INTRO);
+        if (firstTexture) {
+            firstTexture = false;  // Switch to the second texture
+        }
+        else {
+            Game::instance->changeStage(StageType::INTRO);  // Go back to the intro stage
+            Audio::Play("data/audio/change.wav");
+            firstTexture = true;
+        }
     }
 }

@@ -24,7 +24,7 @@ public:
 
 	bool isLaunched = false;
 	bool isExploded = false;
-	float bombSpeed = 5.0f; 
+	float bombSpeed = 5.0f;
 	Vector3 velocity;
 	float explosionTime = 5.0f;
 

@@ -4,6 +4,7 @@
 //float camera_yaw = 0.0f;
 //float speed_mult = 1.0f; 
 //Vector3 velocity = Vector3(0.0f, 0.0f, 0.0f); 
+std::vector<int> activeChannels;
 
 EntityPlayer::EntityPlayer(Vector3 position) {
 
@@ -57,8 +58,15 @@ void EntityPlayer::handleInput(float seconds_elapsed, EntityMesh* skybox, Entity
     if (Input::isKeyPressed(SDL_SCANCODE_LSHIFT)) {
         model.translate(0, 0, seconds_elapsed * speed * 1.5);
     }
-    if (Input::isKeyPressed(SDL_SCANCODE_E)) {
+
+    if (Input::wasKeyPressed(SDL_SCANCODE_LSHIFT)) {
+        Audio::Play("data/audio/accelerate.mp3", 0.7);
+    }
+
+    if (Input::wasKeyPressed(SDL_SCANCODE_E)) {
         dropBomb(bomb);//, seconds_elapsed);
+        int newChannel = Audio::Play("data/audio/bombdrop.mp3", 0.3);
+        activeChannels.push_back(newChannel);
     }
     model.translate(0, 0, seconds_elapsed * speed);
 
@@ -107,27 +115,27 @@ void EntityPlayer::dropBomb(EntityMesh* bomb) {
     bomb->velocity = model.frontVector() * bombSpeed; 
     bomb->isLaunched = true;
 }
-//void EntityPlayer::dropBomb(EntityMesh* bomb, float seconds_elapsed) {
-//    bomb->isLaunched = true;
-//    Vector3 gravity(0.0f, -9.81f, 0.0f); // Gravity acceleration
+//////void entityplayer::dropbomb(entitymesh* bomb, float seconds_elapsed) {
+//    bomb->islaunched = true;
+//    vector3 gravity(0.0f, -9.81f, 0.0f); // gravity acceleration
 //
-//    bomb->model.translate(model.getTranslation() - bomb->bombSpeed * seconds_elapsed + 0.5f * gravity * seconds_elapsed * seconds_elapsed);
+//    bomb->model.translate(model.gettranslation() - bomb->bombspeed * seconds_elapsed + 0.5f * gravity * seconds_elapsed * seconds_elapsed);
 //    //position = position + velocity * seconds_elapsed + 0.5f * gravity * seconds_elapsed * seconds_elapsed;
-//    bomb->bombSpeed = bomb->bombSpeed + -9.81f * seconds_elapsed;
+//    bomb->bombspeed = bomb->bombspeed + -9.81f * seconds_elapsed;
 //
-//    // Check if the bomb has hit the ground (assuming ground is at y = 0)
-//    this->position = bomb->model.getTranslation();
+//    // check if the bomb has hit the ground (assuming ground is at y = 0)
+//    this->position = bomb->model.gettranslation();
 //    if (position.y <= 0.0f) {
 //        position.y = 0.0f;
-//        isExploded = true; // Mark the bomb as exploded
-//        isLaunched = false;
+//        isexploded = true; // mark the bomb as exploded
+//        islaunched = false;
 //    }
 //
-//    // Decrease explosion time
-//    bomb->explosionTime -= seconds_elapsed;
-//    if (bomb->explosionTime <= 0.0f) {
-//        isExploded = true; // Mark the bomb as exploded
-//        isLaunched = false;
+//    // decrease explosion time
+//    bomb->explosiontime -= seconds_elapsed;
+//    if (bomb->explosiontime <= 0.0f) {
+//        isexploded = true; // mark the bomb as exploded
+//        islaunched = false;
 //    }
 //    
 //}
