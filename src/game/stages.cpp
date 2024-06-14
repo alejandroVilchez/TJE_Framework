@@ -14,10 +14,11 @@ Stages::Stages() {
 }
 
 Stages::~Stages() {
-    //delete introStage;
-    //delete playStage;
-    ////delete endStage;
-    //delete currentStage;
+    delete introStage;
+    delete playStage;
+    delete howToStage;
+    //delete endStage;
+    delete currentStage;
 }
 
 void Stages::render() {
@@ -26,22 +27,6 @@ void Stages::render() {
 
 void Stages::update(float elapsed_time) {
     //currentStage->update(elapsed_time);
-}
-
-void Stages::setStage(StageType stage) {
-    currentStageType = stage;
-
-    switch (stage) {
-    case StageType::INTRO:
-        currentStage = introStage;
-        break;
-    case StageType::PLAY:
-        currentStage = playStage;
-        break;
-    /*case StageType::END:
-        currentStage = endStage;
-        break;*/
-    }
 }
 
 PlayStage::PlayStage() {
@@ -133,20 +118,18 @@ void IntroStage::render() {
         shader->setUniform("u_model", model);
         shader->setUniform("u_time", Game::instance->time);
 
-        // Render the quad
         fullScreenQuad->render(GL_TRIANGLES);
 
-        // Disable shader
         shader->disable();
 
-        float blinkTime = sin(Game::instance->time * 5.0f); // Adjust the speed of blinking
+        float blinkTime = sin(Game::instance->time * 5.0f); // Speed of blinking
         bool isLargeFont = blinkTime > 0;
 
-        int startGameFontSize = isLargeFont ? 5 : 4; // Larger font when blinking
-        int howToPlayFontSize = isLargeFont ? 5 : 4; // Larger font when blinking
+        int startGameFontSize = isLargeFont ? 5 : 4; // Change font when blinking
+        int howToPlayFontSize = isLargeFont ? 5 : 4; 
 
-        int startGameXOffset = isLargeFont ? 0 : 27; // Move text 10 units to the right when smaller
-        int howToPlayXOffset = isLargeFont ? 0 : 25; // Move text 10 units to the right when smaller
+        int startGameXOffset = isLargeFont ? 0 : 27; 
+        int howToPlayXOffset = isLargeFont ? 0 : 25; 
 
         /*drawText(width / 2 - 120, height / 2 - 275, "A.T.O.M.", Vector3(1, 1, 1), 7);
         drawText(width / 2 - 330, height / 2 - 175, "Aeronautic Thermonuclear Ogives Maelstrom", Vector3(1, 1, 1), 3);*/
@@ -175,9 +158,11 @@ void IntroStage::update(float elapsed_time) {
         currentSlot = 1;
 
     if (currentSlot == 0 && (Input::wasKeyPressed(SDL_SCANCODE_RETURN) || Input::wasButtonPressed(A_BUTTON))) {
+        Game::instance->changeStage(StageType::PLAY);
         start = true;
     }
     if (currentSlot == 1 && (Input::wasKeyPressed(SDL_SCANCODE_RETURN) || Input::wasButtonPressed(A_BUTTON))) {
+        Game::instance->changeStage(StageType::HOWTO);
         howto = true;
     }
 
@@ -186,5 +171,46 @@ void IntroStage::update(float elapsed_time) {
     }
     if (Input::wasKeyPressed(SDL_SCANCODE_UP) || Input::wasKeyPressed(SDL_SCANCODE_W) || Input::wasButtonPressed(PAD_UP)) {
         currentSlot = (currentSlot + 1) % 2;
+    }
+}
+
+HowToStage::HowToStage() {
+    camera2D = new Camera();
+    camera2D->view_matrix.setIdentity();
+    camera2D->setOrthographic(0, Game::instance->window_width, Game::instance->window_height, 0, -1, 1);
+
+    blinkTime = 0.0f;
+}
+
+HowToStage::~HowToStage() {
+    delete camera2D;
+}
+
+void HowToStage::render() {
+    // Set the clear color (the background color)
+    glClearColor(0.f, 0.f, 0.f, 1.0f);
+
+    // Clear the window and the depth buffer
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    camera2D->enable();
+
+    // Set flags
+    glDisable(GL_BLEND);
+    glEnable(GL_DEPTH_TEST);
+    glDisable(GL_CULL_FACE);
+
+    float blink = sin(blinkTime * 5.0f); // Speed of blinking
+    bool isLargeFont = blink > 0;
+    int fontSize = isLargeFont ? 5 : 4;
+
+    drawText(Game::instance->window_width / 2 - 200, Game::instance->window_height / 2, "Press SPACE to Continue", Vector3(1, 1, 1), fontSize);
+}
+
+void HowToStage::update(float elapsed_time) {
+    blinkTime += elapsed_time;
+
+    if (Input::wasKeyPressed(SDL_SCANCODE_SPACE)) {
+        Game::instance->changeStage(StageType::INTRO);
     }
 }

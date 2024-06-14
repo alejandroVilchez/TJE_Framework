@@ -39,6 +39,7 @@ EntityMesh* skybox;
 IntroStage* introStage;
 PlayStage* playStage;
 EndStage* endStage;
+HowToStage* howToStage;
 Stages* currentStage;
 
 //Entity* root;
@@ -66,6 +67,7 @@ Game::Game(int window_width, int window_height, SDL_Window* window)
 	glEnable( GL_DEPTH_TEST ); //check the occlusions using the Z buffer
 	introStage = new IntroStage();
 	playStage = new PlayStage();
+	howToStage = new HowToStage();
 	endStage = new EndStage();
 
 	currentStage = introStage;
@@ -251,6 +253,9 @@ void Game::changeStage(StageType newStage)
 		break;
 	case StageType::PLAY:
 		currentStage = playStage;
+		break;
+	case StageType::HOWTO:
+		currentStage = howToStage;
 		break;
 	case StageType::END:
 		currentStage = endStage;

@@ -11,6 +11,13 @@
 
 class Scene;
 
+enum class StageType {
+	INTRO,
+	PLAY,
+	HOWTO,
+	END
+};
+
 class Game
 {
 public:
@@ -50,13 +57,6 @@ public:
 	void onGamepadButtonDown(SDL_JoyButtonEvent event);
 	void onGamepadButtonUp(SDL_JoyButtonEvent event);
 	void onResize(int width, int height);
-
-	enum class StageType {
-		INTRO,
-		PLAY,
-		END
-	};
-private:
 	StageType currentStageType;
 	void changeStage(StageType newStage);
 };
