@@ -88,6 +88,7 @@ bool Scene::parseScene(const char* filename) {
 
         // Add entity to scene root
         root.addChild(new_entity);
+        collider.addEntity(new_entity);
     }
 
     std::cout << "Scene [OK] Meshes added: " << mesh_count << std::endl;

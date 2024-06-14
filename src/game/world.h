@@ -50,4 +50,6 @@ public:
     void update(float elapsed_time);
     void cleanRoot();
     void onKeyDown(SDL_KeyboardEvent event);
+
+    EntityCollider collider;
 };

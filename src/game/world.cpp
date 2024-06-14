@@ -83,6 +83,8 @@ World::World(int window_width, int window_height) {
 
 	scene = new Scene();
 	scene->parseScene("data/myscene.scene");
+
+	collider = scene->collider;
 }
 
 void World::render() {
@@ -110,7 +112,7 @@ void World::update(float elapsed_time) {
 	// Example
 	angles += (float)elapsed_time * 10.0f;
 
-	playerEntity->update(elapsed_time, skybox, bombEntity);
+	playerEntity->update(elapsed_time, playerEntity, skybox, bombEntity, &collider);
 
 	//if(bombEntity->launched == true){
 	//	bombEntity->update(elapsed_time);

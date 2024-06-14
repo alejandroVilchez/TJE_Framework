@@ -488,6 +488,14 @@ Matrix44 Matrix44::operator*(const Matrix44& matrix) const
 	return ret;
 }
 
+Vector3 Matrix44::getScaleVector() const {
+	Vector3 scale;
+	scale.x = sqrt(m[0] * m[0] + m[1] * m[1] + m[2] * m[2]);
+	scale.y = sqrt(m[4] * m[4] + m[5] * m[5] + m[6] * m[6]);
+	scale.z = sqrt(m[8] * m[8] + m[9] * m[9] + m[10] * m[10]);
+	return scale;
+}
+
 //Multiplies a vector by a matrix and returns the new vector
 Vector3 operator * (const Matrix44& matrix, const Vector3& v) 
 {   

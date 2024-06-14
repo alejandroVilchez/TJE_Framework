@@ -245,6 +245,8 @@ class Matrix44
 
 		Matrix44 getRotationOnly(); //used when having scale
 
+		Vector3 getScaleVector() const;
+
 		//rotate only
 		Vector3 rotateVector( const Vector3& v) const;
 

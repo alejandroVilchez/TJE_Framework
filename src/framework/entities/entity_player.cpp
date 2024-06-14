@@ -8,13 +8,27 @@ std::vector<int> activeChannels;
 
 EntityPlayer::EntityPlayer(Vector3 position) {
 
+    //playerEntity = new EntityMesh(nullptr, Material(), "Player");
     this->position = position;
     model.setTranslation(position);
 }
 
-void EntityPlayer::update(float seconds_elapsed, EntityMesh* skybox, EntityMesh* bomb) {
+void EntityPlayer::update(float seconds_elapsed, EntityPlayer* player, EntityMesh* skybox, EntityMesh* bomb, EntityCollider* collider) {
     handleInput(seconds_elapsed, skybox, bomb);
     
+    std::vector<EntityMesh*> sceneEntities = collider->getEntitiesInScene();
+    for (auto& entity : sceneEntities) {
+        if (entity == player || entity == skybox || entity == bomb)
+            continue;  // Skip self and special entities like skybox and bomb
+
+        // Perform collision detection
+        if (EntityMesh::checkCollision(player, entity)) {
+            // Collision detected, handle it (e.g., play sound)
+            Audio::Play("data/audio/select.wav", 1.0);
+            // Example: Adjust game state or response to collision
+            // velocity = Vector3(0.0f, 0.0f, 0.0f);
+        }
+}
 
     skybox->model.setTranslation(model.getTranslation());
  
@@ -30,8 +44,12 @@ void EntityPlayer::update(float seconds_elapsed, EntityMesh* skybox, EntityMesh*
             bomb->model.setTranslation(Vector3(newPos.x, 0.0f, newPos.z));
             bomb->velocity = Vector3(0.0f, 0.0f, 0.0f);
             bomb->isLaunched = false; // Mark bomb as no longer active
+            Audio::Play("data/audio/nuclearexp.mp3");
         }
     }
+
+
+
 }
 
 void EntityPlayer::handleInput(float seconds_elapsed, EntityMesh* skybox, EntityMesh* bomb) {

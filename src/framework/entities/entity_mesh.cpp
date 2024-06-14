@@ -47,3 +47,39 @@ void EntityMesh::update(float delta_time) {
 	}
 }
 
+bool EntityMesh::checkCollision(EntityMesh* a, EntityMesh* b) {
+    if (!a || !b || !a->mesh || !b->mesh)
+        return false;
+
+    // Ensure collision models are initialized
+    if (!a->mesh->collision_model) {
+        if (!a->mesh->createCollisionModel())
+            return false;
+    }
+    if (!b->mesh->collision_model) {
+        if (!b->mesh->createCollisionModel())
+            return false;
+    }
+
+    // Prepare the transformation matrices
+    Matrix44 aModel = a->getGlobalMatrix();
+    Vector3 aScale = aModel.getScaleVector(); // Get the scale components
+
+    Matrix44 bModel = b->getGlobalMatrix();
+    Vector3 bScale = bModel.getScaleVector(); // Get the scale components
+
+    aModel.setScale(aScale.x, aScale.y, aScale.z); // Set the scale components
+    bModel.setScale(bScale.x, bScale.y, bScale.z); // Set the scale components
+
+    // Cast collision models to CollisionModel3D
+    CollisionModel3D* aCollisionModel = static_cast<CollisionModel3D*>(a->mesh->collision_model);
+    CollisionModel3D* bCollisionModel = static_cast<CollisionModel3D*>(b->mesh->collision_model);
+
+    // Set the transformation matrices to the collision models
+    aCollisionModel->setTransform(aModel.m);
+    bCollisionModel->setTransform(bModel.m);
+
+    // Check for collision
+    bool collision = aCollisionModel->collision(bCollisionModel);
+    return collision;
+}

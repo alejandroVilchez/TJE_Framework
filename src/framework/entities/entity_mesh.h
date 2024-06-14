@@ -3,6 +3,7 @@
 #include "graphics/material.h"
 #include "entity.h"
 #include "framework/animation.h"
+#include "framework/extra/coldet/coldet.h"
 
 
 
@@ -31,4 +32,5 @@ public:
 	// Methods overwritten from base class
 	void render(Camera* camera) override;
 	void update(float elapsed_time) override;
+	bool checkCollision(EntityMesh* a, EntityMesh* b);
 };
