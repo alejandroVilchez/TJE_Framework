@@ -84,7 +84,7 @@ IntroStage::IntroStage() {
 
 
     // Load texture
-    introBackground = Texture::Get("data/textures/atom.tga");
+    introBackground = Texture::Get("data/textures/atom7.tga");
 
     // Load mesh
     fullScreenQuad = Mesh::Get("data/meshes/quad.obj");
@@ -140,8 +140,8 @@ void IntroStage::render() {
         // Disable shader
         shader->disable();
 
-        drawText(width / 2 - 120, height / 2 - 275, "A.T.O.M.", Vector3(1, 1, 1), 7);
-        drawText(width / 2 - 330, height / 2 - 175, "Aeronautic Thermonuclear Ogives Maelstrom", Vector3(1, 1, 1), 3);
+        /*drawText(width / 2 - 120, height / 2 - 275, "A.T.O.M.", Vector3(1, 1, 1), 7);
+        drawText(width / 2 - 330, height / 2 - 175, "Aeronautic Thermonuclear Ogives Maelstrom", Vector3(1, 1, 1), 3);*/
         if (currentSlot == 0)
             drawText(width / 2 - 130, height / 2 + 100, "Start Game", Vector3(1, 0, 0), 5);
         else
