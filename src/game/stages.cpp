@@ -78,9 +78,9 @@ void EndStage::update(float elapsed_time) {
 }
 
 IntroStage::IntroStage() {
-    camera = new Camera();
-    camera->setOrthographic(-width / 2.0f, width / 2.0f, -height / 2.0f, height / 2.0f, 0.1f, 100.f);
-    camera->lookAt(Vector3(0.f, 0.f, 1.f), Vector3(0.f, 0.f, 0.f), Vector3(0.f, 1.f, 0.f));
+    camera2D = new Camera();
+    camera2D->view_matrix.setIdentity();
+    camera2D->setOrthographic(0, Game::instance->window_width, Game::instance->window_height, 0, -1, 1);
 
 
     // Load texture
@@ -101,7 +101,8 @@ IntroStage::IntroStage() {
     howto = false;
 
     model.setIdentity();
-    model.scale(width, height, 1.0f);
+    model.translate(width/2, height/2, 0);
+    model.scale(width, height, 1.f);
 }
 
 IntroStage::~IntroStage() {
@@ -118,6 +119,8 @@ void IntroStage::render() {
     // Clear the window and the depth buffer
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    camera2D->enable();
+
     // Set flags
     glDisable(GL_BLEND);
     glEnable(GL_DEPTH_TEST);
@@ -126,8 +129,8 @@ void IntroStage::render() {
     if (shader) {
         shader->enable();
         shader->setUniform("u_color", Vector4(1, 1, 1, 1));
-        shader->setUniform("u_viewprojection", camera->viewprojection_matrix);
-        shader->setUniform("u_texture", introBackground, 0);
+        shader->setUniform("u_viewprojection", camera2D->viewprojection_matrix);
+        shader->setUniform("u_texture", introBackground, 1);
         shader->setUniform("u_model", model);
         shader->setUniform("u_time", Game::instance->time);
 
@@ -140,13 +143,13 @@ void IntroStage::render() {
         drawText(width / 2 - 120, height / 2 - 275, "A.T.O.M.", Vector3(1, 1, 1), 7);
         drawText(width / 2 - 330, height / 2 - 175, "Aeronautic Thermonuclear Ogives Maelstrom", Vector3(1, 1, 1), 3);
         if (currentSlot == 0)
-            drawText(width / 2 - 115, height / 2, "Start Game", Vector3(1, 0, 0), 4);
+            drawText(width / 2 - 130, height / 2 + 100, "Start Game", Vector3(1, 0, 0), 5);
         else
-            drawText(width / 2 - 115, height / 2, "Start Game", Vector3(1, 1, 1), 4);
+            drawText(width / 2 - 130, height / 2 + 100, "Start Game", Vector3(1, 1, 1), 5);
         if (currentSlot == 1)
-            drawText(width / 2 - 120, height / 2 + 50, "How to Play", Vector3(1, 0, 0), 4);
+            drawText(width / 2 - 135, height / 2 + 160, "How to Play", Vector3(1, 0, 0), 5);
         else
-            drawText(width / 2 - 120, height / 2 + 50, "How to Play", Vector3(1, 1, 1), 4);
+            drawText(width / 2 - 135, height / 2 + 160, "How to Play", Vector3(1, 1, 1), 5);
 
     }
 }

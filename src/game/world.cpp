@@ -37,7 +37,7 @@ World::World(int window_width, int window_height) {
 
 
     basicShader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs");
-	playerMesh = Mesh::Get("data/meshes/B2_final_model.obj");
+	playerMesh = Mesh::Get("data/meshes/B2rotated.obj");
 	cubemap.diffuse = new Texture();
 	//// Example of loading Mesh from Mesh Manager
 

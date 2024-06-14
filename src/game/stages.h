@@ -50,7 +50,7 @@ private:
     Mesh* fullScreenQuad;
     Shader* shader;
     Camera* camera;
-    bool intermitent;
+    Camera* camera2D;
     float th;
     int currentSlot;
     bool howto;
