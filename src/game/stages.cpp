@@ -82,7 +82,6 @@ IntroStage::IntroStage() {
     camera2D->view_matrix.setIdentity();
     camera2D->setOrthographic(0, Game::instance->window_width, Game::instance->window_height, 0, -1, 1);
 
-
     // Load texture
     introBackground = Texture::Get("data/textures/atom7.tga");
 
@@ -101,12 +100,12 @@ IntroStage::IntroStage() {
     howto = false;
 
     model.setIdentity();
-    model.translate(width/2, height/2, 0);
+    model.translate(width / 2, height / 2, 0);
     model.scale(width, height, 1.f);
 }
 
 IntroStage::~IntroStage() {
-    delete camera;
+    delete camera2D;
     delete fullScreenQuad;
     delete introBackground;
     delete shader;
@@ -140,19 +139,34 @@ void IntroStage::render() {
         // Disable shader
         shader->disable();
 
+        float blinkTime = sin(Game::instance->time * 5.0f); // Adjust the speed of blinking
+        bool isLargeFont = blinkTime > 0;
+
+        int startGameFontSize = isLargeFont ? 5 : 4; // Larger font when blinking
+        int howToPlayFontSize = isLargeFont ? 5 : 4; // Larger font when blinking
+
+        int startGameXOffset = isLargeFont ? 0 : 27; // Move text 10 units to the right when smaller
+        int howToPlayXOffset = isLargeFont ? 0 : 25; // Move text 10 units to the right when smaller
+
         /*drawText(width / 2 - 120, height / 2 - 275, "A.T.O.M.", Vector3(1, 1, 1), 7);
         drawText(width / 2 - 330, height / 2 - 175, "Aeronautic Thermonuclear Ogives Maelstrom", Vector3(1, 1, 1), 3);*/
-        if (currentSlot == 0)
-            drawText(width / 2 - 130, height / 2 + 100, "Start Game", Vector3(1, 0, 0), 5);
-        else
-            drawText(width / 2 - 130, height / 2 + 100, "Start Game", Vector3(1, 1, 1), 5);
-        if (currentSlot == 1)
-            drawText(width / 2 - 135, height / 2 + 160, "How to Play", Vector3(1, 0, 0), 5);
-        else
-            drawText(width / 2 - 135, height / 2 + 160, "How to Play", Vector3(1, 1, 1), 5);
 
+        if (currentSlot == 0) {
+            drawText((width / 2 - 130) + startGameXOffset, height / 2 + 100, "Start Game", Vector3(1, 0, 0), startGameFontSize);
+        }
+        else {
+            drawText(width / 2 - 130, height / 2 + 100, "Start Game", Vector3(1, 1, 1), 5);
+        }
+
+        if (currentSlot == 1) {
+            drawText((width / 2 - 135) + howToPlayXOffset, height / 2 + 160, "How to Play", Vector3(1, 0, 0), howToPlayFontSize);
+        }
+        else {
+            drawText(width / 2 - 135, height / 2 + 160, "How to Play", Vector3(1, 1, 1), 5);
+        }
     }
 }
+
 
 void IntroStage::update(float elapsed_time) {
     if (currentSlot > 1)
