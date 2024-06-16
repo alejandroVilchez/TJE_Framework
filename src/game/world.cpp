@@ -47,8 +47,8 @@ World::World(int window_width, int window_height) {
 
 
 	basicShader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs");
-	//playerMesh = Mesh::Get("data/meshes/B2rotated.obj");
 	playerMesh = Mesh::Get("data/meshes/B2rotated.obj");
+	//playerMesh = Mesh::Get("data/meshes/B2_final_model.obj");
 
 	//quad = createFullscreenQuad(window_width,window_height);
 	cubemap.diffuse = new Texture();
@@ -143,12 +143,14 @@ void World::render() {
 		drawText(this->world_window_width / 2 - 250, this->world_window_height / 2, "You failed to destroy the island...", Vector3(1, 1, 1), 3);
 
 		Audio::Stop(channel2);
+		this->badEnding = true;
 	}
 	else if (playerPosition.y < 0) {
 		failEntity->render(camera);
 		//drawText(this->world_window_width / 2 - 130, this->world_window_height / 2, "Game Over", Vector3(1, 1, 1), 5);
 		drawText(this->world_window_width / 2 - 180, this->world_window_height / 2, "You do not deserve to pilot a B-2...", Vector3(1, 1, 1), 3);
 		Audio::Stop(channel2);
+		this->badEnding = true;
 	}
 	else {
 		drawText(50, this->world_window_height - 50, messageText, Vector3(1, 1, 1), 2);
