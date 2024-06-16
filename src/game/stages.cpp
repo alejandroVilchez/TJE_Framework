@@ -12,7 +12,7 @@ Stages::Stages() {
     howtoBackground3 = Texture::Get("data/textures/How2Camera.tga");
     badEnd = Texture::Get("data/textures/GAME-OVER.tga");
     goodEnd = Texture::Get("data/textures/YOUWIN.tga");
-    creditsBackground = Texture::Get("data/textures/atom7.tga");
+    creditsBackground = Texture::Get("data/textures/Credits.tga");
 
 
 
@@ -86,7 +86,31 @@ CreditsStage::~CreditsStage() {
 }
 
 void CreditsStage::render() {
+    // Render the end stage
+        // Set the clear color (the background color)
+    glClearColor(0.f, 0.f, 0.f, 1.0f);
 
+    // Clear the window and the depth buffer
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    camera2D->enable();
+
+    // Set flags
+    glDisable(GL_BLEND);
+    glEnable(GL_DEPTH_TEST);
+    glDisable(GL_CULL_FACE);
+
+    shader->enable();
+    shader->setUniform("u_color", Vector4(1, 1, 1, 1));
+    shader->setUniform("u_viewprojection", camera2D->viewprojection_matrix);
+    shader->setUniform("u_texture", creditsBackground, 1);
+
+    shader->setUniform("u_model", model);
+    shader->setUniform("u_time", Game::instance->time);
+
+    Game::instance->fullScreenQuad->render(GL_TRIANGLES);
+
+    shader->disable();
 }
 
 void CreditsStage::update(float elapsed_time) {
