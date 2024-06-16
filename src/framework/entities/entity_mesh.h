@@ -29,6 +29,8 @@ public:
 	Vector3 velocity;
 	float explosionTime = 5.0f;
 
+	float mass;
+
 	// Methods overwritten from base class
 	void render(Camera* camera) override;
 	void update(float elapsed_time) override;

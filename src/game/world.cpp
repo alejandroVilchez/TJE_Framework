@@ -74,12 +74,21 @@ World::World(int window_width, int window_height) {
 
 	//------- Bomba --------
 	bombMesh = Mesh::Get("data/meshes/missile1.obj");
-	bombTexture = Texture::Get("data/textures/texture.tga"); // load a texture
+	bombTexture = Texture::Get("data/missile/Missile-2K.png"); // load a texture
 
 	bombMaterial.shader = basicShader;
 	bombMaterial.diffuse = bombTexture;
 
 	bombEntity = new EntityMesh(bombMesh, bombMaterial, "bomb");
+
+	//Explosion Nuclear
+
+	nuclearMesh = Mesh::Get("data/meshes/explosion4.obj");
+	nuclearTexture = Texture::Get("data/meshes/explosion-diffuse.png"); // load a texture
+	nuclearMaterial.shader = basicShader;
+	nuclearMaterial.diffuse = nuclearTexture;
+
+	nuclearEntity = new EntityMesh(nuclearMesh, nuclearMaterial, "nuclear");
 
 	scene = new Scene();
 	scene->parseScene("data/myscene.scene");
@@ -101,7 +110,7 @@ void World::render() {
 		bombEntity->render(camera);
 	}
 	if (bombEntity->isExploded) {
-		//render explosion in the position of the bomb
+		nuclearEntity->render(camera);
 	}
 }
 
@@ -112,7 +121,7 @@ void World::update(float elapsed_time) {
 	// Example
 	angles += (float)elapsed_time * 10.0f;
 
-	playerEntity->update(elapsed_time, playerEntity, skybox, bombEntity, &collider);
+	playerEntity->update(elapsed_time, playerEntity, skybox, bombEntity, &collider, nuclearEntity);
 
 	//if(bombEntity->launched == true){
 	//	bombEntity->update(elapsed_time);

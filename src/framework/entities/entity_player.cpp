@@ -11,10 +11,11 @@ EntityPlayer::EntityPlayer(Vector3 position) {
     //playerEntity = new EntityMesh(nullptr, Material(), "Player");
     this->position = position;
     model.setTranslation(position);
+    smoothedTarget = position;
 }
 
-void EntityPlayer::update(float seconds_elapsed, EntityPlayer* player, EntityMesh* skybox, EntityMesh* bomb, EntityCollider* collider) {
-    handleInput(seconds_elapsed, skybox, bomb);
+void EntityPlayer::update(float seconds_elapsed, EntityPlayer* player, EntityMesh* skybox, EntityMesh* bomb, EntityCollider* collider, EntityMesh* explosion) {
+    handleInput(seconds_elapsed, skybox, bomb, player);
     
     std::vector<EntityMesh*> sceneEntities = collider->getEntitiesInScene();
     for (auto& entity : sceneEntities) {
@@ -33,26 +34,13 @@ void EntityPlayer::update(float seconds_elapsed, EntityPlayer* player, EntityMes
     skybox->model.setTranslation(model.getTranslation());
  
     Vector3 gravity(0.0f, -9.81f, 0.0f);
-    if (bomb->isLaunched) {
-        Vector3 currentPos = bomb->model.getTranslation();
-        Vector3 newPos = currentPos + bomb->velocity * seconds_elapsed + 0.5f * gravity * seconds_elapsed * seconds_elapsed;
-        bomb->velocity = bomb->velocity + gravity * seconds_elapsed;
-        bomb->model.setTranslation(newPos);
-
-        // Chequear si la bomba ha tocado el suelo (suponiendo que el suelo está en y = 0)
-        if (newPos.y <= 0.0f) {
-            bomb->model.setTranslation(Vector3(newPos.x, 0.0f, newPos.z));
-            bomb->velocity = Vector3(0.0f, 0.0f, 0.0f);
-            bomb->isLaunched = false; // Mark bomb as no longer active
-            Audio::Play("data/audio/nuclearexp.mp3");
-        }
-    }
+    updateBombPhysics(bomb, seconds_elapsed, gravity, explosion, player->velocity);
 
 
 
 }
 
-void EntityPlayer::handleInput(float seconds_elapsed, EntityMesh* skybox, EntityMesh* bomb) {
+void EntityPlayer::handleInput(float seconds_elapsed, EntityMesh* skybox, EntityMesh* bomb, EntityMesh* player) {
 
     
     // Aqu� se manejar�an las entradas del usuario para mover el avi�n
@@ -74,7 +62,8 @@ void EntityPlayer::handleInput(float seconds_elapsed, EntityMesh* skybox, Entity
 
     }
     if (Input::isKeyPressed(SDL_SCANCODE_LSHIFT)) {
-        model.translate(0, 0, seconds_elapsed * speed * 1.5);
+        speed = speed * 1.5;
+        model.translate(0, 0, seconds_elapsed * speed);
     }
 
     if (Input::wasKeyPressed(SDL_SCANCODE_LSHIFT)) {
@@ -82,57 +71,93 @@ void EntityPlayer::handleInput(float seconds_elapsed, EntityMesh* skybox, Entity
     }
 
     if (Input::wasKeyPressed(SDL_SCANCODE_E)) {
-        dropBomb(bomb);//, seconds_elapsed);
+        dropBomb(bomb, player);//, seconds_elapsed);
         int newChannel = Audio::Play("data/audio/bombdrop.mp3", 0.3);
         activeChannels.push_back(newChannel);
     }
+
+    speed = 5.0;
     model.translate(0, 0, seconds_elapsed * speed);
 
 }
 
 void EntityPlayer::playerPOV(Camera* camera, float seconds_elapsed) {
-    
-    //if(Input::isMousePressed(SDL_BUTTON_LEFT) || Input::isMousePressed(SDL_BUTTON_MIDDLE)){
-    //    camera_yaw += Input::mouse_delta.x * 0.005f;
-    //    camera_pitch += Input::mouse_delta.y * 0.005f;
-    //    camera_pitch = clamp(camera_pitch, -M_PI * 0.5f, M_PI * 0.5f);
-    //}
-    //else {
-    //    // Slowly return to the plane's forward direction when the mouse is not pressed
-    //    camera_yaw *= 0.95f;
-    //    camera_pitch *= 0.95f;
-    //}
+    // Get the current position of the plane
+    Vector3 planePosition = model.getTranslation();
 
-    //Matrix44 mYaw;
-    //mYaw.setRotation(camera_yaw, Vector3(0, 1, 0));
+    // Smooth the transition to the new target position
+    float smoothingFactor = 0.1f; // Adjust for desired smoothness
+    smoothedTarget = smoothedTarget * (1.0f - smoothingFactor) + planePosition * smoothingFactor;
 
-    //Matrix44 mPitch;
-    //mPitch.setRotation(camera_pitch, Vector3(-1, 0, 0));
+    // Extract the yaw rotation from the plane's orientation
+    Vector3 planeFront = model.frontVector();
+    Vector3 planeRight = model.rightVector();
+    planeFront.y = 0.0f;
+    planeRight.y = 0.0f;
+    planeFront.normalize();
+    planeRight.normalize();
 
-    //Matrix44 final_rotation = mPitch * mYaw;
-    Vector3 front = model.frontVector(); //final_rotation.frontVector().normalize();  
-    
-    Vector3 eye;
-    Vector3 center;
+    // Determine the camera's position relative to the plane
+    Vector3 cameraOffset = Vector3(0.0f, 0.1f, -0.3f);  // Adjust as necessary
+    Vector3 eye = smoothedTarget + planeFront * cameraOffset.z + Vector3(0.0f, cameraOffset.y, 0.0f);
 
-    float orbit_dist = 0.6f;
-    eye = model.getTranslation() - front * orbit_dist;
-    center = model * Vector3(0.0f, 0.1f, 0.0f);
+    // Set the camera to look at the smoothed target position
+    Vector3 center = smoothedTarget;
 
+    // Set the up vector to be along the z-axis, assuming y-up coordinate system
+    Vector3 up = Vector3(0.0f, 1.0f, 0.0f);
 
-    camera->lookAt(eye, center, model.rotateVector(Vector3(0.0f, 1.0f, 0.0f)));
-    
-    //update our scene:
+    // Update the camera's view matrix
+    camera->lookAt(eye, center, up);
+
+    // Update the rest of the scene
     Entity::update(seconds_elapsed);
-
 }
 
-void EntityPlayer::dropBomb(EntityMesh* bomb) {
+void EntityPlayer::dropBomb(EntityMesh* bomb, EntityMesh* player) {
 
-    bomb->model.setTranslation(model.getTranslation()); 
-    bomb->velocity = model.frontVector() * bombSpeed; 
+    bomb->model.setTranslation(model.getTranslation());
+    bomb->mass = 1100;
+    // Calculate the initial velocity based on the plane's speed and direction
+    Vector3 planeVelocity = player->velocity;
+    Vector3 directionVelocity = model.frontVector() * planeVelocity.length();
+
+    // Set bomb's initial velocity
+    bomb->velocity = directionVelocity;
+
     bomb->isLaunched = true;
 }
+
+Vector3 EntityPlayer::calculateDragForce(Vector3 velocity) {
+    float speed = velocity.length();
+    float dragMagnitude = 0.5f * airDensity * speed * speed * dragCoefficient * bombCrossSectionalArea;
+    Vector3 dragForce = -velocity.normalize() * dragMagnitude;
+    return dragForce;
+}
+
+// Update bomb physics
+void EntityPlayer::updateBombPhysics(EntityMesh* bomb, float seconds_elapsed, const Vector3& gravity, EntityMesh* explosion, Vector3& velocity) {
+    if (bomb->isLaunched) {
+        Vector3 currentPos = bomb->model.getTranslation();
+        Vector3 dragForce = calculateDragForce(bomb->velocity);
+        Vector3 acceleration = gravity + (dragForce / bomb->mass);  // Assuming mass is a property of the bomb
+
+        Vector3 newPos = currentPos + bomb->velocity * seconds_elapsed + 0.5f * acceleration * seconds_elapsed * seconds_elapsed;
+        bomb->velocity += acceleration * seconds_elapsed;
+        bomb->model.setTranslation(newPos);
+
+        // Check if the bomb has hit the ground (assuming the ground is at y = 0)
+        if (newPos.y <= 0.0f) {
+            bomb->model.setTranslation(Vector3(newPos.x, 0.0f, newPos.z));
+            bomb->velocity = Vector3(0.0f, 0.0f, 0.0f);
+            bomb->isLaunched = false;  // Mark bomb as no longer active
+            bomb->isExploded = true;
+            explosion->model.setTranslation(newPos);
+            Audio::Play("data/audio/nuclearexp.mp3", 1);
+        }
+    }
+}
+
 //////void entityplayer::dropbomb(entitymesh* bomb, float seconds_elapsed) {
 //    bomb->islaunched = true;
 //    vector3 gravity(0.0f, -9.81f, 0.0f); // gravity acceleration

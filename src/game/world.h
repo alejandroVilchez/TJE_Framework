@@ -43,6 +43,11 @@ public:
     Material bombMaterial;
     Texture* bombTexture;
 
+    EntityMesh* nuclearEntity;
+    Mesh* nuclearMesh;
+    Material nuclearMaterial;
+    Texture* nuclearTexture;
+
     Material cubemap;
     Material skyboxMaterial;
     EntityMesh* skybox;
