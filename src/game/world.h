@@ -10,6 +10,8 @@
 #include "graphics/shader.h"
 #include "scene.h"
 #include <stdio.h>
+#include <iomanip>  // Para std::setprecision
+#include <sstream>  // Para std::ostringstream
 
 
 //#endif /* world_h */
@@ -21,6 +23,8 @@ public:
     static World* instance;
 
     World(int window_width, int window_height);
+    int world_window_width;
+    int world_window_height;
     Matrix44 model;
     Entity* root = nullptr;
 
@@ -37,6 +41,9 @@ public:
     Camera* camera;
 
     EntityPlayer* playerEntity;
+    Vector3 playerPosition;
+    std::string playerHeight;
+    float gameTimer;
 
     EntityMesh* bombEntity;
     Mesh* bombMesh;
@@ -47,6 +54,13 @@ public:
     Mesh* nuclearMesh;
     Material nuclearMaterial;
     Texture* nuclearTexture;
+
+    EntityMesh* failEntity;
+    Mesh* failMesh;
+    Material failMaterial;
+    Texture* failTexture;
+
+    std::string messageText;
 
     Camera* camera2D;
 

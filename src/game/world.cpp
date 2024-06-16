@@ -26,6 +26,8 @@ World::World(int window_width, int window_height) {
 
 	instance = this;
 
+	this->world_window_width = window_width;
+	this->world_window_height = window_height,
 	/*int window_width = Game::instance->window_width;
 	int window_height = Game::instance->window_height;*/
 
@@ -42,7 +44,9 @@ World::World(int window_width, int window_height) {
 
 
     basicShader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs");
-	playerMesh = Mesh::Get("data/meshes/B2rotated.obj");
+	//playerMesh = Mesh::Get("data/meshes/B2rotated.obj");
+	playerMesh = Mesh::Get("data/meshes/B2_final_model.obj");
+	
 	//quad = createFullscreenQuad(window_width,window_height);
 	cubemap.diffuse = new Texture();
 
@@ -65,8 +69,8 @@ World::World(int window_width, int window_height) {
 	//// Example of shader loading using the shaders manager
 	//shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs");
 
+	//------- Player --------
 	playerTexture = Texture::Get("data/textures/texture.tga"); // Load a texture
-
 
 	playerMaterial.shader = basicShader;
 	playerMaterial.diffuse = playerTexture;
@@ -77,7 +81,8 @@ World::World(int window_width, int window_height) {
 	playerEntity->mesh = playerMesh;
 	playerEntity->material = playerMaterial;
 	playerEntity->name = "Player";
-	float angle_in_rad = 1.5707963268f; //90 degrees
+	
+	gameTimer = 35.0f;
 
 	//------- Bomba --------
 	bombMesh = Mesh::Get("data/meshes/missile1.obj");
@@ -88,8 +93,7 @@ World::World(int window_width, int window_height) {
 
 	bombEntity = new EntityMesh(bombMesh, bombMaterial, "bomb");
 
-	//Explosion Nuclear
-
+	//----- Explosion Nuclear -----
 	nuclearMesh = Mesh::Get("data/meshes/explosion4.obj");
 	nuclearTexture = Texture::Get("data/meshes/explosion-diffuse.png"); // load a texture
 	nuclearMaterial.shader = basicShader;
@@ -97,6 +101,15 @@ World::World(int window_width, int window_height) {
 
 	nuclearEntity = new EntityMesh(nuclearMesh, nuclearMaterial, "nuclear");
 
+	//----- Explosion Avion -----
+	failMesh = Mesh::Get("data/meshes/fail.obj");
+	//failTexture = Texture::Get("data/meshes/explosion-diffuse.png"); // load a texture
+	//failMaterial.shader = basicShader;
+	//failMaterial.diffuse = failTexture;
+
+	failEntity = new EntityMesh(failMesh, nuclearMaterial, "fail");
+
+	//----- Mapa -----
 	scene = new Scene();
 	scene->parseScene("data/myscene.scene");
 
@@ -120,6 +133,24 @@ void World::render() {
 
 		nuclearEntity->render(camera);
 	}
+	if (gameTimer < 0) {
+		failEntity->render(camera);
+		//drawText(this->world_window_width / 2 - 130, this->world_window_height / 2, "Game Over", Vector3(1, 1, 1), 5);
+		drawText(this->world_window_width / 2 - 250, this->world_window_height / 2, "You failed to destroy the island...", Vector3(1, 1, 1), 3);
+	}
+	else if (playerPosition.y < 0) {
+		failEntity->render(camera);
+		//drawText(this->world_window_width / 2 - 130, this->world_window_height / 2, "Game Over", Vector3(1, 1, 1), 5);
+		drawText(this->world_window_width / 2 - 180, this->world_window_height / 2, "You destroyed yourself...", Vector3(1, 1, 1), 3);
+	}
+	else {
+		drawText(50, this->world_window_height - 50, messageText, Vector3(1, 1, 1), 2);
+	}
+	std::ostringstream stream1;
+	stream1 << std::fixed << std::setprecision(2) << playerPosition.y;
+	playerHeight = "Height: " + stream1.str();
+	drawText(50, 50, playerHeight, Vector3(1, 1, 1), 2);
+	
 }
 
 void World::update(float elapsed_time) {
@@ -128,14 +159,28 @@ void World::update(float elapsed_time) {
 
 	// Example
 	//angles += (float)elapsed_time * 10.0f;
+	gameTimer -= elapsed_time;
 
-	playerEntity->update(elapsed_time, playerEntity, skybox, bombEntity, &collider, nuclearEntity);
-
-	//if(bombEntity->launched == true){
-	//	bombEntity->update(elapsed_time);
-	//}
-	
+	playerEntity->update(elapsed_time, playerEntity, skybox, bombEntity, &collider, nuclearEntity, gameTimer);
 	playerEntity->playerPOV(camera, elapsed_time);
+
+	playerPosition = playerEntity->model.getTranslation();
+
+	if (gameTimer > 30) {
+		messageText = "You have been discovered by the enemy radar!";
+	}
+	else {
+		std::ostringstream stream;
+		stream << std::fixed << std::setprecision(2) << gameTimer;
+		messageText = "Time remaining until impact: " + stream.str();
+	}
+	if (gameTimer < 0) {
+		failEntity->model.setTranslation(playerEntity->model.getTranslation() - Vector3(0.0, 1.0, 0.1));
+	}
+	else if (playerPosition.y <= 0) {
+		failEntity->model.setTranslation(playerEntity->model.getTranslation() - Vector3(0.0, 1.0, 0.1));
+	}
+
     root->update(elapsed_time);
 }
 

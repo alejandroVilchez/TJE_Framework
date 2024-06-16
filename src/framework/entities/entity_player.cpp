@@ -19,8 +19,8 @@ EntityPlayer::EntityPlayer(Vector3 position) {
     targetSpeed = 5.0f;
 }
 
-void EntityPlayer::update(float seconds_elapsed, EntityPlayer* player, EntityMesh* skybox, EntityMesh* bomb, EntityCollider* collider, EntityMesh* explosion) {
-    handleInput(seconds_elapsed, skybox, bomb, player);
+void EntityPlayer::update(float seconds_elapsed, EntityPlayer* player, EntityMesh* skybox, EntityMesh* bomb, EntityCollider* collider, EntityMesh* explosion, float playerTimer) {
+    handleInput(seconds_elapsed, skybox, bomb, player, playerTimer);
     
     std::vector<EntityMesh*> sceneEntities = collider->getEntitiesInScene();
     for (auto& entity : sceneEntities) {
@@ -47,49 +47,54 @@ void EntityPlayer::update(float seconds_elapsed, EntityPlayer* player, EntityMes
 
 }
 
-void EntityPlayer::handleInput(float seconds_elapsed, EntityMesh* skybox, EntityMesh* bomb, EntityMesh* player) {
-
+void EntityPlayer::handleInput(float seconds_elapsed, EntityMesh* skybox, EntityMesh* bomb, EntityMesh* player, float playerTimer) {
     
     // Aqu� se manejar�an las entradas del usuario para mover el avi�n
-    
-    if (Input::isKeyPressed(SDL_SCANCODE_W) || Input::isKeyPressed(SDL_SCANCODE_UP)) {
-        this->model.rotate(seconds_elapsed * rotation_speed, Vector3(-1.0f, 0.0f, 0.0f));
-
+    if (playerTimer <= 0){
+        model.setTranslation(this->position);
     }
-    if (Input::isKeyPressed(SDL_SCANCODE_S) || Input::isKeyPressed(SDL_SCANCODE_DOWN)) {
-        this->model.rotate(seconds_elapsed * rotation_speed, Vector3(1.0f, 0.0f, 0.0f));
-
+    else if (this->position.y <= 0) {
+        model.setTranslation(this->position);
     }
-    if (Input::isKeyPressed(SDL_SCANCODE_A) || Input::isKeyPressed(SDL_SCANCODE_LEFT)) {
-        this->model.rotate(seconds_elapsed * rotation_speed, Vector3(0.0f, 0.0f, 1.0f));
+    else {
+        if (Input::isKeyPressed(SDL_SCANCODE_W) || Input::isKeyPressed(SDL_SCANCODE_UP)) {
+            this->model.rotate(seconds_elapsed * rotation_speed, Vector3(-1.0f, 0.0f, 0.0f));
 
-    }
-    if (Input::isKeyPressed(SDL_SCANCODE_D) || Input::isKeyPressed(SDL_SCANCODE_RIGHT)) {
-        this->model.rotate(seconds_elapsed * rotation_speed, Vector3(0.0f, 0.0f, -1.0f));
+        }
+        if (Input::isKeyPressed(SDL_SCANCODE_S) || Input::isKeyPressed(SDL_SCANCODE_DOWN)) {
+            this->model.rotate(seconds_elapsed * rotation_speed, Vector3(1.0f, 0.0f, 0.0f));
 
-    }
-    if (Input::isKeyPressed(SDL_SCANCODE_LSHIFT)) {
-        targetSpeed = 8.0;
+        }
+        if (Input::isKeyPressed(SDL_SCANCODE_A) || Input::isKeyPressed(SDL_SCANCODE_LEFT)) {
+            this->model.rotate(seconds_elapsed * rotation_speed, Vector3(0.0f, 0.0f, 1.0f));
+
+        }
+        if (Input::isKeyPressed(SDL_SCANCODE_D) || Input::isKeyPressed(SDL_SCANCODE_RIGHT)) {
+            this->model.rotate(seconds_elapsed * rotation_speed, Vector3(0.0f, 0.0f, -1.0f));
+
+        }
+        if (Input::isKeyPressed(SDL_SCANCODE_LSHIFT)) {
+            targetSpeed = 8.0;
+            model.translate(0, 0, seconds_elapsed * speed);
+        }
+
+        if (Input::wasKeyPressed(SDL_SCANCODE_LSHIFT)) {
+            Audio::Play("data/audio/accelerate.mp3", 0.7);
+        }
+
+        if (Input::wasKeyPressed(SDL_SCANCODE_Q)) {
+            cameraViewMode = (cameraViewMode + 1) % 4;
+        }
+
+        if (Input::wasKeyPressed(SDL_SCANCODE_E)) {
+            dropBomb(bomb, player);//, seconds_elapsed);
+            int newChannel = Audio::Play("data/audio/bombdrop.mp3", 0.3);
+            activeChannels.push_back(newChannel);
+        }
+        targetSpeed = 5.0;
         model.translate(0, 0, seconds_elapsed * speed);
+        this->position = model.getTranslation();
     }
-
-    if (Input::wasKeyPressed(SDL_SCANCODE_LSHIFT)) {
-        Audio::Play("data/audio/accelerate.mp3", 0.7);
-    }
-
-    if (Input::wasKeyPressed(SDL_SCANCODE_Q)) {
-        cameraViewMode = (cameraViewMode + 1) % 4;
-    }
-
-    if (Input::wasKeyPressed(SDL_SCANCODE_E)) {
-        dropBomb(bomb, player);//, seconds_elapsed);
-        int newChannel = Audio::Play("data/audio/bombdrop.mp3", 0.3);
-        activeChannels.push_back(newChannel);
-    }
-
-    targetSpeed = 5.0;
-    model.translate(0, 0, seconds_elapsed * speed);
-
 }
 
 void EntityPlayer::playerPOV(Camera* camera, float seconds_elapsed) {

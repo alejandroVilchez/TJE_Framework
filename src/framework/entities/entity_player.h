@@ -29,8 +29,8 @@ public:
     Vector3 velocity;
 
     EntityPlayer(Vector3 position);
-    void update(float seconds_elapsed, EntityPlayer* player, EntityMesh* skybox, EntityMesh* bomb, EntityCollider* collider, EntityMesh* explosion);
-    void handleInput(float seconds_elapsed, EntityMesh* skybox, EntityMesh* bomb, EntityMesh* player);
+    void update(float seconds_elapsed, EntityPlayer* player, EntityMesh* skybox, EntityMesh* bomb, EntityCollider* collider, EntityMesh* explosion, float playerTimer);
+    void handleInput(float seconds_elapsed, EntityMesh* skybox, EntityMesh* bomb, EntityMesh* player, float playerTimer);
     void playerPOV(Camera* camera, float seconds_elapsed);
     void dropBomb(EntityMesh* bomb, EntityMesh* player);
     void updateBomb(EntityMesh& bomb, float seconds_elapsed);

@@ -15,7 +15,8 @@ enum class StageType {
 	INTRO,
 	PLAY,
 	HOWTO,
-	END
+	END,
+	CREDITS
 };
 
 class Game
