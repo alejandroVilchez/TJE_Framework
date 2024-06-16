@@ -1,10 +1,5 @@
 #include "stages.h"
 
-//IntroStage* introStage;
-//PlayStage* playStage;
-//EndStage* endStage;
-
-
 Stages::Stages() {
     camera2D = new Camera();
     camera2D->view_matrix.setIdentity();
@@ -14,9 +9,10 @@ Stages::Stages() {
     introBackground = Texture::Get("data/textures/atom7.tga");
     howtoBackground1 = Texture::Get("data/textures/howto.tga");
     howtoBackground2 = Texture::Get("data/textures/b2atom.tga");
-    endBackground = Texture::Get("data/textures/GAME-OVER.tga");
-    goodEnd = Texture::Get("data/textures/endAtom.tga");
-    creditsBackground = Texture::Get("data/textures/endAtom.tga");
+    howtoBackground3 = Texture::Get("data/textures/How2Camera.tga");
+    badEnd = Texture::Get("data/textures/GAME-OVER.tga");
+    goodEnd = Texture::Get("data/textures/YOUWIN.tga");
+    creditsBackground = Texture::Get("data/textures/atom7.tga");
 
 
 
@@ -35,7 +31,7 @@ Stages::~Stages() {
     delete introStage;
     delete playStage;
     delete howToStage;
-    //delete endStage;
+    //delete GoodEndStage;
     delete currentStage;
     delete camera2D;
 }
@@ -89,22 +85,22 @@ void CreditsStage::update(float elapsed_time) {
 }
 
 
-// ------ End Stage ------
+// ------ Good End Stage ------
 
 
-EndStage::EndStage() {
+GoodEndStage::GoodEndStage() {
     // Initialize any necessary resources for the end stage
         // Initialize other variables
-    endSlot = 0;
+    goodEndSlot = 0;
     credits = false;
     intro = false;
 }
 
-EndStage::~EndStage() {
+GoodEndStage::~GoodEndStage() {
     // Clean up resources
 }
 
-void EndStage::render() {
+void GoodEndStage::render() {
     // Render the end stage
             // Set the clear color (the background color)
     glClearColor(0.f, 0.f, 0.f, 1.0f);
@@ -122,7 +118,7 @@ void EndStage::render() {
     shader->enable();
     shader->setUniform("u_color", Vector4(1, 1, 1, 1));
     shader->setUniform("u_viewprojection", camera2D->viewprojection_matrix);
-    shader->setUniform("u_texture", endBackground, 1);
+    shader->setUniform("u_texture", goodEnd, 1);
 
     shader->setUniform("u_model", model);
     shader->setUniform("u_time", Game::instance->time);
@@ -143,14 +139,14 @@ void EndStage::render() {
     /*drawText(width / 2 - 120, height / 2 - 275, "A.T.O.M.", Vector3(1, 1, 1), 7);
     drawText(width / 2 - 330, height / 2 - 175, "Aeronautic Thermonuclear Ogives Maelstrom", Vector3(1, 1, 1), 3);*/
 
-    if (endSlot == 0) {
+    if (goodEndSlot == 0) {
         drawText((width / 2 - 135) + creditsXOffset, height / 2 + 100, "See Credits", Vector3(1, 0, 0), creditsFontSize);
     }
     else {
         drawText(width / 2 - 135, height / 2 + 100, "See Credits", Vector3(1, 1, 1), 5);
     }
 
-    if (endSlot == 1) {
+    if (goodEndSlot == 1) {
         drawText((width / 2 - 180) + introXOffset, height / 2 + 160, "Return to Menu", Vector3(1, 0, 0), introFontSize);
     }
     else {
@@ -159,30 +155,129 @@ void EndStage::render() {
 
 }
 
-void EndStage::update(float elapsed_time) {
+void GoodEndStage::update(float elapsed_time) {
     // No update needed for the end stage
-    if (endSlot > 1)
-        endSlot = 0;
-    if (endSlot < 0)
-        endSlot = 1;
+    if (goodEndSlot > 1)
+        goodEndSlot = 0;
+    if (goodEndSlot < 0)
+        goodEndSlot = 1;
 
-    if (endSlot == 0 && (Input::wasKeyPressed(SDL_SCANCODE_RETURN) || Input::wasButtonPressed(A_BUTTON))) {
+    if (goodEndSlot == 0 && (Input::wasKeyPressed(SDL_SCANCODE_RETURN) || Input::wasButtonPressed(A_BUTTON))) {
         Game::instance->changeStage(StageType::CREDITS);
         Audio::Play("data/audio/select.wav");
         //Audio::Stop(channel1);
         //channel2 = Audio::Play("data/audio/bombersound.mp3", 1, BASS_SAMPLE_LOOP);
     }
-    if (endSlot == 1 && (Input::wasKeyPressed(SDL_SCANCODE_RETURN) || Input::wasButtonPressed(A_BUTTON))) {
+    if (goodEndSlot == 1 && (Input::wasKeyPressed(SDL_SCANCODE_RETURN) || Input::wasButtonPressed(A_BUTTON))) {
         Game::instance->changeStage(StageType::INTRO);
         Audio::Play("data/audio/select.wav");
     }
 
     if (Input::wasKeyPressed(SDL_SCANCODE_DOWN) || Input::wasKeyPressed(SDL_SCANCODE_S) || Input::wasButtonPressed(PAD_DOWN)) {
-        endSlot = (endSlot + 1) % 2;
+        goodEndSlot = (goodEndSlot + 1) % 2;
         Audio::Play("data/audio/change.wav");
     }
     if (Input::wasKeyPressed(SDL_SCANCODE_UP) || Input::wasKeyPressed(SDL_SCANCODE_W) || Input::wasButtonPressed(PAD_UP)) {
-        endSlot = (endSlot - 1) % 2;
+        goodEndSlot = (goodEndSlot - 1) % 2;
+        Audio::Play("data/audio/change.wav");
+    }
+
+}
+
+// ------ Bad End Stage ------
+
+
+BadEndStage::BadEndStage() {
+    // Initialize any necessary resources for the end stage
+        // Initialize other variables
+    badEndSlot = 0;
+    credits = false;
+    intro = false;
+}
+
+BadEndStage::~BadEndStage() {
+    // Clean up resources
+}
+
+void BadEndStage::render() {
+    // Render the end stage
+            // Set the clear color (the background color)
+    glClearColor(0.f, 0.f, 0.f, 1.0f);
+
+    // Clear the window and the depth buffer
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    camera2D->enable();
+
+    // Set flags
+    glDisable(GL_BLEND);
+    glEnable(GL_DEPTH_TEST);
+    glDisable(GL_CULL_FACE);
+
+    shader->enable();
+    shader->setUniform("u_color", Vector4(1, 1, 1, 1));
+    shader->setUniform("u_viewprojection", camera2D->viewprojection_matrix);
+    shader->setUniform("u_texture", badEnd, 1);
+
+    shader->setUniform("u_model", model);
+    shader->setUniform("u_time", Game::instance->time);
+
+    Game::instance->fullScreenQuad->render(GL_TRIANGLES);
+
+    shader->disable();
+
+    float blinkTime = sin(Game::instance->time * 5.0f); // Speed of blinking
+    bool isLargeFont = blinkTime > 0;
+
+    int creditsFontSize = isLargeFont ? 5 : 4; // Change font when blinking
+    int introFontSize = isLargeFont ? 5 : 4;
+
+    int creditsXOffset = isLargeFont ? 0 : 25;
+    int introXOffset = isLargeFont ? 0 : 25;
+
+    /*drawText(width / 2 - 120, height / 2 - 275, "A.T.O.M.", Vector3(1, 1, 1), 7);
+    drawText(width / 2 - 330, height / 2 - 175, "Aeronautic Thermonuclear Ogives Maelstrom", Vector3(1, 1, 1), 3);*/
+
+    if (badEndSlot == 0) {
+        drawText((width / 2 - 135) + creditsXOffset, height / 2 + 100, "See Credits", Vector3(1, 0, 0), creditsFontSize);
+    }
+    else {
+        drawText(width / 2 - 135, height / 2 + 100, "See Credits", Vector3(1, 1, 1), 5);
+    }
+
+    if (badEndSlot == 1) {
+        drawText((width / 2 - 180) + introXOffset, height / 2 + 160, "Return to Menu", Vector3(1, 0, 0), introFontSize);
+    }
+    else {
+        drawText(width / 2 - 180, height / 2 + 160, "Return to Menu", Vector3(1, 1, 1), 5);
+    }
+
+}
+
+void BadEndStage::update(float elapsed_time) {
+    // No update needed for the end stage
+    if (badEndSlot > 1)
+        badEndSlot = 0;
+    if (badEndSlot < 0)
+        badEndSlot = 1;
+
+    if (badEndSlot == 0 && (Input::wasKeyPressed(SDL_SCANCODE_RETURN) || Input::wasButtonPressed(A_BUTTON))) {
+        Game::instance->changeStage(StageType::CREDITS);
+        Audio::Play("data/audio/select.wav");
+        //Audio::Stop(channel1);
+        //channel2 = Audio::Play("data/audio/bombersound.mp3", 1, BASS_SAMPLE_LOOP);
+    }
+    if (badEndSlot == 1 && (Input::wasKeyPressed(SDL_SCANCODE_RETURN) || Input::wasButtonPressed(A_BUTTON))) {
+        Game::instance->changeStage(StageType::INTRO);
+        Audio::Play("data/audio/select.wav");
+    }
+
+    if (Input::wasKeyPressed(SDL_SCANCODE_DOWN) || Input::wasKeyPressed(SDL_SCANCODE_S) || Input::wasButtonPressed(PAD_DOWN)) {
+        badEndSlot = (badEndSlot + 1) % 2;
+        Audio::Play("data/audio/change.wav");
+    }
+    if (Input::wasKeyPressed(SDL_SCANCODE_UP) || Input::wasKeyPressed(SDL_SCANCODE_W) || Input::wasButtonPressed(PAD_UP)) {
+        badEndSlot = (badEndSlot - 1) % 2;
         Audio::Play("data/audio/change.wav");
     }
 
@@ -286,7 +381,7 @@ void IntroStage::update(float elapsed_time) {
         Audio::Play("data/audio/select.wav");
     }    
     if (currentSlot == 2 && (Input::wasKeyPressed(SDL_SCANCODE_RETURN) || Input::wasButtonPressed(A_BUTTON))) {
-        Game::instance->changeStage(StageType::END);
+        Game::instance->changeStage(StageType::BADEND);
         Audio::Play("data/audio/select.wav");
     }
 
@@ -327,11 +422,14 @@ void HowToStage::render() {
 
     shader->enable();
     shader->setUniform("u_color", Vector4(1, 1, 1, 1));
-    if (firstTexture) {
+    if (howTo == 0) {
         shader->setUniform("u_texture", howtoBackground1, 1);
     }
-    else {
+    else if(howTo == 1) {
         shader->setUniform("u_texture", howtoBackground2, 1);
+    }
+    else {
+        shader->setUniform("u_texture", howtoBackground3, 1);
     }
     shader->setUniform("u_model", model);
     shader->setUniform("u_time", Game::instance->time);
@@ -352,13 +450,11 @@ void HowToStage::update(float elapsed_time) {
     blinkTime += elapsed_time;
 
     if (Input::wasKeyPressed(SDL_SCANCODE_SPACE)) {
-        if (firstTexture) {
-            firstTexture = false;  // Switch to the second texture
-        }
-        else {
+        howTo += 1;
+        if (howTo >= 3){ 
             Game::instance->changeStage(StageType::INTRO);  // Go back to the intro stage
             Audio::Play("data/audio/change.wav");
-            firstTexture = true;
+            howTo = 0;
         }
     }
 }
