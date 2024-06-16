@@ -37,6 +37,7 @@ public:
     Shader* shader;
     Texture* howtoBackground1;
     Texture* howtoBackground2;
+    Texture* howtoBackground3;
     Texture* introBackground;
     Texture* endBackground;
     Texture* goodEnd;
@@ -93,6 +94,7 @@ public:
 private:
     float blinkTime;
     bool firstTexture;
+    int howTo = 0;
 };
 
 class EndStage : public Stages {

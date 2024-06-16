@@ -44,8 +44,8 @@ World::World(int window_width, int window_height) {
 
 
     basicShader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs");
+	playerMesh = Mesh::Get("data/meshes/B2_final_model.obj");
 	//playerMesh = Mesh::Get("data/meshes/B2rotated.obj");
-	playerMesh = Mesh::Get("data/meshes/B2rotated.obj");
 	
 	//quad = createFullscreenQuad(window_width,window_height);
 	cubemap.diffuse = new Texture();

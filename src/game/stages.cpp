@@ -14,8 +14,9 @@ Stages::Stages() {
     introBackground = Texture::Get("data/textures/atom7.tga");
     howtoBackground1 = Texture::Get("data/textures/howto.tga");
     howtoBackground2 = Texture::Get("data/textures/b2atom.tga");
+    howtoBackground3 = Texture::Get("data/textures/How2Camera.tga");
     endBackground = Texture::Get("data/textures/GAME-OVER.tga");
-    goodEnd = Texture::Get("data/textures/endAtom.tga");
+    goodEnd = Texture::Get("data/textures/YOUWIN.tga");
     creditsBackground = Texture::Get("data/textures/endAtom.tga");
 
 
@@ -328,12 +329,22 @@ void HowToStage::render() {
 
     shader->enable();
     shader->setUniform("u_color", Vector4(1, 1, 1, 1));
+    if (howTo == 0) {
+        shader->setUniform("u_texture", howtoBackground1, 1);
+    }
+    else if(howTo == 1) {
+        shader->setUniform("u_texture", howtoBackground2, 1);
+    }
+    else {
+        shader->setUniform("u_texture", howtoBackground3, 1);
+    }
+    /*
     if (firstTexture) {
         shader->setUniform("u_texture", howtoBackground1, 1);
     }
     else {
         shader->setUniform("u_texture", howtoBackground2, 1);
-    }
+    }*/
     shader->setUniform("u_model", model);
     shader->setUniform("u_time", Game::instance->time);
 
@@ -353,13 +364,19 @@ void HowToStage::update(float elapsed_time) {
     blinkTime += elapsed_time;
 
     if (Input::wasKeyPressed(SDL_SCANCODE_SPACE)) {
-        if (firstTexture) {
-            firstTexture = false;  // Switch to the second texture
-        }
-        else {
+        howTo += 1;
+        if (howTo >= 3){ 
             Game::instance->changeStage(StageType::INTRO);  // Go back to the intro stage
             Audio::Play("data/audio/change.wav");
-            firstTexture = true;
+            howTo = 0;
         }
+        //if (firstTexture) {
+        //    firstTexture = false;  // Switch to the second texture
+        //}
+        //else {
+        //    Game::instance->changeStage(StageType::INTRO);  // Go back to the intro stage
+        //    Audio::Play("data/audio/change.wav");
+        //    firstTexture = true;
+        //}
     }
 }
