@@ -41,6 +41,7 @@ public:
     int cameraViewMode = 0;
     float targetSpeed;
     float smoothingFactor = 0.001f;
+    float randheight;
 
     void handleDodgeActions(float seconds_elapsed);
     void evaluateMovements();

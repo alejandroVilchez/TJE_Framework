@@ -23,6 +23,7 @@ EntityPlayer::EntityPlayer(Vector3 position) {
     model.setTranslation(position);
     smoothedTarget = position;
     targetSpeed = 5.0f;
+    randheight = rand() % 22 + 33;
 }
 
 void EntityPlayer::update(float seconds_elapsed, EntityPlayer* player, EntityMesh* skybox, EntityMesh* bomb, EntityCollider* collider, EntityMesh* explosion, float playerTimer) {
@@ -45,9 +46,10 @@ void EntityPlayer::update(float seconds_elapsed, EntityPlayer* player, EntityMes
 }
     speed = speed * (1.0f - smoothingFactor) + targetSpeed * smoothingFactor;
 
-    if (this->position.y > 33) {
+    if (this->position.y > 33 and detected == false and (rand()%100) != 1) {
         detected = true;
         Audio::Play("data/audio/radar.wav", 1.0);
+        //randheight = rand() % 22 + 33;
     }
     
     //evaluateMovements();
