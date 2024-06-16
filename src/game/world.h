@@ -87,7 +87,8 @@ public:
     Mesh* createFullscreenQuad(int window_width, int window_height);
     void startTransition();
     void renderTransition();
-
+    int radarTimer;
+    bool missilelost;
 
 
     EntityCollider collider;

@@ -1,14 +1,20 @@
 #include "entity_player.h"
-
+#include <deque>
 
 //float camera_yaw = 0.0f;
 //float speed_mult = 1.0f; 
 //Vector3 velocity = Vector3(0.0f, 0.0f, 0.0f); 
 std::vector<int> activeChannels;
+const float directionChangeThreshold = 0.95f;
 
 bool isTransitioning = false;
 float transitionTimer = 0.0f;
 float transitionDuration = 1.0f;
+std::deque<Vector3> recentPositions;
+const size_t historySize = 10; // History size for evaluating movements
+
+const size_t maxRecentPositions = 100;
+const int maxDirectionChangePoints = 100;
 
 EntityPlayer::EntityPlayer(Vector3 position) {
 
@@ -17,11 +23,14 @@ EntityPlayer::EntityPlayer(Vector3 position) {
     model.setTranslation(position);
     smoothedTarget = position;
     targetSpeed = 5.0f;
+    randheight = rand() % 22 + 33;
 }
 
 void EntityPlayer::update(float seconds_elapsed, EntityPlayer* player, EntityMesh* skybox, EntityMesh* bomb, EntityCollider* collider, EntityMesh* explosion, float playerTimer) {
     handleInput(seconds_elapsed, skybox, bomb, player, playerTimer);
     
+
+
     std::vector<EntityMesh*> sceneEntities = collider->getEntitiesInScene();
     for (auto& entity : sceneEntities) {
         if (entity == player || entity == skybox || entity == bomb)
@@ -37,11 +46,13 @@ void EntityPlayer::update(float seconds_elapsed, EntityPlayer* player, EntityMes
 }
     speed = speed * (1.0f - smoothingFactor) + targetSpeed * smoothingFactor;
 
-    if (this->position.y > 33) {
+    if (this->position.y > 33 and detected == false and (rand()%100) != 1) {
         detected = true;
         Audio::Play("data/audio/radar.wav", 1.0);
+        //randheight = rand() % 22 + 33;
     }
-
+    
+    //evaluateMovements();
 
     skybox->model.setTranslation(model.getTranslation());
  
@@ -52,23 +63,36 @@ void EntityPlayer::update(float seconds_elapsed, EntityPlayer* player, EntityMes
 
 }
 
+//void EntityPlayer::handleDodgeActions(float seconds_elapsed) {
+//    if (Input::isKeyPressed(SDL_SCANCODE_W) || Input::isKeyPressed(SDL_SCANCODE_UP) ||
+//        Input::isKeyPressed(SDL_SCANCODE_S) || Input::isKeyPressed(SDL_SCANCODE_DOWN) ||
+//        Input::isKeyPressed(SDL_SCANCODE_A) || Input::isKeyPressed(SDL_SCANCODE_LEFT) ||
+//        Input::isKeyPressed(SDL_SCANCODE_D) || Input::isKeyPressed(SDL_SCANCODE_RIGHT)) {
+//        dodgePoints += seconds_elapsed * 10.0f; // Increment points based on time
+//    }
+//}
+
 void EntityPlayer::handleInput(float seconds_elapsed, EntityMesh* skybox, EntityMesh* bomb, EntityMesh* player, float playerTimer) {
-    
-    // Aqu� se manejar�an las entradas del usuario para mover el avi�n
-    if (playerTimer <= 0){
+    // Handle user input for player movement
+    if (playerTimer <= 0) {
         model.setTranslation(this->position);
     }
     else if (this->position.y <= 0) {
         model.setTranslation(this->position);
     }
     else {
+        Vector3 planeForward = model.frontVector();
+
+        static Vector3 prevDirection = planeForward;
+
+        bool moved = false;
         if (Input::isKeyPressed(SDL_SCANCODE_W) || Input::isKeyPressed(SDL_SCANCODE_UP)) {
             this->model.rotate(seconds_elapsed * rotation_speed, Vector3(-1.0f, 0.0f, 0.0f));
-
+            moved = true;
         }
         if (Input::isKeyPressed(SDL_SCANCODE_S) || Input::isKeyPressed(SDL_SCANCODE_DOWN)) {
             this->model.rotate(seconds_elapsed * rotation_speed, Vector3(1.0f, 0.0f, 0.0f));
-
+            moved = true;
         }
         if (Input::isKeyPressed(SDL_SCANCODE_A) || Input::isKeyPressed(SDL_SCANCODE_LEFT)) {
             this->model.rotate(seconds_elapsed * rotation_speed, Vector3(0.0f, 0.0f, 1.0f));
@@ -81,26 +105,47 @@ void EntityPlayer::handleInput(float seconds_elapsed, EntityMesh* skybox, Entity
         if (Input::isKeyPressed(SDL_SCANCODE_LSHIFT)) {
             targetSpeed = 8.0;
             model.translate(0, 0, seconds_elapsed * speed);
+            moved = true;
         }
 
         if (Input::wasKeyPressed(SDL_SCANCODE_LSHIFT)) {
             Audio::Play("data/audio/accelerate.mp3", 0.7);
+            directionChangePoints += 1;
         }
 
         if (Input::wasKeyPressed(SDL_SCANCODE_Q)) {
             cameraViewMode = (cameraViewMode + 1) % 4;
         }
 
-        if (Input::wasKeyPressed(SDL_SCANCODE_E)) {
-            dropBomb(bomb, player);//, seconds_elapsed);
+		if (Input::wasKeyPressed(SDL_SCANCODE_E)) {
+            dropBomb(bomb, player);
             int newChannel = Audio::Play("data/audio/bombdrop.mp3", 0.3);
             activeChannels.push_back(newChannel);
         }
         targetSpeed = 5.0;
         model.translate(0, 0, seconds_elapsed * speed);
         this->position = model.getTranslation();
+
+        // Track recent positions
+        if (moved and detected) {
+            float directionChange = planeForward.distance(prevDirection);
+            //directionChange = std::min(directionChange, 1.0f); // Clamp the value between 0 and 1
+
+            if (Input::isKeyPressed(SDL_SCANCODE_LSHIFT)) {
+                directionChangePoints += directionChange * 1.2;
+            }
+            else {
+                directionChangePoints += directionChange;
+            }
+         
+            prevDirection = planeForward; // Update prevVelocity
+        }
+        if (not detected) {
+            directionChangePoints = 0;
+        }
     }
 }
+
 
 void EntityPlayer::playerPOV(Camera* camera, float seconds_elapsed) {
     Vector3 planePosition = model.getTranslation();
@@ -176,7 +221,7 @@ void EntityPlayer::dropBomb(EntityMesh* bomb, EntityMesh* player) {
     bomb->mass = 1100;
     // Calculate the initial velocity based on the plane's speed and direction
     Vector3 planeForward = model.frontVector();
-    Vector3 planeVelocity = planeForward * speed;
+    Vector3 planeVelocity = planeForward * Vector3(5.f,5.f,5.f);
 
     // Set bomb's initial velocity
     bomb->velocity = planeVelocity;

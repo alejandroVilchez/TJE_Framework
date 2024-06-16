@@ -28,6 +28,7 @@ public:
     Vector3 position;
     Vector3 velocity;
 
+    float directionChangePoints = 0;
     bool detected = false;
 
     EntityPlayer(Vector3 position);
@@ -40,7 +41,10 @@ public:
     int cameraViewMode = 0;
     float targetSpeed;
     float smoothingFactor = 0.001f;
+    float randheight;
 
+    void handleDodgeActions(float seconds_elapsed);
+    void evaluateMovements();
     // Update bomb physics
     void updateBombPhysics(EntityMesh* bomb, float seconds_elapsed, const Vector3& gravity, EntityMesh* explosion, Vector3& velocity);
 
@@ -49,7 +53,7 @@ private:
     std::vector<EntityMesh> activeBombs;  // Track active bombs
     Vector3 smoothedTarget;
     EntityMesh* playerEntity;
-    float rotation_speed = 1.0f;
+    float rotation_speed = 0.7f;
     std::vector<HCHANNEL> activeChannels;  // Track active sound channels for bomb drops
 };
 
