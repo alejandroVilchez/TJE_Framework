@@ -46,6 +46,7 @@ public:
     float gameTimer;
 
     bool detected = false;
+    bool planecrashed = false;
 
     EntityMesh* bombEntity;
     Mesh* bombMesh;
@@ -63,6 +64,7 @@ public:
     Texture* failTexture;
 
     HCHANNEL alarm;
+    HCHANNEL planeexp;
 
     std::string messageText;
 
