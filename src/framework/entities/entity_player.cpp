@@ -46,9 +46,8 @@ void EntityPlayer::update(float seconds_elapsed, EntityPlayer* player, EntityMes
 }
     speed = speed * (1.0f - smoothingFactor) + targetSpeed * smoothingFactor;
 
-    if (this->position.y > 33 and detected == false and (rand()%100) != 1) {
+    if (this->position.y > 33 and (rand() % 888) == 1 and detected == false || this->position.y > 50 and (rand() % 444) == 1 and detected == false) {
         detected = true;
-        Audio::Play("data/audio/radar.wav", 1.0);
         //randheight = rand() % 22 + 33;
     }
     
