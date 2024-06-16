@@ -280,7 +280,6 @@ void IntroStage::update(float elapsed_time) {
         Game::instance->changeStage(StageType::PLAY);
         Audio::Play("data/audio/select.wav");
         Audio::Stop(channel1);
-        channel2 = Audio::Play("data/audio/bombersound.mp3",1, BASS_SAMPLE_LOOP);
     }
     if (currentSlot == 1 && (Input::wasKeyPressed(SDL_SCANCODE_RETURN) || Input::wasButtonPressed(A_BUTTON))) {
         Game::instance->changeStage(StageType::HOWTO);

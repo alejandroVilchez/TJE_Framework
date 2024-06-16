@@ -2,6 +2,8 @@
 
 float angles = 0;
 float mouse_speeds = 100.0f;
+bool engine = 0;
+HCHANNEL channel2;
 //
 //Mesh* mesh = NULL;
 //Texture* texture = NULL;
@@ -137,11 +139,13 @@ void World::render() {
 		failEntity->render(camera);
 		//drawText(this->world_window_width / 2 - 130, this->world_window_height / 2, "Game Over", Vector3(1, 1, 1), 5);
 		drawText(this->world_window_width / 2 - 250, this->world_window_height / 2, "You failed to destroy the island...", Vector3(1, 1, 1), 3);
+		Audio::Stop(channel2);
 	}
 	else if (playerPosition.y < 0) {
 		failEntity->render(camera);
 		//drawText(this->world_window_width / 2 - 130, this->world_window_height / 2, "Game Over", Vector3(1, 1, 1), 5);
-		drawText(this->world_window_width / 2 - 180, this->world_window_height / 2, "You destroyed yourself...", Vector3(1, 1, 1), 3);
+		drawText(this->world_window_width / 2 - 180, this->world_window_height / 2, "You do not deserve to pilot a B-2...", Vector3(1, 1, 1), 3);
+		Audio::Stop(channel2);
 	}
 	else {
 		drawText(50, this->world_window_height - 50, messageText, Vector3(1, 1, 1), 2);
@@ -150,7 +154,10 @@ void World::render() {
 	stream1 << std::fixed << std::setprecision(2) << playerPosition.y;
 	playerHeight = "Height: " + stream1.str();
 	drawText(50, 50, playerHeight, Vector3(1, 1, 1), 2);
-	
+	if (engine == 0) {
+		channel2 = Audio::Play("data/audio/bombersound.mp3", 1, BASS_SAMPLE_LOOP);
+		engine = 1;
+	}
 }
 
 void World::update(float elapsed_time) {
