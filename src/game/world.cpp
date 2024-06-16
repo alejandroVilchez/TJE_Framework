@@ -181,11 +181,12 @@ void World::update(float elapsed_time) {
 	//}
 	if (gameTimer < 0) {
 		failEntity->model.setTranslation(playerEntity->model.getTranslation() - Vector3(0.0, 1.0, 0.1));
-		alarm = Audio::Play("data/audio/alarm.wav", 0.5);
 		Audio::Stop(alarm);
+		Audio::Play("data/audio/planeexp.mp3", 0.5);
 	}
 	else if (playerPosition.y <= 0) {
 		failEntity->model.setTranslation(playerEntity->model.getTranslation() - Vector3(0.0, 1.0, 0.1));
+		Audio::Play("data/audio/planeexp.mp3", 0.5);
 	}
 
     root->update(elapsed_time);
