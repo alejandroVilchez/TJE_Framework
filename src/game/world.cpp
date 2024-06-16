@@ -172,7 +172,7 @@ void World::update(float elapsed_time) {
 		messageText = "You have been discovered by the enemy radar! Something is approaching you";
 	}
 	if (gameTimer < 5) {
-		alarm = Audio::Play("data/audio/alarm.wav");
+		alarm = Audio::Play("data/audio/alarm.wav", 0.5);
 	}
 	//else {
 	//	std::ostringstream stream;
@@ -181,6 +181,7 @@ void World::update(float elapsed_time) {
 	//}
 	if (gameTimer < 0) {
 		failEntity->model.setTranslation(playerEntity->model.getTranslation() - Vector3(0.0, 1.0, 0.1));
+		alarm = Audio::Play("data/audio/alarm.wav", 0.5);
 		Audio::Stop(alarm);
 	}
 	else if (playerPosition.y <= 0) {

@@ -211,7 +211,7 @@ void EntityPlayer::updateBombPhysics(EntityMesh* bomb, float seconds_elapsed, co
             bomb->isLaunched = false;  // Mark bomb as no longer active
             bomb->isExploded = true;
             explosion->model.setTranslation(newPos);
-            Audio::Play("data/audio/nuclearexp.mp3", 1);
+            Audio::Play("data/audio/nuclearexp.wav", 1);
         }
     }
 }
