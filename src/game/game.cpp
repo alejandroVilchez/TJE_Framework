@@ -102,59 +102,6 @@ void Game::render(void)
 	glDisable(GL_CULL_FACE);
    
 	currentStage->render();
-	//// Create model matrix for cube
-	//Matrix44 m;
-	//m.rotate(angle*DEG2RAD, Vector3(0.0f, 1.0f, 0.0f));
-
-	//if(shader)
-	//{
-	//	// Enable shader
-	//	shader->enable();
-
-	//	// Upload uniforms
-	//	shader->setUniform("u_color", Vector4(1,1,1,1));
-	//	shader->setUniform("u_viewprojection", camera->viewprojection_matrix );
-	//	shader->setUniform("u_texture", texture, 0);
-	//	shader->setUniform("u_model", m);
-	//	shader->setUniform("u_time", time);
-
-	//	// Do the draw call
-	//	mesh->render( GL_TRIANGLES );
-
-	//	// Disable shader
-	//	shader->disable();
-	//}
-	//// Create model matrix for cube
-	//Matrix44 m;
-	//m.rotate(angle*DEG2RAD, Vector3(0.0f, 1.0f, 0.0f));
-
-	//if(shader)
-	//{
-	//	// Enable shader
-	//	shader->enable();
-
-	//	// Upload uniforms
-	//	shader->setUniform("u_color", Vector4(1,1,1,1));
-	//	shader->setUniform("u_viewprojection", camera->viewprojection_matrix );
-	//	shader->setUniform("u_texture", texture, 0);
-	//	shader->setUniform("u_model", m);
-	//	shader->setUniform("u_time", time);
-
-	//	// Do the draw call
-	//	mesh->render( GL_TRIANGLES );
-
-	//	// Disable shader
-	//	shader->disable();
-	//}
-
-	// Draw the floor grid
-	//drawGrid();
-	
-	
-	
-
-	// Render the FPS, Draw Calls, etc
-	//drawText(2, 2, getGPUStats(), Vector3(1, 1, 1), 2);
 
 	
 
@@ -179,12 +126,7 @@ void Game::update(double seconds_elapsed)
 	//}
 	currentStage->update(seconds_elapsed);
 
-	//// Async input to move the camera around
-	//if (Input::isKeyPressed(SDL_SCANCODE_LSHIFT) ) speed *= 10; //move faster with left shift
-	//if (Input::isKeyPressed(SDL_SCANCODE_W) || Input::isKeyPressed(SDL_SCANCODE_UP)) camera->move(Vector3(0.0f, 0.0f, 1.0f) * speed);
-	//if (Input::isKeyPressed(SDL_SCANCODE_S) || Input::isKeyPressed(SDL_SCANCODE_DOWN)) camera->move(Vector3(0.0f, 0.0f,-1.0f) * speed);
-	//if (Input::isKeyPressed(SDL_SCANCODE_A) || Input::isKeyPressed(SDL_SCANCODE_LEFT)) camera->move(Vector3(1.0f, 0.0f, 0.0f) * speed);
-	//if (Input::isKeyPressed(SDL_SCANCODE_D) || Input::isKeyPressed(SDL_SCANCODE_RIGHT)) camera->move(Vector3(-1.0f,0.0f, 0.0f) * speed);
+
 }
 
 //Keyboard event handler (sync input)

@@ -49,6 +49,7 @@ public:
     Vector3 playerPosition;
     std::string playerHeight;
     float gameTimer;
+    float timerScene2;
     float missileTimer = 100.;
 
     bool detected = false;

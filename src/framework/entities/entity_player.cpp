@@ -24,6 +24,9 @@ EntityPlayer::EntityPlayer(Vector3 position) {
     smoothedTarget = position;
     targetSpeed = 5.0f;
     randheight = rand() % 22 + 33;
+    bombused = false;
+    bombin = false;
+    bombout = false;
 }
 
 void EntityPlayer::update(float seconds_elapsed, EntityPlayer* player, EntityMesh* skybox, EntityMesh* bomb, EntityCollider* collider, EntityMesh* explosion, float playerTimer) {
@@ -116,10 +119,11 @@ void EntityPlayer::handleInput(float seconds_elapsed, EntityMesh* skybox, Entity
             cameraViewMode = (cameraViewMode + 1) % 4;
         }
 
-		if (Input::wasKeyPressed(SDL_SCANCODE_E)) {
+		if (Input::wasKeyPressed(SDL_SCANCODE_E) and bombused == false) {
             dropBomb(bomb, player);
             int newChannel = Audio::Play("data/audio/bombdrop.mp3", 0.3);
             activeChannels.push_back(newChannel);
+            bombused = true;
         }
         targetSpeed = 5.0;
         model.translate(0, 0, seconds_elapsed * speed);
@@ -220,7 +224,7 @@ void EntityPlayer::dropBomb(EntityMesh* bomb, EntityMesh* player) {
     bomb->mass = 1100;
     // Calculate the initial velocity based on the plane's speed and direction
     Vector3 planeForward = model.frontVector();
-    Vector3 planeVelocity = planeForward * Vector3(5.f,5.f,5.f);
+    Vector3 planeVelocity = planeForward * speed;
 
     // Set bomb's initial velocity
     bomb->velocity = planeVelocity;
@@ -256,6 +260,12 @@ void EntityPlayer::updateBombPhysics(EntityMesh* bomb, float seconds_elapsed, co
             bomb->isExploded = true;
             explosion->model.setTranslation(newPos);
             Audio::Play("data/audio/nuclearexp.wav", 1);
+            if (newPos.x<40. and newPos.x>-40. and newPos.z < 40. and newPos.z > 40.) {
+                bombin = true;
+            }
+            else {
+                bombout = true;
+            }
         }
     }
 }

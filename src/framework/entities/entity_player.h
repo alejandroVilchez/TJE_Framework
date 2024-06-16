@@ -43,7 +43,9 @@ public:
     float targetSpeed;
     float smoothingFactor = 0.001f;
     float randheight;
-
+    bool bombused;
+    bool bombin;
+    bool bombout;
     void handleDodgeActions(float seconds_elapsed);
     void evaluateMovements();
     // Update bomb physics
