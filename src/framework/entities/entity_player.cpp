@@ -6,12 +6,17 @@
 //Vector3 velocity = Vector3(0.0f, 0.0f, 0.0f); 
 std::vector<int> activeChannels;
 
+bool isTransitioning = false;
+float transitionTimer = 0.0f;
+float transitionDuration = 1.0f;
+
 EntityPlayer::EntityPlayer(Vector3 position) {
 
     //playerEntity = new EntityMesh(nullptr, Material(), "Player");
     this->position = position;
     model.setTranslation(position);
     smoothedTarget = position;
+    targetSpeed = 5.0f;
 }
 
 void EntityPlayer::update(float seconds_elapsed, EntityPlayer* player, EntityMesh* skybox, EntityMesh* bomb, EntityCollider* collider, EntityMesh* explosion) {
@@ -30,6 +35,8 @@ void EntityPlayer::update(float seconds_elapsed, EntityPlayer* player, EntityMes
             // velocity = Vector3(0.0f, 0.0f, 0.0f);
         }
 }
+    speed = speed * (1.0f - smoothingFactor) + targetSpeed * smoothingFactor;
+
 
     skybox->model.setTranslation(model.getTranslation());
  
@@ -62,12 +69,16 @@ void EntityPlayer::handleInput(float seconds_elapsed, EntityMesh* skybox, Entity
 
     }
     if (Input::isKeyPressed(SDL_SCANCODE_LSHIFT)) {
-        speed = speed * 1.5;
+        targetSpeed = 8.0;
         model.translate(0, 0, seconds_elapsed * speed);
     }
 
     if (Input::wasKeyPressed(SDL_SCANCODE_LSHIFT)) {
         Audio::Play("data/audio/accelerate.mp3", 0.7);
+    }
+
+    if (Input::wasKeyPressed(SDL_SCANCODE_Q)) {
+        cameraViewMode = (cameraViewMode + 1) % 4;
     }
 
     if (Input::wasKeyPressed(SDL_SCANCODE_E)) {
@@ -76,20 +87,13 @@ void EntityPlayer::handleInput(float seconds_elapsed, EntityMesh* skybox, Entity
         activeChannels.push_back(newChannel);
     }
 
-    speed = 5.0;
+    targetSpeed = 5.0;
     model.translate(0, 0, seconds_elapsed * speed);
 
 }
 
 void EntityPlayer::playerPOV(Camera* camera, float seconds_elapsed) {
-    // Get the current position of the plane
     Vector3 planePosition = model.getTranslation();
-
-    // Smooth the transition to the new target position
-    float smoothingFactor = 0.1f; // Adjust for desired smoothness
-    smoothedTarget = smoothedTarget * (1.0f - smoothingFactor) + planePosition * smoothingFactor;
-
-    // Extract the yaw rotation from the plane's orientation
     Vector3 planeFront = model.frontVector();
     Vector3 planeRight = model.rightVector();
     planeFront.y = 0.0f;
@@ -97,18 +101,60 @@ void EntityPlayer::playerPOV(Camera* camera, float seconds_elapsed) {
     planeFront.normalize();
     planeRight.normalize();
 
-    // Determine the camera's position relative to the plane
-    Vector3 cameraOffset = Vector3(0.0f, 0.1f, -0.3f);  // Adjust as necessary
-    Vector3 eye = smoothedTarget + planeFront * cameraOffset.z + Vector3(0.0f, cameraOffset.y, 0.0f);
+    if (cameraViewMode == 0) { // Third-person view
+        // Smooth the transition to the new target position
+        float smoothingFactor = 0.1f;
+        smoothedTarget = smoothedTarget * (1.0f - smoothingFactor) + planePosition * smoothingFactor;
 
-    // Set the camera to look at the smoothed target position
-    Vector3 center = smoothedTarget;
+        // Determine the camera's position relative to the plane
+        Vector3 cameraOffset = Vector3(0.0f, 0.1f, -0.3f);
+        Vector3 eye = smoothedTarget + planeFront * cameraOffset.z + Vector3(0.0f, cameraOffset.y, 0.0f);
+        Vector3 center = smoothedTarget;
+        Vector3 up = Vector3(0.0f, 1.0f, 0.0f);
 
-    // Set the up vector to be along the z-axis, assuming y-up coordinate system
-    Vector3 up = Vector3(0.0f, 1.0f, 0.0f);
+        // Update the camera's view matrix
+        camera->lookAt(eye, center, up);
+    }
+    else if (cameraViewMode == 1) {
+        float smoothingFactor = 0.1f;
+        smoothedTarget = smoothedTarget * (1.0f - smoothingFactor) + planePosition * smoothingFactor;
 
-    // Update the camera's view matrix
-    camera->lookAt(eye, center, up);
+        // Determine the camera's position relative to the plane
+        Vector3 cameraOffset = Vector3(0.0f, 1.0f, -0.7f);
+        Vector3 eye = smoothedTarget + planeFront * cameraOffset.z + Vector3(0.0f, cameraOffset.y, 0.0f);
+        Vector3 center = smoothedTarget;
+        Vector3 up = Vector3(0.0f, 1.0f, 0.0f);
+
+        // Update the camera's view matrix
+        camera->lookAt(eye, center, up);
+    }
+    else if (cameraViewMode == 2) {
+        float smoothingFactor = 0.1f;
+        smoothedTarget = smoothedTarget * (1.0f - smoothingFactor) + planePosition * smoothingFactor;
+
+        // Determine the camera's position relative to the plane
+        Vector3 cameraOffset = Vector3(0.0f, 1.0f, 0.7f);
+        Vector3 eye = smoothedTarget + planeFront * cameraOffset.z + Vector3(0.0f, cameraOffset.y, 0.0f);
+        Vector3 center = smoothedTarget;
+        Vector3 up = Vector3(0.0f, 1.0f, 0.0f);
+
+        // Update the camera's view matrix
+        camera->lookAt(eye, center, up);
+    }
+    else { // First-person view
+        Vector3 front = model.frontVector(); //final_rotation.frontVector().normalize();  
+
+        Vector3 eye;
+        Vector3 center;
+
+        float orbit_dist = 0.6f;
+        eye = model.getTranslation() - front * orbit_dist;
+        center = model * Vector3(0.0f, 0.1f, 0.0f);
+
+
+        camera->lookAt(eye, center, model.rotateVector(Vector3(0.0f, 1.0f, 0.0f)));
+
+    }
 
     // Update the rest of the scene
     Entity::update(seconds_elapsed);
@@ -119,11 +165,11 @@ void EntityPlayer::dropBomb(EntityMesh* bomb, EntityMesh* player) {
     bomb->model.setTranslation(model.getTranslation());
     bomb->mass = 1100;
     // Calculate the initial velocity based on the plane's speed and direction
-    Vector3 planeVelocity = player->velocity;
-    Vector3 directionVelocity = model.frontVector() * planeVelocity.length();
+    Vector3 planeForward = model.frontVector();
+    Vector3 planeVelocity = planeForward * speed;
 
     // Set bomb's initial velocity
-    bomb->velocity = directionVelocity;
+    bomb->velocity = planeVelocity;
 
     bomb->isLaunched = true;
 }
@@ -141,6 +187,8 @@ void EntityPlayer::updateBombPhysics(EntityMesh* bomb, float seconds_elapsed, co
         Vector3 currentPos = bomb->model.getTranslation();
         Vector3 dragForce = calculateDragForce(bomb->velocity);
         Vector3 acceleration = gravity + (dragForce / bomb->mass);  // Assuming mass is a property of the bomb
+
+        //Vector3 acceleration = gravity
 
         Vector3 newPos = currentPos + bomb->velocity * seconds_elapsed + 0.5f * acceleration * seconds_elapsed * seconds_elapsed;
         bomb->velocity += acceleration * seconds_elapsed;

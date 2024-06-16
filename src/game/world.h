@@ -48,6 +48,10 @@ public:
     Material nuclearMaterial;
     Texture* nuclearTexture;
 
+    Camera* camera2D;
+
+    //Mesh* quad;
+
     Material cubemap;
     Material skyboxMaterial;
     EntityMesh* skybox;
@@ -55,6 +59,11 @@ public:
     void update(float elapsed_time);
     void cleanRoot();
     void onKeyDown(SDL_KeyboardEvent event);
+    Mesh* createFullscreenQuad(int window_width, int window_height);
+    void startTransition();
+    void renderTransition();
+
+
 
     EntityCollider collider;
 };

@@ -17,8 +17,6 @@ Stages::Stages() {
 
 
 
-    // Load mesh
-    fullScreenQuad = Mesh::Get("data/meshes/quad.obj");
 
     // Load shader
     shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs");
@@ -92,7 +90,6 @@ IntroStage::IntroStage() {
 
 IntroStage::~IntroStage() {
     delete camera2D;
-    delete fullScreenQuad;
     delete introBackground;
     delete shader;
 }
@@ -118,7 +115,7 @@ void IntroStage::render() {
         shader->setUniform("u_model", model);
         shader->setUniform("u_time", Game::instance->time);
 
-        fullScreenQuad->render(GL_TRIANGLES);
+        Game::instance->fullScreenQuad->render(GL_TRIANGLES);
 
         shader->disable();
 
@@ -210,7 +207,7 @@ void HowToStage::render() {
     shader->setUniform("u_model", model);
     shader->setUniform("u_time", Game::instance->time);
 
-    fullScreenQuad->render(GL_TRIANGLES);
+    Game::instance->fullScreenQuad->render(GL_TRIANGLES);
 
     shader->disable();
 

@@ -42,6 +42,8 @@ public:
 	Scene* scene;
 	World* world;
 
+	Mesh* fullScreenQuad;
+
 	Game( int window_width, int window_height, SDL_Window* window );
 
 	//main functions

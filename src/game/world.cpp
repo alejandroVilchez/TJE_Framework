@@ -35,10 +35,17 @@ World::World(int window_width, int window_height) {
 	camera->lookAt(Vector3(0.f, 100.f, 100.f), Vector3(0.f, 0.f, 0.f), Vector3(0.f, 0.f, 0.f)); //position the camera and point to 0,0,0
 	camera->setPerspective(70.f, window_width / (float)window_height, 0.1f, 10000.f); //set the projection, we want to be perspective
 
+	camera2D = new Camera();
+	camera2D->view_matrix.setIdentity();
+	camera2D->setOrthographic(0, window_width, window_height, 0, -1, 1);
+
+
 
     basicShader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs");
 	playerMesh = Mesh::Get("data/meshes/B2rotated.obj");
+	//quad = createFullscreenQuad(window_width,window_height);
 	cubemap.diffuse = new Texture();
+
 	//// Example of loading Mesh from Mesh Manager
 
 	cubemap.diffuse->loadCubemap("landscape", {
@@ -110,16 +117,17 @@ void World::render() {
 		bombEntity->render(camera);
 	}
 	if (bombEntity->isExploded) {
+
 		nuclearEntity->render(camera);
 	}
 }
 
 void World::update(float elapsed_time) {
 
-	float speed = elapsed_time * mouse_speeds; //the speed is defined by the seconds_elapsed so it goes constant
+	//float speed = elapsed_time * mouse_speeds; //the speed is defined by the seconds_elapsed so it goes constant
 
 	// Example
-	angles += (float)elapsed_time * 10.0f;
+	//angles += (float)elapsed_time * 10.0f;
 
 	playerEntity->update(elapsed_time, playerEntity, skybox, bombEntity, &collider, nuclearEntity);
 
@@ -142,4 +150,24 @@ void World::onKeyDown(SDL_KeyboardEvent event) {
 	//case SDLK_ESCAPE: Game::instance->must_exit = true; break; //ESC key, kill the app
 	case SDLK_F1: Shader::ReloadAll(); break;
 	}
+}
+
+Mesh* World::createFullscreenQuad(int windowWidth, int windowHeight) {
+
+
+	Mesh* quadMesh = new Mesh();
+	quadMesh->createQuad(0.0f, 0.0f, static_cast<float>(windowWidth), static_cast<float>(windowHeight), false);
+
+	// Create a material for the quad
+	Material quadMaterial;
+	quadMaterial.shader = basicShader;
+	quadMaterial.diffuse = Texture::Get("data/textures/Solid_white.png");
+
+	// Create an EntityMesh for the quad
+	EntityMesh* quadEntity = new EntityMesh(quadMesh, quadMaterial, "FullscreenQuad");
+
+	// Add the quad entity to the root entity
+	root->addChild(quadEntity);
+
+	return quadMesh;
 }

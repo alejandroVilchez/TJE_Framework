@@ -26,6 +26,7 @@ class EntityPlayer : public EntityMesh {
 public:
     float speed = 5.0f;
     Vector3 position;
+    Vector3 velocity;
 
     EntityPlayer(Vector3 position);
     void update(float seconds_elapsed, EntityPlayer* player, EntityMesh* skybox, EntityMesh* bomb, EntityCollider* collider, EntityMesh* explosion);
@@ -34,6 +35,9 @@ public:
     void dropBomb(EntityMesh* bomb, EntityMesh* player);
     void updateBomb(EntityMesh& bomb, float seconds_elapsed);
     Vector3 calculateDragForce(Vector3 velocity);
+    int cameraViewMode = 0;
+    float targetSpeed;
+    float smoothingFactor = 0.001f;
 
     // Update bomb physics
     void updateBombPhysics(EntityMesh* bomb, float seconds_elapsed, const Vector3& gravity, EntityMesh* explosion, Vector3& velocity);
