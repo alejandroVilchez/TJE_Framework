@@ -63,6 +63,12 @@ void PlayStage::render() {
 
 void PlayStage::update(float elapsed_time) {
     Game::instance->world->update(elapsed_time);
+    if (Game::instance->world->goodEnding) {
+        Game::instance->changeStage(StageType::GOODEND);
+    }
+    else if (Game::instance->world->badEnding) {
+        Game::instance->changeStage(StageType::BADEND);
+    }
 }
 
 
@@ -139,14 +145,14 @@ void GoodEndStage::render() {
     /*drawText(width / 2 - 120, height / 2 - 275, "A.T.O.M.", Vector3(1, 1, 1), 7);
     drawText(width / 2 - 330, height / 2 - 175, "Aeronautic Thermonuclear Ogives Maelstrom", Vector3(1, 1, 1), 3);*/
 
-    if (goodEndSlot == 0) {
+    if (goodEndSlot == 1) {
         drawText((width / 2 - 135) + creditsXOffset, height / 2 + 240, "See Credits", Vector3(1, 0, 0), creditsFontSize);
     }
     else {
         drawText(width / 2 - 135, height / 2 + 240, "See Credits", Vector3(1, 1, 1), 5);
     }
 
-    if (goodEndSlot == 1) {
+    if (goodEndSlot == 0) {
         drawText((width / 2 - 180) + introXOffset, height / 2 + 180, "Return to Menu", Vector3(1, 0, 0), introFontSize);
     }
     else {
@@ -162,13 +168,13 @@ void GoodEndStage::update(float elapsed_time) {
     if (goodEndSlot < 0)
         goodEndSlot = 1;
 
-    if (goodEndSlot == 0 && (Input::wasKeyPressed(SDL_SCANCODE_RETURN) || Input::wasButtonPressed(A_BUTTON))) {
+    if (goodEndSlot == 1 && (Input::wasKeyPressed(SDL_SCANCODE_RETURN) || Input::wasButtonPressed(A_BUTTON))) {
         Game::instance->changeStage(StageType::CREDITS);
         Audio::Play("data/audio/select.wav");
         //Audio::Stop(channel1);
         //channel2 = Audio::Play("data/audio/bombersound.mp3", 1, BASS_SAMPLE_LOOP);
     }
-    if (goodEndSlot == 1 && (Input::wasKeyPressed(SDL_SCANCODE_RETURN) || Input::wasButtonPressed(A_BUTTON))) {
+    if (goodEndSlot == 0 && (Input::wasKeyPressed(SDL_SCANCODE_RETURN) || Input::wasButtonPressed(A_BUTTON))) {
         Game::instance->changeStage(StageType::INTRO);
         Audio::Play("data/audio/select.wav");
     }
@@ -238,14 +244,14 @@ void BadEndStage::render() {
     /*drawText(width / 2 - 120, height / 2 - 275, "A.T.O.M.", Vector3(1, 1, 1), 7);
     drawText(width / 2 - 330, height / 2 - 175, "Aeronautic Thermonuclear Ogives Maelstrom", Vector3(1, 1, 1), 3);*/
 
-    if (badEndSlot == 0) {
+    if (badEndSlot == 1) {
         drawText((width / 2 - 135) + creditsXOffset, height / 2 + 240, "See Credits", Vector3(1, 0, 0), creditsFontSize);
     }
     else {
         drawText(width / 2 - 135, height / 2 + 240, "See Credits", Vector3(1, 1, 1), 5);
     }
 
-    if (badEndSlot == 1) {
+    if (badEndSlot == 0) {
         drawText((width / 2 - 180) + introXOffset, height / 2 + 180, "Return to Menu", Vector3(1, 0, 0), introFontSize);
     }
     else {
@@ -261,13 +267,13 @@ void BadEndStage::update(float elapsed_time) {
     if (badEndSlot < 0)
         badEndSlot = 1;
 
-    if (badEndSlot == 0 && (Input::wasKeyPressed(SDL_SCANCODE_RETURN) || Input::wasButtonPressed(A_BUTTON))) {
+    if (badEndSlot == 1 && (Input::wasKeyPressed(SDL_SCANCODE_RETURN) || Input::wasButtonPressed(A_BUTTON))) {
         Game::instance->changeStage(StageType::CREDITS);
         Audio::Play("data/audio/select.wav");
         //Audio::Stop(channel1);
         //channel2 = Audio::Play("data/audio/bombersound.mp3", 1, BASS_SAMPLE_LOOP);
     }
-    if (badEndSlot == 1 && (Input::wasKeyPressed(SDL_SCANCODE_RETURN) || Input::wasButtonPressed(A_BUTTON))) {
+    if (badEndSlot == 0 && (Input::wasKeyPressed(SDL_SCANCODE_RETURN) || Input::wasButtonPressed(A_BUTTON))) {
         Game::instance->changeStage(StageType::INTRO);
         Audio::Play("data/audio/select.wav");
     }

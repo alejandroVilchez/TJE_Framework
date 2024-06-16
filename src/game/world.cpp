@@ -27,7 +27,8 @@ World* World::instance;
 World::World(int window_width, int window_height) {
 
 	instance = this;
-
+	this->goodEnding = false;
+	this->badEnding = false;
 	this->world_window_width = window_width;
 	this->world_window_height = window_height,
 	/*int window_width = Game::instance->window_width;
@@ -201,6 +202,13 @@ void World::update(float elapsed_time) {
 			planeexp = Audio::Play("data/audio/planeexp.mp3", 0.5);
 			planecrashed = true;
 		}
+		if (planecrashed) {
+			timerScene -= elapsed_time;
+			if (timerScene < 0.0) {
+				this->badEnding = true;
+			}
+	}
+
 	}
 
     root->update(elapsed_time);

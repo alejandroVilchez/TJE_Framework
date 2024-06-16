@@ -75,6 +75,11 @@ public:
     Material cubemap;
     Material skyboxMaterial;
     EntityMesh* skybox;
+
+    bool badEnding;
+    bool goodEnding;
+    float timerScene = 2.0f;
+
     void render();
     void update(float elapsed_time);
     void cleanRoot();
