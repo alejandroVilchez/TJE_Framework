@@ -65,9 +65,11 @@ void PlayStage::update(float elapsed_time) {
     Game::instance->world->update(elapsed_time);
     if (Game::instance->world->goodEnding) {
         Game::instance->changeStage(StageType::GOODEND);
+        Audio::Play("data/audio/YouWin.wav");
     }
     else if (Game::instance->world->badEnding) {
         Game::instance->changeStage(StageType::BADEND);
+        Audio::Play("data/audio/GameOver.wav");
     }
 }
 
@@ -388,6 +390,7 @@ void IntroStage::update(float elapsed_time) {
     }    
     if (currentSlot == 2 && (Input::wasKeyPressed(SDL_SCANCODE_RETURN) || Input::wasButtonPressed(A_BUTTON))) {
         Game::instance->changeStage(StageType::BADEND);
+        Audio::Play("data/audio/GameOver.wav");
         Audio::Play("data/audio/select.wav");
     }
 
