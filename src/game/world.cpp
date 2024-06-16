@@ -47,8 +47,8 @@ World::World(int window_width, int window_height) {
 
 
 	basicShader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs");
-	playerMesh = Mesh::Get("data/meshes/B2_final_model.obj");
 	//playerMesh = Mesh::Get("data/meshes/B2rotated.obj");
+	playerMesh = Mesh::Get("data/meshes/B2rotated.obj");
 
 	//quad = createFullscreenQuad(window_width,window_height);
 	cubemap.diffuse = new Texture();
@@ -86,6 +86,7 @@ World::World(int window_width, int window_height) {
 	playerEntity->name = "Player";
 
 	gameTimer = rand() % 5 + 11.;
+	timerScene2 = 7;
 	missilelost = false;
 	//------- Bomba --------
 	bombMesh = Mesh::Get("data/meshes/missile1.obj");
@@ -155,7 +156,7 @@ void World::render() {
 
 
 	std::ostringstream stream1;
-	stream1 << std::fixed << std::setprecision(2) << playerPosition.y*50;
+	stream1 << std::fixed << std::setprecision(2) << playerPosition.y * 50;
 	playerHeight = "Height: " + stream1.str() + " m.";
 	drawText(50, 50, playerHeight, Vector3(1, 1, 1), 2);
 
@@ -235,6 +236,18 @@ void World::update(float elapsed_time) {
 			if (timerScene < 0.0) {
 				this->badEnding = true;
 			}
+		}
+	}
+	if (playerEntity->bombin) {
+		timerScene2 -= elapsed_time;
+		if (timerScene2 < 0.0) {
+			this->goodEnding = true;
+		}
+	}
+	if (playerEntity->bombout) {
+		timerScene2 -= elapsed_time;
+		if (timerScene2 < 0.0) {
+			this->badEnding = true;
 		}
 	}
 
