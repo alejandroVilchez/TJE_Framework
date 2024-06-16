@@ -9,6 +9,7 @@
 #include "graphics/texture.h"
 #include "graphics/shader.h"
 #include "scene.h"
+#include <string>
 #include <stdio.h>
 #include <iomanip>  // Para std::setprecision
 #include <sstream>  // Para std::ostringstream
@@ -40,10 +41,16 @@ public:
     Scene* scene;
     Camera* camera;
 
+    bool badEnding = false;
+    bool goodEnding = false;
+    float timerScene = 2.0f;
+
     EntityPlayer* playerEntity;
     Vector3 playerPosition;
     std::string playerHeight;
     float gameTimer;
+    float timerScene2;
+    float missileTimer = 100.;
 
     bool detected = false;
     bool planecrashed = false;
@@ -75,11 +82,6 @@ public:
     Material cubemap;
     Material skyboxMaterial;
     EntityMesh* skybox;
-
-    bool badEnding;
-    bool goodEnding;
-    float timerScene = 2.0f;
-
     void render();
     void update(float elapsed_time);
     void cleanRoot();

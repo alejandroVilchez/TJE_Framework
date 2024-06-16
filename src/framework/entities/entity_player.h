@@ -30,6 +30,7 @@ public:
 
     float directionChangePoints = 0;
     bool detected = false;
+    bool detectedonce = false;
 
     EntityPlayer(Vector3 position);
     void update(float seconds_elapsed, EntityPlayer* player, EntityMesh* skybox, EntityMesh* bomb, EntityCollider* collider, EntityMesh* explosion, float playerTimer);
@@ -42,7 +43,9 @@ public:
     float targetSpeed;
     float smoothingFactor = 0.001f;
     float randheight;
-
+    bool bombused;
+    bool bombin;
+    bool bombout;
     void handleDodgeActions(float seconds_elapsed);
     void evaluateMovements();
     // Update bomb physics

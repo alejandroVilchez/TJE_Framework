@@ -24,6 +24,9 @@ EntityPlayer::EntityPlayer(Vector3 position) {
     smoothedTarget = position;
     targetSpeed = 5.0f;
     randheight = rand() % 22 + 33;
+    bombused = false;
+    bombin = false;
+    bombout = false;
 }
 
 void EntityPlayer::update(float seconds_elapsed, EntityPlayer* player, EntityMesh* skybox, EntityMesh* bomb, EntityCollider* collider, EntityMesh* explosion, float playerTimer) {
@@ -46,9 +49,8 @@ void EntityPlayer::update(float seconds_elapsed, EntityPlayer* player, EntityMes
 }
     speed = speed * (1.0f - smoothingFactor) + targetSpeed * smoothingFactor;
 
-    if (this->position.y > 33 and detected == false and (rand()%100) != 1) {
+    if (this->position.y > 33 and (rand() % 888) == 1 and detected == false || this->position.y > 50 and (rand() % 444) == 1 and detected == false) {
         detected = true;
-        Audio::Play("data/audio/radar.wav", 1.0);
         //randheight = rand() % 22 + 33;
     }
     
@@ -117,10 +119,11 @@ void EntityPlayer::handleInput(float seconds_elapsed, EntityMesh* skybox, Entity
             cameraViewMode = (cameraViewMode + 1) % 4;
         }
 
-		if (Input::wasKeyPressed(SDL_SCANCODE_E)) {
+		if (Input::wasKeyPressed(SDL_SCANCODE_E) and bombused == false) {
             dropBomb(bomb, player);
             int newChannel = Audio::Play("data/audio/bombdrop.mp3", 0.3);
             activeChannels.push_back(newChannel);
+            bombused = true;
         }
         targetSpeed = 5.0;
         model.translate(0, 0, seconds_elapsed * speed);
@@ -221,7 +224,7 @@ void EntityPlayer::dropBomb(EntityMesh* bomb, EntityMesh* player) {
     bomb->mass = 1100;
     // Calculate the initial velocity based on the plane's speed and direction
     Vector3 planeForward = model.frontVector();
-    Vector3 planeVelocity = planeForward * Vector3(5.f,5.f,5.f);
+    Vector3 planeVelocity = planeForward * speed;
 
     // Set bomb's initial velocity
     bomb->velocity = planeVelocity;
@@ -257,6 +260,12 @@ void EntityPlayer::updateBombPhysics(EntityMesh* bomb, float seconds_elapsed, co
             bomb->isExploded = true;
             explosion->model.setTranslation(newPos);
             Audio::Play("data/audio/nuclearexp.wav", 1);
+            if (newPos.x<30. and newPos.x>-30. and newPos.z < 30. and newPos.z > -30.) {
+                bombin = true;
+            }
+            else {
+                bombout = true;
+            }
         }
     }
 }

@@ -4,6 +4,7 @@ float angles = 0;
 float mouse_speeds = 100.0f;
 bool engine = 0;
 HCHANNEL channel2;
+HCHANNEL radar;
 //
 //Mesh* mesh = NULL;
 //Texture* texture = NULL;
@@ -27,8 +28,7 @@ World* World::instance;
 World::World(int window_width, int window_height) {
 
 	instance = this;
-	this->goodEnding = false;
-	this->badEnding = false;
+
 	this->world_window_width = window_width;
 	this->world_window_height = window_height,
 		/*int window_width = Game::instance->window_width;
@@ -47,8 +47,8 @@ World::World(int window_width, int window_height) {
 
 
 	basicShader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs");
-	playerMesh = Mesh::Get("data/meshes/B2_final_model.obj");
 	//playerMesh = Mesh::Get("data/meshes/B2rotated.obj");
+	playerMesh = Mesh::Get("data/meshes/B2rotated.obj");
 
 	//quad = createFullscreenQuad(window_width,window_height);
 	cubemap.diffuse = new Texture();
@@ -86,6 +86,7 @@ World::World(int window_width, int window_height) {
 	playerEntity->name = "Player";
 
 	gameTimer = rand() % 5 + 11.;
+	timerScene2 = 7;
 	missilelost = false;
 	//------- Bomba --------
 	bombMesh = Mesh::Get("data/meshes/missile1.obj");
@@ -155,9 +156,10 @@ void World::render() {
 
 
 	std::ostringstream stream1;
-	stream1 << std::fixed << std::setprecision(2) << playerPosition.y;
-	playerHeight = "Height: " + stream1.str();
+	stream1 << std::fixed << std::setprecision(2) << playerPosition.y * 50;
+	playerHeight = "Height: " + stream1.str() + " m.";
 	drawText(50, 50, playerHeight, Vector3(1, 1, 1), 2);
+
 	if (engine == 0) {
 		channel2 = Audio::Play("data/audio/bombersound.mp3", 1, BASS_SAMPLE_LOOP);
 		engine = 1;
@@ -171,27 +173,32 @@ void World::update(float elapsed_time) {
 
 	// Example
 	//angles += (float)elapsed_time * 10.0f;
-	if (playerEntity->detected == true) {
+	if (playerEntity->detected) {
+		radar = Audio::Play("data/audio/radar.wav", 1);
 		gameTimer -= elapsed_time;
+		//messageText = "You have been discovered by the enemy radar! Something is approaching you";
+		messageText = std::to_string(playerEntity->directionChangePoints);
 	}
 	if (missilelost) {
 		radarTimer -= elapsed_time;
 	}
-
+	if (playerEntity->detectedonce) {
+		missileTimer -= elapsed_time;
+	}
+	if (missileTimer == 0) {
+		playerEntity->detected = true;
+	}
 	playerEntity->update(elapsed_time, playerEntity, skybox, bombEntity, &collider, nuclearEntity, gameTimer);
 	playerEntity->playerPOV(camera, elapsed_time);
 
 	playerPosition = playerEntity->model.getTranslation();
-	if (gameTimer < 14) {
-		messageText = "You have been discovered by the enemy radar! Something is approaching you";
-	}
 	if (gameTimer < 5) {
 		alarm = Audio::Play("data/audio/alarm.wav", 0.5);
 	}
-	if (playerEntity->directionChangePoints > 15) {
+	if (playerEntity->directionChangePoints > 10) {
+		playerEntity->detected = false;
 		gameTimer = rand() % 5 + 11;
 		Audio::Stop(alarm);
-		playerEntity->detected = false;
 		missilelost = true;
 		radarTimer = rand() % 5;
 	}
@@ -210,7 +217,12 @@ void World::update(float elapsed_time) {
 	}
 	if (radarTimer == 0) {
 		missilelost = false;
+		Audio::Stop(radar);
 		planeexp = Audio::Play("data/audio/planeexp.mp3", 0.25);
+		messageText = "missile dodged, but you have been detected, be fast";
+		playerEntity->detectedonce = true;
+		missileTimer = rand() % 45 + 15;
+		radarTimer = 100;
 
 	}
 	else if (playerPosition.y <= 0) {
@@ -224,8 +236,19 @@ void World::update(float elapsed_time) {
 			if (timerScene < 0.0) {
 				this->badEnding = true;
 			}
+		}
 	}
-
+	if (playerEntity->bombin) {
+		timerScene2 -= elapsed_time;
+		if (timerScene2 < 0.0) {
+			this->goodEnding = true;
+		}
+	}
+	if (playerEntity->bombout) {
+		timerScene2 -= elapsed_time;
+		if (timerScene2 < 0.0) {
+			this->badEnding = true;
+		}
 	}
 
 	root->update(elapsed_time);
