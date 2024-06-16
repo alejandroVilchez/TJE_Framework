@@ -86,7 +86,7 @@ World::World(int window_width, int window_height) {
 	playerEntity->name = "Player";
 
 	gameTimer = rand() % 5 + 11.;
-	timerScene2 = 7;
+	timerScene2 = 10;
 	missilelost = false;
 	//------- Bomba --------
 	bombMesh = Mesh::Get("data/meshes/missile1.obj");
@@ -151,12 +151,12 @@ void World::render() {
 		Audio::Stop(channel2);
 	}
 	else {
-		drawText(50, this->world_window_height - 50, messageText, Vector3(1, 1, 1), 2);
+		drawText(50, this->world_window_height - 50, messageText, Vector3(1, 1, 1), 1);
 	}
 
 
 	std::ostringstream stream1;
-	stream1 << std::fixed << std::setprecision(2) << playerPosition.y * 50;
+	stream1 << std::fixed << std::setprecision(2) << playerPosition.y * 20;
 	playerHeight = "Height: " + stream1.str() + " m.";
 	drawText(50, 50, playerHeight, Vector3(1, 1, 1), 2);
 
@@ -176,8 +176,8 @@ void World::update(float elapsed_time) {
 	if (playerEntity->detected) {
 		radar = Audio::Play("data/audio/radar.wav", 1);
 		gameTimer -= elapsed_time;
-		//messageText = "You have been discovered by the enemy radar! Something is approaching you";
-		messageText = std::to_string(playerEntity->directionChangePoints);
+		messageText = "You have been discovered by the enemy radar! Something is approaching you";
+		//messageText = std::to_string(playerEntity->directionChangePoints);
 	}
 	if (missilelost) {
 		radarTimer -= elapsed_time;
@@ -225,6 +225,15 @@ void World::update(float elapsed_time) {
 		radarTimer = 100;
 
 	}
+
+	if (playerEntity->damaged == true) {
+		timerScene -= elapsed_time;
+		if (timerScene < 0.0) {
+			planecrashed = true;
+			planeexp = Audio::Play("data/audio/planeexp.mp3", 0.5);
+		}
+	}
+
 	else if (playerPosition.y <= 0) {
 		failEntity->model.setTranslation(playerEntity->model.getTranslation() - Vector3(0.0, 1.0, 0.1));
 		if (planecrashed == false) {
@@ -239,12 +248,14 @@ void World::update(float elapsed_time) {
 		}
 	}
 	if (playerEntity->bombin) {
+		messageText = "Good job, those Chanin communists did not expect this, the victory is ours! Glory to Harmonica!";
 		timerScene2 -= elapsed_time;
 		if (timerScene2 < 0.0) {
 			this->goodEnding = true;
 		}
 	}
 	if (playerEntity->bombout) {
+		messageText = "Where did you drop that bomb? We were supposed to bomb them, not the ocean! We are doomed...";
 		timerScene2 -= elapsed_time;
 		if (timerScene2 < 0.0) {
 			this->badEnding = true;

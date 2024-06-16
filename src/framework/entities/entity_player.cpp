@@ -260,7 +260,11 @@ void EntityPlayer::updateBombPhysics(EntityMesh* bomb, float seconds_elapsed, co
             bomb->isExploded = true;
             explosion->model.setTranslation(newPos);
             Audio::Play("data/audio/nuclearexp.wav", 1);
-            if (newPos.x<30. and newPos.x>-30. and newPos.z < 30. and newPos.z > -30.) {
+            expdist = newPos.distance(this->position);
+            if (expdist < 25) {
+                damaged = true;
+            }
+            if (newPos.x<30. and newPos.x>-30. and newPos.z < 30. and newPos.z > -30. and damaged==false) {
                 bombin = true;
             }
             else {

@@ -46,6 +46,8 @@ public:
     bool bombused;
     bool bombin;
     bool bombout;
+    float expdist;
+    bool damaged = false;
     void handleDodgeActions(float seconds_elapsed);
     void evaluateMovements();
     // Update bomb physics
