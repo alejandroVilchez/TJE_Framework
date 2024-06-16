@@ -39,6 +39,7 @@ public:
     Texture* howtoBackground2;
     Texture* introBackground;
     Texture* endBackground;
+    Texture* goodEnd;
     Texture* creditsBackground;
     HCHANNEL channel1;
     HCHANNEL channel2;

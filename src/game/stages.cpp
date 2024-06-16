@@ -14,7 +14,8 @@ Stages::Stages() {
     introBackground = Texture::Get("data/textures/atom7.tga");
     howtoBackground1 = Texture::Get("data/textures/howto.tga");
     howtoBackground2 = Texture::Get("data/textures/b2atom.tga");
-    endBackground = Texture::Get("data/textures/endAtom.tga");
+    endBackground = Texture::Get("data/textures/GAME-OVER.tga");
+    goodEnd = Texture::Get("data/textures/endAtom.tga");
     creditsBackground = Texture::Get("data/textures/endAtom.tga");
 
 
