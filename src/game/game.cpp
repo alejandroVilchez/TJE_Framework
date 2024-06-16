@@ -38,7 +38,9 @@ EntityMesh* skybox;
 
 IntroStage* introStage;
 PlayStage* playStage;
-EndStage* endStage;
+BadEndStage* badEndStage;
+GoodEndStage* goodEndStage;
+CreditsStage* creditsStage;
 HowToStage* howToStage;
 Stages* currentStage;
 
@@ -70,7 +72,9 @@ Game::Game(int window_width, int window_height, SDL_Window* window)
 	introStage = new IntroStage();
 	playStage = new PlayStage();
 	howToStage = new HowToStage();
-	endStage = new EndStage();
+	badEndStage = new BadEndStage();
+	goodEndStage = new GoodEndStage();
+	creditsStage = new CreditsStage();
 
 	currentStage = introStage;
 	currentStageType = StageType::INTRO;
@@ -194,8 +198,12 @@ void Game::onKeyDown( SDL_KeyboardEvent event )
 			if (currentStageType == StageType::INTRO)
 				changeStage(StageType::PLAY);
 			else if (currentStageType == StageType::PLAY)
-				changeStage(StageType::END);
-			else if (currentStageType == StageType::END)
+				changeStage(StageType::BADEND);
+			else if (currentStageType == StageType::BADEND)
+				changeStage(StageType::GOODEND);
+			else if (currentStageType == StageType::GOODEND)
+				changeStage(StageType::CREDITS);
+			else if (currentStageType == StageType::CREDITS)
 				changeStage(StageType::INTRO);
 			break;
 	}
@@ -259,8 +267,14 @@ void Game::changeStage(StageType newStage)
 	case StageType::HOWTO:
 		currentStage = howToStage;
 		break;
-	case StageType::END:
-		currentStage = endStage;
+	case StageType::BADEND:
+		currentStage = badEndStage;
+		break;
+	case StageType::GOODEND:
+		currentStage = goodEndStage;
+		break;
+	case StageType::CREDITS:
+		currentStage = creditsStage;
 		break;
 	}
 }

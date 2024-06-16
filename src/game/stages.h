@@ -11,14 +11,16 @@ enum class StageTypes {
     INTRO,
     PLAY,
     HOWTO,
-    END,
+    GOODEND,
+    BADEND,
     CREDITS
 };
 
 class IntroStage;
 class PlayStage;
 class HowToStage;
-class EndStage;
+class GoodEndStage;
+class BadEndStage;
 class CreditsStage;
 
 class Stages {
@@ -39,7 +41,7 @@ public:
     Texture* howtoBackground2;
     Texture* howtoBackground3;
     Texture* introBackground;
-    Texture* endBackground;
+    Texture* badEnd;
     Texture* goodEnd;
     Texture* creditsBackground;
     HCHANNEL channel1;
@@ -51,7 +53,8 @@ private:
     IntroStage* introStage;
     PlayStage* playStage;
     HowToStage* howToStage;
-    EndStage* endStage;
+    BadEndStage* badEndStage;
+    GoodEndStage* goodEndStage;
     CreditsStage* creditsStage;
     bool end;
 
@@ -97,19 +100,34 @@ private:
     int howTo = 0;
 };
 
-class EndStage : public Stages {
+class GoodEndStage : public Stages {
 public:
-    EndStage();
-    ~EndStage();
+    GoodEndStage();
+    ~GoodEndStage();
 
     void render() override;
     void update(float elapsed_time) override;
 private:
     //float th;
-    int endSlot;
+    int goodEndSlot;
     bool credits;
     bool intro;
 };
+
+class BadEndStage : public Stages {
+public:
+    BadEndStage();
+    ~BadEndStage();
+
+    void render() override;
+    void update(float elapsed_time) override;
+private:
+    //float th;
+    int badEndSlot;
+    bool credits;
+    bool intro;
+};
+
 class CreditsStage : public Stages {
 public:
     CreditsStage();
