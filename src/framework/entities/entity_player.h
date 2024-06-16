@@ -28,6 +28,8 @@ public:
     Vector3 position;
     Vector3 velocity;
 
+    bool detected = false;
+
     EntityPlayer(Vector3 position);
     void update(float seconds_elapsed, EntityPlayer* player, EntityMesh* skybox, EntityMesh* bomb, EntityCollider* collider, EntityMesh* explosion, float playerTimer);
     void handleInput(float seconds_elapsed, EntityMesh* skybox, EntityMesh* bomb, EntityMesh* player, float playerTimer);

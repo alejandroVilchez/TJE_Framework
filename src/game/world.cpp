@@ -45,7 +45,7 @@ World::World(int window_width, int window_height) {
 
     basicShader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs");
 	//playerMesh = Mesh::Get("data/meshes/B2rotated.obj");
-	playerMesh = Mesh::Get("data/meshes/B2_final_model.obj");
+	playerMesh = Mesh::Get("data/meshes/B2rotated.obj");
 	
 	//quad = createFullscreenQuad(window_width,window_height);
 	cubemap.diffuse = new Texture();
@@ -82,7 +82,7 @@ World::World(int window_width, int window_height) {
 	playerEntity->material = playerMaterial;
 	playerEntity->name = "Player";
 	
-	gameTimer = 35.0f;
+	gameTimer = 15.0f;
 
 	//------- Bomba --------
 	bombMesh = Mesh::Get("data/meshes/missile1.obj");
@@ -159,23 +159,29 @@ void World::update(float elapsed_time) {
 
 	// Example
 	//angles += (float)elapsed_time * 10.0f;
-	gameTimer -= elapsed_time;
+	if (playerEntity->detected == true) {
+		gameTimer -= elapsed_time;
+	}
 
 	playerEntity->update(elapsed_time, playerEntity, skybox, bombEntity, &collider, nuclearEntity, gameTimer);
 	playerEntity->playerPOV(camera, elapsed_time);
 
 	playerPosition = playerEntity->model.getTranslation();
 
-	if (gameTimer > 30) {
-		messageText = "You have been discovered by the enemy radar!";
+	if (gameTimer < 14) {
+		messageText = "You have been discovered by the enemy radar! Something is approaching you";
 	}
-	else {
-		std::ostringstream stream;
-		stream << std::fixed << std::setprecision(2) << gameTimer;
-		messageText = "Time remaining until impact: " + stream.str();
+	if (gameTimer < 5) {
+		alarm = Audio::Play("data/audio/alarm.wav");
 	}
+	//else {
+	//	std::ostringstream stream;
+	//	stream << std::fixed << std::setprecision(2) << gameTimer;
+	//	messageText = "Time remaining until impact: " + stream.str();
+	//}
 	if (gameTimer < 0) {
 		failEntity->model.setTranslation(playerEntity->model.getTranslation() - Vector3(0.0, 1.0, 0.1));
+		Audio::Stop(alarm);
 	}
 	else if (playerPosition.y <= 0) {
 		failEntity->model.setTranslation(playerEntity->model.getTranslation() - Vector3(0.0, 1.0, 0.1));

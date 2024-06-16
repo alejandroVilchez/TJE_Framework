@@ -37,6 +37,11 @@ void EntityPlayer::update(float seconds_elapsed, EntityPlayer* player, EntityMes
 }
     speed = speed * (1.0f - smoothingFactor) + targetSpeed * smoothingFactor;
 
+    if (this->position.y > 33) {
+        detected = true;
+        Audio::Play("data/audio/radar.wav", 1.0);
+    }
+
 
     skybox->model.setTranslation(model.getTranslation());
  

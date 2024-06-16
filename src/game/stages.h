@@ -5,6 +5,7 @@
 #include "graphics/shader.h"
 #include "game.h"
 #include "framework/audio.h"
+#include "stages.h"
 
 enum class StageTypes {
     INTRO,

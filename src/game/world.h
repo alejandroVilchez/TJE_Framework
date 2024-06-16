@@ -45,6 +45,8 @@ public:
     std::string playerHeight;
     float gameTimer;
 
+    bool detected = false;
+
     EntityMesh* bombEntity;
     Mesh* bombMesh;
     Material bombMaterial;
@@ -59,6 +61,8 @@ public:
     Mesh* failMesh;
     Material failMaterial;
     Texture* failTexture;
+
+    HCHANNEL alarm;
 
     std::string messageText;
 
