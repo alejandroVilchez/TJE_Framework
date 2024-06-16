@@ -140,17 +140,17 @@ void GoodEndStage::render() {
     drawText(width / 2 - 330, height / 2 - 175, "Aeronautic Thermonuclear Ogives Maelstrom", Vector3(1, 1, 1), 3);*/
 
     if (goodEndSlot == 0) {
-        drawText((width / 2 - 135) + creditsXOffset, height / 2 + 100, "See Credits", Vector3(1, 0, 0), creditsFontSize);
+        drawText((width / 2 - 135) + creditsXOffset, height / 2 + 240, "See Credits", Vector3(1, 0, 0), creditsFontSize);
     }
     else {
-        drawText(width / 2 - 135, height / 2 + 100, "See Credits", Vector3(1, 1, 1), 5);
+        drawText(width / 2 - 135, height / 2 + 240, "See Credits", Vector3(1, 1, 1), 5);
     }
 
     if (goodEndSlot == 1) {
-        drawText((width / 2 - 180) + introXOffset, height / 2 + 160, "Return to Menu", Vector3(1, 0, 0), introFontSize);
+        drawText((width / 2 - 180) + introXOffset, height / 2 + 180, "Return to Menu", Vector3(1, 0, 0), introFontSize);
     }
     else {
-        drawText(width / 2 - 180, height / 2 + 160, "Return to Menu", Vector3(1, 1, 1), 5);
+        drawText(width / 2 - 180, height / 2 + 180, "Return to Menu", Vector3(1, 1, 1), 5);
     }
 
 }
@@ -239,17 +239,17 @@ void BadEndStage::render() {
     drawText(width / 2 - 330, height / 2 - 175, "Aeronautic Thermonuclear Ogives Maelstrom", Vector3(1, 1, 1), 3);*/
 
     if (badEndSlot == 0) {
-        drawText((width / 2 - 135) + creditsXOffset, height / 2 + 100, "See Credits", Vector3(1, 0, 0), creditsFontSize);
+        drawText((width / 2 - 135) + creditsXOffset, height / 2 + 240, "See Credits", Vector3(1, 0, 0), creditsFontSize);
     }
     else {
-        drawText(width / 2 - 135, height / 2 + 100, "See Credits", Vector3(1, 1, 1), 5);
+        drawText(width / 2 - 135, height / 2 + 240, "See Credits", Vector3(1, 1, 1), 5);
     }
 
     if (badEndSlot == 1) {
-        drawText((width / 2 - 180) + introXOffset, height / 2 + 160, "Return to Menu", Vector3(1, 0, 0), introFontSize);
+        drawText((width / 2 - 180) + introXOffset, height / 2 + 180, "Return to Menu", Vector3(1, 0, 0), introFontSize);
     }
     else {
-        drawText(width / 2 - 180, height / 2 + 160, "Return to Menu", Vector3(1, 1, 1), 5);
+        drawText(width / 2 - 180, height / 2 + 180, "Return to Menu", Vector3(1, 1, 1), 5);
     }
 
 }
