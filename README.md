@@ -10,7 +10,7 @@
 
 ## Project Description
 
-Atomic bomber is a flight simulator game where the player controls a nuclear bomber plane and must drop atomic bombs over the enemy's island. The goal is to land the bomb in the objective and avoid the enemy radar in order to survive. 
+Atom is a flight simulator game where the player controls a nuclear bomber plane and must drop atomic bombs over the enemy's island. The goal is to land the bomb in the objective and avoid the enemy radar in order to survive. 
 
 ## Blocks of the Game
 
