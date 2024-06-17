@@ -32,7 +32,7 @@ public:
     bool detected = false;
     bool detectedonce = false;
 
-    EntityPlayer(Vector3 position);
+    EntityPlayer(Vector3 positionx);
     void update(float seconds_elapsed, EntityPlayer* player, EntityMesh* skybox, EntityMesh* bomb, EntityCollider* collider, EntityMesh* explosion, float playerTimer);
     void handleInput(float seconds_elapsed, EntityMesh* skybox, EntityMesh* bomb, EntityMesh* player, float playerTimer);
     void playerPOV(Camera* camera, float seconds_elapsed);
@@ -48,6 +48,7 @@ public:
     bool bombout;
     float expdist;
     bool damaged = false;
+    bool dmg = false;
     void handleDodgeActions(float seconds_elapsed);
     void evaluateMovements();
     // Update bomb physics

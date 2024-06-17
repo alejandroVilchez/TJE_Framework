@@ -58,7 +58,7 @@ PlayStage::~PlayStage() {
 
 void PlayStage::render() {
     Game::instance->world->render();
-    drawText(2, 2, getGPUStats(), Vector3(1, 1, 1), 2);
+    //drawText(2, 2, getGPUStats(), Vector3(1, 1, 1), 2);
 }
 
 void PlayStage::update(float elapsed_time) {

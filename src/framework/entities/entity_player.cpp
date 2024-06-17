@@ -14,13 +14,13 @@ std::deque<Vector3> recentPositions;
 const size_t historySize = 10; // History size for evaluating movements
 
 const size_t maxRecentPositions = 100;
-const int maxDirectionChangePoints = 100;
 
-EntityPlayer::EntityPlayer(Vector3 position) {
+
+EntityPlayer::EntityPlayer(Vector3 positionx) {
 
     //playerEntity = new EntityMesh(nullptr, Material(), "Player");
-    this->position = position;
-    model.setTranslation(position);
+    this->position = positionx;
+    model.setTranslation(Vector3(-200.0f, 22.0f, 200.0f));
     smoothedTarget = position;
     targetSpeed = 5.0f;
     randheight = rand() % 22 + 33;
@@ -31,7 +31,7 @@ EntityPlayer::EntityPlayer(Vector3 position) {
 
 void EntityPlayer::update(float seconds_elapsed, EntityPlayer* player, EntityMesh* skybox, EntityMesh* bomb, EntityCollider* collider, EntityMesh* explosion, float playerTimer) {
     handleInput(seconds_elapsed, skybox, bomb, player, playerTimer);
-    
+
 
 
     std::vector<EntityMesh*> sceneEntities = collider->getEntitiesInScene();
@@ -46,18 +46,18 @@ void EntityPlayer::update(float seconds_elapsed, EntityPlayer* player, EntityMes
             // Example: Adjust game state or response to collision
             // velocity = Vector3(0.0f, 0.0f, 0.0f);
         }
-}
+    }
     speed = speed * (1.0f - smoothingFactor) + targetSpeed * smoothingFactor;
 
     if (this->position.y > 33 and (rand() % 888) == 1 and detected == false || this->position.y > 50 and (rand() % 444) == 1 and detected == false) {
         detected = true;
         //randheight = rand() % 22 + 33;
     }
-    
+
     //evaluateMovements();
 
     skybox->model.setTranslation(model.getTranslation());
- 
+
     Vector3 gravity(0.0f, -9.81f, 0.0f);
     updateBombPhysics(bomb, seconds_elapsed, gravity, explosion, player->velocity);
 
@@ -80,6 +80,9 @@ void EntityPlayer::handleInput(float seconds_elapsed, EntityMesh* skybox, Entity
         model.setTranslation(this->position);
     }
     else if (this->position.y <= 0) {
+        model.setTranslation(this->position);
+    }
+    else if (this->dmg) {
         model.setTranslation(this->position);
     }
     else {
@@ -119,7 +122,7 @@ void EntityPlayer::handleInput(float seconds_elapsed, EntityMesh* skybox, Entity
             cameraViewMode = (cameraViewMode + 1) % 4;
         }
 
-		if (Input::wasKeyPressed(SDL_SCANCODE_E) and bombused == false) {
+        if (Input::wasKeyPressed(SDL_SCANCODE_E) and bombused == false) {
             dropBomb(bomb, player);
             int newChannel = Audio::Play("data/audio/bombdrop.mp3", 0.3);
             activeChannels.push_back(newChannel);
@@ -140,7 +143,7 @@ void EntityPlayer::handleInput(float seconds_elapsed, EntityMesh* skybox, Entity
             else {
                 directionChangePoints += directionChange;
             }
-         
+
             prevDirection = planeForward; // Update prevVelocity
         }
         if (not detected) {
@@ -261,11 +264,17 @@ void EntityPlayer::updateBombPhysics(EntityMesh* bomb, float seconds_elapsed, co
             explosion->model.setTranslation(newPos);
             Audio::Play("data/audio/nuclearexp.wav", 1);
             expdist = newPos.distance(this->position);
-            if (expdist < 25) {
+            damaged = false;
+            if (expdist < 33) {
                 damaged = true;
             }
-            if (newPos.x<30. and newPos.x>-30. and newPos.z < 30. and newPos.z > -30. and damaged==false) {
-                bombin = true;
+            if (newPos.x<42. and newPos.x>-42. and newPos.z < 42. and newPos.z > -42.) {
+                if (damaged == false) {
+                    bombin = true;
+                }
+                else {
+                    bombout = true;
+                }
             }
             else {
                 bombout = true;

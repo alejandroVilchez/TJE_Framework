@@ -5,6 +5,7 @@ float mouse_speeds = 100.0f;
 bool engine = 0;
 HCHANNEL channel2;
 HCHANNEL radar;
+bool damg = false;
 //
 //Mesh* mesh = NULL;
 //Texture* texture = NULL;
@@ -47,8 +48,8 @@ World::World(int window_width, int window_height) {
 
 
 	basicShader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs");
+	//playerMesh = Mesh::Get("data/meshes/B2rotated.obj");
 	playerMesh = Mesh::Get("data/meshes/B2rotated.obj");
-	//playerMesh = Mesh::Get("data/meshes/B2_final_model.obj");
 
 	//quad = createFullscreenQuad(window_width,window_height);
 	cubemap.diffuse = new Texture();
@@ -78,7 +79,7 @@ World::World(int window_width, int window_height) {
 	playerMaterial.shader = basicShader;
 	playerMaterial.diffuse = playerTexture;
 
-	Vector3 position = (0.0f, 0.0f, 15.0f);
+	Vector3 position = (-200.0f, 200.0f, 22.0f);
 	playerEntity = new EntityPlayer(position);//EntityMesh(playerMesh, playerMaterial, "Player");
 
 	playerEntity->mesh = playerMesh;
@@ -88,6 +89,7 @@ World::World(int window_width, int window_height) {
 	gameTimer = rand() % 5 + 11.;
 	timerScene2 = 10;
 	missilelost = false;
+	radarTimer = 100;
 	//------- Bomba --------
 	bombMesh = Mesh::Get("data/meshes/missile1.obj");
 	bombTexture = Texture::Get("data/missile/Missile-2K.png"); // load a texture
@@ -137,23 +139,28 @@ void World::render() {
 
 		nuclearEntity->render(camera);
 	}
+	if (damg) {
+		{
+			failEntity->render(camera);
+			drawText(this->world_window_width / 2 - 250, this->world_window_height / 2, "You die with the Wuhu island", Vector3(1, 1, 1), 3);
+			Audio::Stop(channel2);
+		}
+	}
 	if (gameTimer < 0) {
 		failEntity->render(camera);
 		//drawText(this->world_window_width / 2 - 130, this->world_window_height / 2, "Game Over", Vector3(1, 1, 1), 5);
 		drawText(this->world_window_width / 2 - 250, this->world_window_height / 2, "You failed to destroy the island...", Vector3(1, 1, 1), 3);
 
 		Audio::Stop(channel2);
-		this->badEnding = true;
 	}
 	else if (playerPosition.y < 0) {
 		failEntity->render(camera);
 		//drawText(this->world_window_width / 2 - 130, this->world_window_height / 2, "Game Over", Vector3(1, 1, 1), 5);
 		drawText(this->world_window_width / 2 - 180, this->world_window_height / 2, "You do not deserve to pilot a B-2...", Vector3(1, 1, 1), 3);
 		Audio::Stop(channel2);
-		this->badEnding = true;
 	}
 	else {
-		drawText(50, this->world_window_height - 50, messageText, Vector3(1, 1, 1), 1);
+		drawText(50, this->world_window_height - 50, messageText, Vector3(1, 1, 1), 2);
 	}
 
 
@@ -178,7 +185,7 @@ void World::update(float elapsed_time) {
 	if (playerEntity->detected) {
 		radar = Audio::Play("data/audio/radar.wav", 1);
 		gameTimer -= elapsed_time;
-		messageText = "You have been discovered by the enemy radar! Something is approaching you";
+		messageText = "You have been discovered by the enemy radar! Missile coming";
 		//messageText = std::to_string(playerEntity->directionChangePoints);
 	}
 	if (missilelost) {
@@ -220,6 +227,7 @@ void World::update(float elapsed_time) {
 	if (radarTimer == 0) {
 		missilelost = false;
 		Audio::Stop(radar);
+		Audio::Stop(alarm);
 		planeexp = Audio::Play("data/audio/planeexp.mp3", 0.25);
 		messageText = "missile dodged, but you have been detected, be fast";
 		playerEntity->detectedonce = true;
@@ -229,10 +237,20 @@ void World::update(float elapsed_time) {
 	}
 
 	if (playerEntity->damaged == true) {
+		failEntity->model.setTranslation(playerEntity->model.getTranslation() - Vector3(0.0, 1.0, 0.1));
 		timerScene -= elapsed_time;
+		if (timerScene < 1.0) {
+			//playerEntity.setTranslation(position);
+			if (planecrashed == false) {
+				failEntity->model.setTranslation(playerEntity->model.getTranslation() - Vector3(0.0, 1.0, 0.1));
+				playerEntity->dmg = true;
+				damg = true;
+				planeexp = Audio::Play("data/audio/planeexp.mp3, ", 0.5);
+				planecrashed = true;
+			}
+		}
 		if (timerScene < 0.0) {
-			planecrashed = true;
-			planeexp = Audio::Play("data/audio/planeexp.mp3", 0.5);
+			this->badEnding = true;
 		}
 	}
 
@@ -250,17 +268,28 @@ void World::update(float elapsed_time) {
 		}
 	}
 	if (playerEntity->bombin) {
-		messageText = "Good job, those Chanin communists did not expect this, the victory is ours! Glory to Harmonica!";
+		messageText = "Good job, those Chanin communists did not expect this!";
 		timerScene2 -= elapsed_time;
 		if (timerScene2 < 0.0) {
 			this->goodEnding = true;
+			Audio::Stop(radar);
+			Audio::Stop(planeexp);
+			Audio::Stop(alarm);
 		}
 	}
 	if (playerEntity->bombout) {
-		messageText = "Where did you drop that bomb? We were supposed to bomb them, not the ocean! We are doomed...";
+		if (playerEntity->damaged) {
+			messageText = "You were flying too close to the explosion, good bye soldier...";
+		}
+		else {
+			messageText = "Idiot, we were supposed to bomb them, not the ocean!";
+		}
 		timerScene2 -= elapsed_time;
 		if (timerScene2 < 0.0) {
 			this->badEnding = true;
+			Audio::Stop(radar);
+			Audio::Stop(planeexp);
+			Audio::Stop(alarm);
 		}
 	}
 
