@@ -66,10 +66,12 @@ void PlayStage::update(float elapsed_time) {
     if (Game::instance->world->goodEnding) {
         Game::instance->changeStage(StageType::GOODEND);
         Audio::Play("data/audio/YouWin.wav");
+        //Game::instance->world->goodEnding = false;
     }
     else if (Game::instance->world->badEnding) {
         Game::instance->changeStage(StageType::BADEND);
         Audio::Play("data/audio/GameOver.wav");
+        //Game::instance->world->badEnding = false;
     }
 }
 
@@ -114,6 +116,11 @@ void CreditsStage::render() {
 }
 
 void CreditsStage::update(float elapsed_time) {
+    if (Input::wasKeyPressed(SDL_SCANCODE_RETURN) || Input::wasButtonPressed(A_BUTTON)) {
+        Game::instance->changeStage(StageType::INTRO);
+        Game::instance->world->resetGame();
+        Audio::Play("data/audio/select.wav");
+    }
 }
 
 
@@ -126,6 +133,7 @@ GoodEndStage::GoodEndStage() {
     goodEndSlot = 0;
     credits = false;
     intro = false;
+    //Game::instance->world->resetGame();
 }
 
 GoodEndStage::~GoodEndStage() {
@@ -202,6 +210,7 @@ void GoodEndStage::update(float elapsed_time) {
     }
     if (goodEndSlot == 0 && (Input::wasKeyPressed(SDL_SCANCODE_RETURN) || Input::wasButtonPressed(A_BUTTON))) {
         Game::instance->changeStage(StageType::INTRO);
+        Game::instance->world->resetGame();
         Audio::Play("data/audio/select.wav");
     }
 
@@ -225,6 +234,7 @@ BadEndStage::BadEndStage() {
     badEndSlot = 0;
     credits = false;
     intro = false;
+    //Game::instance->world->resetGame();
 }
 
 BadEndStage::~BadEndStage() {
@@ -301,6 +311,7 @@ void BadEndStage::update(float elapsed_time) {
     }
     if (badEndSlot == 0 && (Input::wasKeyPressed(SDL_SCANCODE_RETURN) || Input::wasButtonPressed(A_BUTTON))) {
         Game::instance->changeStage(StageType::INTRO);
+        Game::instance->world->resetGame();
         Audio::Play("data/audio/select.wav");
     }
 

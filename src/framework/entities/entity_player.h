@@ -53,7 +53,7 @@ public:
     void evaluateMovements();
     // Update bomb physics
     void updateBombPhysics(EntityMesh* bomb, float seconds_elapsed, const Vector3& gravity, EntityMesh* explosion, Vector3& velocity);
-
+    void resetPlayer();
 
 private:
     std::vector<EntityMesh> activeBombs;  // Track active bombs

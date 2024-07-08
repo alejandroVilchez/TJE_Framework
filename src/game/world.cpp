@@ -6,23 +6,7 @@ bool engine = 0;
 HCHANNEL channel2;
 HCHANNEL radar;
 bool damg = false;
-//
-//Mesh* mesh = NULL;
-//Texture* texture = NULL;
-//Shader* shader = NULL;
 
-//Mesh* playerMesh = nullptr; // Load a cube mesh
-//Texture* playerTexture = nullptr;
-//Shader* basicShader = nullptr;
-//Material playerMaterial;
-
-//Scene* scene;
-//
-//EntityPlayer* playerEntity;
-//
-//Material cubemap;
-//Material skyboxMaterial;
-//EntityMesh* skybox;
 
 World* World::instance;
 
@@ -32,9 +16,7 @@ World::World(int window_width, int window_height) {
 
 	this->world_window_width = window_width;
 	this->world_window_height = window_height,
-		/*int window_width = Game::instance->window_width;
-		int window_height = Game::instance->window_height;*/
-
+	
 		root = new Entity();
 
 	camera = new Camera();
@@ -49,7 +31,7 @@ World::World(int window_width, int window_height) {
 
 	basicShader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs");
 	//playerMesh = Mesh::Get("data/meshes/B2rotated.obj");
-	playerMesh = Mesh::Get("data/meshes/B2rotated.obj");
+	playerMesh = Mesh::Get("data/meshes/B2_final_model.obj");
 
 	//quad = createFullscreenQuad(window_width,window_height);
 	cubemap.diffuse = new Texture();
@@ -109,10 +91,6 @@ World::World(int window_width, int window_height) {
 
 	//----- Explosion Avion -----
 	failMesh = Mesh::Get("data/meshes/fail.obj");
-	//failTexture = Texture::Get("data/meshes/explosion-diffuse.png"); // load a texture
-	//failMaterial.shader = basicShader;
-	//failMaterial.diffuse = failTexture;
-
 	failEntity = new EntityMesh(failMesh, nuclearMaterial, "fail");
 
 	//----- Mapa -----
@@ -327,4 +305,30 @@ Mesh* World::createFullscreenQuad(int windowWidth, int windowHeight) {
 	root->addChild(quadEntity);
 
 	return quadMesh;
+}
+
+void World::resetGame() {
+	this->goodEnding = false;
+	this->badEnding = false;
+	
+	gameTimer = rand() % 5 + 11.0;
+	
+	missilelost = false;
+	timerScene2 = 10;
+	radarTimer = 100;
+	//engine = 0;
+	
+	playerPosition = Vector3(-200.0f, 200.0f, 22.0f);
+	playerEntity->model.setTranslation(playerPosition);
+	
+	playerEntity->resetPlayer();
+
+	bombEntity->isLaunched = false;
+	bombEntity->isExploded = false;
+
+	/*nuclearEntity->model.setTranslation(Vector3(0.0f, 0.0f, 0.0f));
+	failEntity->model.setTranslation(Vector3(0.0f, 0.0f, 0.0f));*/
+
+	planecrashed = false;
+	detected = false; 
 }

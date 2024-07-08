@@ -26,6 +26,8 @@ public:
     World(int window_width, int window_height);
     int world_window_width;
     int world_window_height;
+
+
     Matrix44 model;
     Entity* root = nullptr;
 
@@ -51,6 +53,8 @@ public:
     float gameTimer;
     float timerScene2;
     float missileTimer = 100.;
+    int radarTimer;
+    bool missilelost;
 
     bool detected = false;
     bool planecrashed = false;
@@ -89,8 +93,8 @@ public:
     Mesh* createFullscreenQuad(int window_width, int window_height);
     void startTransition();
     void renderTransition();
-    int radarTimer;
-    bool missilelost;
+    void resetGame();
+
 
 
     EntityCollider collider;

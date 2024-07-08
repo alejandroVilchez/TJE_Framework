@@ -162,6 +162,7 @@ void EntityPlayer::playerPOV(Camera* camera, float seconds_elapsed) {
     planeFront.normalize();
     planeRight.normalize();
 
+
     if (cameraViewMode == 0) { // Third-person view
         // Smooth the transition to the new target position
         float smoothingFactor = 0.1f;
@@ -281,6 +282,21 @@ void EntityPlayer::updateBombPhysics(EntityMesh* bomb, float seconds_elapsed, co
             }
         }
     }
+}
+void EntityPlayer::resetPlayer() {
+   
+    cameraViewMode = 0;
+
+    directionChangePoints = 0;
+    detected = false;
+    detectedonce = false;
+    
+    bombused = false;
+    bombin = false;
+    bombout = false;
+
+    damaged = false;
+    dmg = false;
 }
 
 //////void entityplayer::dropbomb(entitymesh* bomb, float seconds_elapsed) {
