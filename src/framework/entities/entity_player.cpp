@@ -20,7 +20,7 @@ EntityPlayer::EntityPlayer(Vector3 positionx) {
 
     //playerEntity = new EntityMesh(nullptr, Material(), "Player");
     this->position = positionx;
-    model.setTranslation(Vector3(-200.0f, 22.0f, 200.0f));
+    model.setTranslation(Vector3(-200.0f, 22.0f, 200.0f));-
     smoothedTarget = position;
     targetSpeed = 5.0f;
     randheight = rand() % 22 + 33;
@@ -49,7 +49,7 @@ void EntityPlayer::update(float seconds_elapsed, EntityPlayer* player, EntityMes
     }
     speed = speed * (1.0f - smoothingFactor) + targetSpeed * smoothingFactor;
 
-    if (this->position.y > 33 and (rand() % 888) == 1 and detected == false || this->position.y > 50 and (rand() % 444) == 1 and detected == false) {
+    if (this->position.y > 33 and (rand() % 1111) == 1 and detected == false || this->position.y > 50 and (rand() % 1111) == 1 and detected == false) {
         detected = true;
         //randheight = rand() % 22 + 33;
     }

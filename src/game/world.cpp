@@ -68,7 +68,7 @@ World::World(int window_width, int window_height) {
 	playerEntity->material = playerMaterial;
 	playerEntity->name = "Player";
 
-	gameTimer = rand() % 5 + 11.;
+	gameTimer = 15;
 	timerScene2 = 10;
 	missilelost = false;
 	radarTimer = 100;
@@ -128,7 +128,7 @@ void World::render() {
 		failEntity->render(camera);
 		//drawText(this->world_window_width / 2 - 130, this->world_window_height / 2, "Game Over", Vector3(1, 1, 1), 5);
 		drawText(this->world_window_width / 2 - 250, this->world_window_height / 2, "You failed to destroy the island...", Vector3(1, 1, 1), 3);
-
+		Audio::Stop(radar);
 		Audio::Stop(channel2);
 	}
 	else if (playerPosition.y < 0) {
@@ -173,7 +173,7 @@ void World::update(float elapsed_time) {
 		missileTimer -= elapsed_time;
 	}
 	if (missileTimer == 0) {
-		playerEntity->detected = true;
+		playerEntity->detected = false;
 	}
 	playerEntity->update(elapsed_time, playerEntity, skybox, bombEntity, &collider, nuclearEntity, gameTimer);
 	playerEntity->playerPOV(camera, elapsed_time);
@@ -184,7 +184,7 @@ void World::update(float elapsed_time) {
 	}
 	if (playerEntity->directionChangePoints > 10) {
 		playerEntity->detected = false;
-		gameTimer = rand() % 5 + 11;
+		gameTimer = 15;
 		Audio::Stop(alarm);
 		missilelost = true;
 		radarTimer = rand() % 5;
@@ -197,6 +197,7 @@ void World::update(float elapsed_time) {
 	if (gameTimer < 0) {
 		failEntity->model.setTranslation(playerEntity->model.getTranslation() - Vector3(0.0, 1.0, 0.1));
 		Audio::Stop(alarm);
+		Audio::Stop(radar);
 		if (planecrashed == false) {
 			planeexp = Audio::Play("data/audio/planeexp.mp3", 0.5);
 			planecrashed = true;
@@ -246,7 +247,7 @@ void World::update(float elapsed_time) {
 		}
 	}
 	if (playerEntity->bombin) {
-		messageText = "Good job, those Chanin communists did not expect this!";
+		messageText = "Good job, those Chanin communists did not expect that!";
 		timerScene2 -= elapsed_time;
 		if (timerScene2 < 0.0) {
 			this->goodEnding = true;
