@@ -210,7 +210,8 @@ void GoodEndStage::update(float elapsed_time) {
     }
     if (goodEndSlot == 0 && (Input::wasKeyPressed(SDL_SCANCODE_RETURN) || Input::wasButtonPressed(A_BUTTON))) {
         Game::instance->changeStage(StageType::INTRO);
-        Game::instance->world->resetGame();
+        //Game::instance->world->resetGame();
+        Game::instance->restart();
         Audio::Play("data/audio/select.wav");
     }
 
@@ -256,7 +257,7 @@ void BadEndStage::render() {
     glEnable(GL_DEPTH_TEST);
     glDisable(GL_CULL_FACE);
 
-    shader->enable();
+	shader->enable();
     shader->setUniform("u_color", Vector4(1, 1, 1, 1));
     shader->setUniform("u_viewprojection", camera2D->viewprojection_matrix);
     shader->setUniform("u_texture", badEnd, 1);
@@ -311,7 +312,8 @@ void BadEndStage::update(float elapsed_time) {
     }
     if (badEndSlot == 0 && (Input::wasKeyPressed(SDL_SCANCODE_RETURN) || Input::wasButtonPressed(A_BUTTON))) {
         Game::instance->changeStage(StageType::INTRO);
-        Game::instance->world->resetGame();
+        //Game::instance->world->resetGame();
+        Game::instance->restart();
         Audio::Play("data/audio/select.wav");
     }
 

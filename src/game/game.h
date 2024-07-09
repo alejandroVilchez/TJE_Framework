@@ -52,6 +52,8 @@ public:
 	void render( void );
 	void update( double dt );
 
+	void restart();
+
 	//events
 	void onKeyDown( SDL_KeyboardEvent event );
 	void onKeyUp(SDL_KeyboardEvent event);

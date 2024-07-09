@@ -195,6 +195,39 @@ void Game::onResize(int width, int height)
 	window_height = height;
 }
 
+void Game::restart()
+{
+	// Clean up existing game data
+	//delete introStage;
+	//delete playStage;
+	//delete badEndStage;
+	//delete goodEndStage;
+	//delete creditsStage;
+	//delete howToStage;
+	//delete world;
+
+	// Reinitialize the game stages
+	introStage = new IntroStage();
+	playStage = new PlayStage();
+	howToStage = new HowToStage();
+	badEndStage = new BadEndStage();
+	goodEndStage = new GoodEndStage();
+	creditsStage = new CreditsStage();
+
+	// Reset world
+	world = new World(window_width, window_height);
+
+	// Set initial stage
+	currentStage = introStage;
+	currentStageType = StageType::INTRO;
+
+	// Reset game state
+	time = 0.0f;
+	elapsed_time = 0.0f;
+	frame = 0;
+	fps = 0;
+}
+
 void Game::changeStage(StageType newStage)
 {
 	currentStageType = newStage;
