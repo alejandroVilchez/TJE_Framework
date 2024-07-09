@@ -304,17 +304,18 @@ void BadEndStage::update(float elapsed_time) {
     if (badEndSlot < 0)
         badEndSlot = 1;
 
-    if (badEndSlot == 1 && (Input::wasKeyPressed(SDL_SCANCODE_RETURN) || Input::wasButtonPressed(A_BUTTON))) {
-        Game::instance->changeStage(StageType::CREDITS);
-        Audio::Play("data/audio/select.wav");
-        //Audio::Stop(channel1);
-        //channel2 = Audio::Play("data/audio/bombersound.mp3", 1, BASS_SAMPLE_LOOP);
-    }
-    if (badEndSlot == 0 && (Input::wasKeyPressed(SDL_SCANCODE_RETURN) || Input::wasButtonPressed(A_BUTTON))) {
+    if (badEndSlot == 0 && (Input::wasKeyPressed(SDL_SCANCODE_RETURN) || Input::wasButtonPressed(A_BUTTON) || Input::isMousePressed(SDL_BUTTON_LEFT))) {
         Game::instance->changeStage(StageType::INTRO);
         //Game::instance->world->resetGame();
         Game::instance->restart();
         Audio::Play("data/audio/select.wav");
+    }
+
+    if (badEndSlot == 1 && (Input::wasKeyPressed(SDL_SCANCODE_RETURN) || Input::wasButtonPressed(A_BUTTON) || Input::isMousePressed(SDL_BUTTON_LEFT))) {
+        Game::instance->changeStage(StageType::CREDITS);
+        Audio::Play("data/audio/select.wav");
+        //Audio::Stop(channel1);
+        //channel2 = Audio::Play("data/audio/bombersound.mp3", 1, BASS_SAMPLE_LOOP);
     }
 
     if (Input::wasKeyPressed(SDL_SCANCODE_DOWN) || Input::wasKeyPressed(SDL_SCANCODE_S) || Input::wasButtonPressed(PAD_DOWN)) {
@@ -325,7 +326,22 @@ void BadEndStage::update(float elapsed_time) {
         badEndSlot = (badEndSlot - 1) % 2;
         Audio::Play("data/audio/change.wav");
     }
-
+    
+    float returnButtonX1 = width / 2 - 180;
+    float returnButtonX2 = width / 2 + 180;
+    float returnButtonY1 = height / 2 + 180;
+    float returnButtonY2 = returnButtonY1 + 40;
+    if ((Input::mouse_position.x >= returnButtonX1 && Input::mouse_position.x <= returnButtonX2) && (Input::mouse_position.y >= returnButtonY1 && Input::mouse_position.y <= returnButtonY2)) {
+        badEndSlot = 0;
+    }
+    // width / 2 - 135, height / 2 + 240
+    float creditsButtonX1 = width / 2 - 135;
+    float creditsButtonX2 = width / 2 + 135;
+    float creditsButtonY1 = height / 2 + 240;
+    float creditsButtonY2 = returnButtonY1 + 40;
+    if ((Input::mouse_position.x >= creditsButtonX1 && Input::mouse_position.x <= creditsButtonX2) && (Input::mouse_position.y >= creditsButtonY1 && Input::mouse_position.y <= creditsButtonY2)) {
+        badEndSlot = 1;
+    }
 }
 
 
@@ -416,16 +432,16 @@ void IntroStage::update(float elapsed_time) {
     if (currentSlot < 0)
         currentSlot = 2;
 
-    if (currentSlot == 0 && (Input::wasKeyPressed(SDL_SCANCODE_RETURN) || Input::wasButtonPressed(A_BUTTON))) {
+    if (currentSlot == 0 && (Input::wasKeyPressed(SDL_SCANCODE_RETURN) || Input::wasButtonPressed(A_BUTTON) || Input::isMousePressed(SDL_BUTTON_LEFT))) {
         Game::instance->changeStage(StageType::PLAY);
         Audio::Play("data/audio/select.wav");
         Audio::Stop(channel1);
     }
-    if (currentSlot == 1 && (Input::wasKeyPressed(SDL_SCANCODE_RETURN) || Input::wasButtonPressed(A_BUTTON))) {
+    if (currentSlot == 1 && (Input::wasKeyPressed(SDL_SCANCODE_RETURN) || Input::wasButtonPressed(A_BUTTON) || Input::isMousePressed(SDL_BUTTON_LEFT))) {
         Game::instance->changeStage(StageType::HOWTO);
         Audio::Play("data/audio/select.wav");
     }    
-    if (currentSlot == 2 && (Input::wasKeyPressed(SDL_SCANCODE_RETURN) || Input::wasButtonPressed(A_BUTTON))) {
+    if (currentSlot == 2 && (Input::wasKeyPressed(SDL_SCANCODE_RETURN) || Input::wasButtonPressed(A_BUTTON) || Input::isMousePressed(SDL_BUTTON_LEFT))) {
         Game::instance->changeStage(StageType::BADEND);
         Audio::Play("data/audio/GameOver.wav");
         Audio::Play("data/audio/select.wav");
@@ -439,6 +455,31 @@ void IntroStage::update(float elapsed_time) {
         currentSlot = (currentSlot - 1) % 3;
         Audio::Play("data/audio/change.wav");
     }
+    
+    float startButtonX1 = width / 2 - 130;
+    float startButtonX2 = width / 2 + 130;
+    float startButtonY1 = height / 2 + 100;
+    float startButtonY2 = startButtonY1 + 40;
+    if ((Input::mouse_position.x >= startButtonX1 && Input::mouse_position.x <= startButtonX2) && (Input::mouse_position.y >= startButtonY1 && Input::mouse_position.y <= startButtonY2)) {
+        currentSlot = 0;
+    }
+
+    float howButtonX1 = width / 2 - 135;
+    float howButtonX2 = width / 2 + 150;
+    float howButtonY1 = height / 2 + 160;
+    float howButtonY2 = howButtonY1 + 40;
+    if ((Input::mouse_position.x >= howButtonX1 && Input::mouse_position.x <= howButtonX2) && (Input::mouse_position.y >= howButtonY1 && Input::mouse_position.y <= howButtonY2)) {
+        currentSlot = 1;     
+    }
+    
+    float exitButtonX1 = width / 2 - 40;
+    float exitButtonX2 = width / 2 + 50;
+    float exitButtonY1 = height / 2 + 220;
+    float exitButtonY2 = exitButtonY1 + 40;
+    if ((Input::mouse_position.x >= exitButtonX1 && Input::mouse_position.x <= exitButtonX2) && (Input::mouse_position.y >= exitButtonY1 && Input::mouse_position.y <= exitButtonY2)) {
+        currentSlot = 2;
+    }
+
 }
 
 
