@@ -74,6 +74,7 @@ World::World(int window_width, int window_height) {
 	playerEntity->name = "Player";
 	playerEntity->damaged = false;
 	playerEntity->position.y = 22;
+	playerEntity->model.rotate(3.83972, Vector3(0.0, 1.0, 0.0)); //220º degrees rotated
 
 	gameTimer = 15;
 	timerScene2 = 10;
