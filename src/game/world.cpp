@@ -67,11 +67,15 @@ World::World(int window_width, int window_height) {
 	playerEntity->mesh = playerMesh;
 	playerEntity->material = playerMaterial;
 	playerEntity->name = "Player";
+	playerEntity->damaged = false;
+	playerEntity->position.y = 22;
 
 	gameTimer = 15;
 	timerScene2 = 10;
 	missilelost = false;
 	radarTimer = 100;
+	engine = 0;
+	planecrashed = false;
 	//------- Bomba --------
 	bombMesh = Mesh::Get("data/meshes/missile1.obj");
 	bombTexture = Texture::Get("data/missile/Missile-2K.png"); // load a texture
@@ -312,23 +316,35 @@ void World::resetGame() {
 	this->goodEnding = false;
 	this->badEnding = false;
 	
-	gameTimer = rand() % 5 + 11.0;
+	gameTimer = 15.f;
 	
 	missilelost = false;
-	timerScene2 = 10;
-	radarTimer = 100;
-	//engine = 0;
+	timerScene2 = 10.0f;
+	radarTimer = 100.0f;
+	missileTimer = 0.0f;
+	engine = 0;
 	
-	playerPosition = Vector3(-200.0f, 200.0f, 22.0f);
+	playerPosition = Vector3(-200.0f, 22.0f, 200.0f);
 	playerEntity->model.setTranslation(playerPosition);
 	
 	playerEntity->resetPlayer();
+
+	Audio::Destroy();
+	Audio::Init();
+	//cleanRoot();
+
+	//root->addChild(playerEntity);
+	//root->addChild(bombEntity);
+	//root->addChild(nuclearEntity);
+	//root->addChild(failEntity);
+	//root->addChild(skybox);
 
 	bombEntity->isLaunched = false;
 	bombEntity->isExploded = false;
 
 	/*nuclearEntity->model.setTranslation(Vector3(0.0f, 0.0f, 0.0f));
 	failEntity->model.setTranslation(Vector3(0.0f, 0.0f, 0.0f));*/
+
 
 	planecrashed = false;
 	detected = false; 
