@@ -52,6 +52,10 @@ World::World(int window_width, int window_height) {
 
 	skybox = new EntityMesh(Mesh::Get("data/meshes/skybox.obj"), cubemap, "skybox");
 
+	loseText1 = "";
+	loseText2 = "";
+	loseText3 = "";
+
 	//// Example of shader loading using the shaders manager
 	//shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs");
 
@@ -102,6 +106,8 @@ World::World(int window_width, int window_height) {
 	scene->parseScene("data/myscene.scene");
 
 	collider = scene->collider;
+
+	
 }
 
 void World::render() {
@@ -124,21 +130,21 @@ void World::render() {
 	if (damg) {
 		{
 			failEntity->render(camera);
-			drawText(this->world_window_width / 2 - 250, this->world_window_height / 2, "You die with the Wuhu island", Vector3(1, 1, 1), 3);
+			loseText1 = "You die with the Wuhu island";
 			Audio::Stop(channel2);
 		}
 	}
 	if (gameTimer < 0) {
 		failEntity->render(camera);
 		//drawText(this->world_window_width / 2 - 130, this->world_window_height / 2, "Game Over", Vector3(1, 1, 1), 5);
-		drawText(this->world_window_width / 2 - 250, this->world_window_height / 2, "You failed to destroy the island...", Vector3(1, 1, 1), 3);
+		loseText2 = "You failed to destroy the island...";
 		Audio::Stop(radar);
 		Audio::Stop(channel2);
 	}
 	else if (playerPosition.y < 0) {
 		failEntity->render(camera);
-		//drawText(this->world_window_width / 2 - 130, this->world_window_height / 2, "Game Over", Vector3(1, 1, 1), 5);
-		drawText(this->world_window_width / 2 - 180, this->world_window_height / 2, "You do not deserve to pilot a B-2...", Vector3(1, 1, 1), 3);
+		loseText3 = "You die with the Wuhu island";
+
 		Audio::Stop(channel2);
 	}
 	else {
@@ -150,6 +156,9 @@ void World::render() {
 	stream1 << std::fixed << std::setprecision(2) << playerPosition.y * 20;
 	playerHeight = "Height: " + stream1.str() + " m.";
 	drawText(50, 50, playerHeight, Vector3(1, 1, 1), 2);
+	drawText(this->world_window_width / 2 - 180, this->world_window_height / 2, loseText3, Vector3(1, 1, 1), 3);
+	drawText(this->world_window_width / 2 - 250, this->world_window_height / 2, loseText2, Vector3(1, 1, 1), 3);
+	drawText(this->world_window_width / 2 - 250, this->world_window_height / 2, loseText1, Vector3(1, 1, 1), 3);
 
 	if (engine == 0) {
 		channel2 = Audio::Play("data/audio/bombersound.mp3", 1, BASS_SAMPLE_LOOP);
@@ -164,7 +173,7 @@ void World::update(float elapsed_time) {
 
 	// Example
 	//angles += (float)elapsed_time * 10.0f;
-	if (playerEntity->detected) {
+	if (playerEntity->detected and radarTimer <= 0) {
 		radar = Audio::Play("data/audio/radar.wav", 1);
 		gameTimer -= elapsed_time;
 		messageText = "You have been discovered by the enemy radar! Missile coming";
@@ -175,9 +184,6 @@ void World::update(float elapsed_time) {
 	}
 	if (playerEntity->detectedonce) {
 		missileTimer -= elapsed_time;
-	}
-	if (missileTimer == 0) {
-		playerEntity->detected = false;
 	}
 	playerEntity->update(elapsed_time, playerEntity, skybox, bombEntity, &collider, nuclearEntity, gameTimer);
 	playerEntity->playerPOV(camera, elapsed_time);
@@ -214,7 +220,7 @@ void World::update(float elapsed_time) {
 		planeexp = Audio::Play("data/audio/planeexp.mp3", 0.25);
 		messageText = "missile dodged, but you have been detected, be fast";
 		playerEntity->detectedonce = true;
-		missileTimer = rand() % 45 + 15;
+		missileTimer = rand() % 50 + 10;
 		radarTimer = 100;
 
 	}
@@ -243,11 +249,9 @@ void World::update(float elapsed_time) {
 			planeexp = Audio::Play("data/audio/planeexp.mp3", 0.5);
 			planecrashed = true;
 		}
-		if (planecrashed) {
-			timerScene -= elapsed_time;
-			if (timerScene < 0.0) {
-				this->badEnding = true;
-			}
+		timerScene -= elapsed_time;
+		if (timerScene < 0.0) {
+			this->badEnding = true;
 		}
 	}
 	if (playerEntity->bombin) {
@@ -317,12 +321,18 @@ void World::resetGame() {
 	this->badEnding = false;
 	
 	gameTimer = 15.f;
+
+	messageText = "";
+	loseText1 = "";
+	loseText2 = "";
+	loseText3 = "";
 	
 	missilelost = false;
 	timerScene2 = 10.0f;
 	radarTimer = 100.0f;
 	missileTimer = 0.0f;
 	engine = 0;
+	damg = false;
 	
 	playerPosition = Vector3(-200.0f, 22.0f, 200.0f);
 	playerEntity->model.setTranslation(playerPosition);
