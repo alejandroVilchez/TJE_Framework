@@ -52,6 +52,7 @@ World::World(int window_width, int window_height) {
 
 	skybox = new EntityMesh(Mesh::Get("data/meshes/skybox.obj"), cubemap, "skybox");
 
+	messageText = "";
 	loseText1 = "";
 	loseText2 = "";
 	loseText3 = "";
@@ -78,6 +79,7 @@ World::World(int window_width, int window_height) {
 	timerScene2 = 10;
 	missilelost = false;
 	radarTimer = 100;
+	missileTimer = 0;
 	engine = 0;
 	planecrashed = false;
 	//------- Bomba --------
@@ -173,7 +175,7 @@ void World::update(float elapsed_time) {
 
 	// Example
 	//angles += (float)elapsed_time * 10.0f;
-	if (playerEntity->detected and radarTimer <= 0) {
+	if (playerEntity->detected and missileTimer <= 0) {
 		radar = Audio::Play("data/audio/radar.wav", 1);
 		gameTimer -= elapsed_time;
 		messageText = "You have been discovered by the enemy radar! Missile coming";
@@ -211,6 +213,10 @@ void World::update(float elapsed_time) {
 		if (planecrashed == false) {
 			planeexp = Audio::Play("data/audio/planeexp.mp3", 0.5);
 			planecrashed = true;
+		}
+		timerScene -= elapsed_time;
+		if (timerScene < 0.0) {
+			this->badEnding = true;
 		}
 	}
 	if (radarTimer == 0) {
