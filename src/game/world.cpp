@@ -52,11 +52,10 @@ World::World(int window_width, int window_height) {
 
 	skybox = new EntityMesh(Mesh::Get("data/meshes/skybox.obj"), cubemap, "skybox");
 
-	messageText = "";
-	loseText1 = "";
-	loseText2 = "";
-	loseText3 = "";
-
+	messageText = " ";
+	loseText2 = " ";
+	loseText3 = " ";
+	radarInfo = " ";
 	//// Example of shader loading using the shaders manager
 	//shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs");
 
@@ -133,35 +132,51 @@ void World::render() {
 	if (damg) {
 		{
 			failEntity->render(camera);
-			loseText1 = "You die with the Wuhu island";
+			loseText2 = "You die with the Wuhu island";
 			Audio::Stop(channel2);
 		}
 	}
 	if (gameTimer < 0) {
 		failEntity->render(camera);
 		//drawText(this->world_window_width / 2 - 130, this->world_window_height / 2, "Game Over", Vector3(1, 1, 1), 5);
-		loseText2 = "You failed to destroy the island...";
+		loseText3 = "You failed to destroy the island...";
 		Audio::Stop(radar);
 		Audio::Stop(channel2);
 	}
+	
 	else if (playerPosition.y < 0) {
 		failEntity->render(camera);
-		loseText3 = "You die with the Wuhu island";
+		loseText2 = "You die with the Wuhu island";
 
 		Audio::Stop(channel2);
 	}
 	else {
-		drawText(50, this->world_window_height - 50, messageText, Vector3(1, 1, 1), 2);
+		drawText(50, this->world_window_height - 50, messageText, Vector3(0, 1, 0), 2);
 	}
 
+	if (playerEntity->detected) {
+		if (playerEntity->missileLock) {
+			radarInfo = " ";
+			radarInfo2 = "Danger! Enemy guided missile have locked onto you";
+		}
+		else if(playerEntity->missileLock == false) {
+			radarInfo = "Missile lock is broken!";
+			radarInfo2 = " ";
+		}
+	}
+	else {
+		radarInfo = " ";
+		radarInfo2 = " ";
+	}
 
 	std::ostringstream stream1;
 	stream1 << std::fixed << std::setprecision(2) << playerPosition.y * 20;
 	playerHeight = "Height: " + stream1.str() + " m.";
-	drawText(50, 50, playerHeight, Vector3(1, 1, 1), 2);
+	drawText(50, 50, playerHeight, Vector3(0, 1, 0), 2);
+	drawText(50, 100, radarInfo, Vector3(0, 1, 0), 2);
+	drawText(50, 100, radarInfo2, Vector3(1, 0, 0), 2);
 	drawText(this->world_window_width / 2 - 180, this->world_window_height / 2, loseText3, Vector3(1, 1, 1), 3);
 	drawText(this->world_window_width / 2 - 250, this->world_window_height / 2, loseText2, Vector3(1, 1, 1), 3);
-	drawText(this->world_window_width / 2 - 250, this->world_window_height / 2, loseText1, Vector3(1, 1, 1), 3);
 
 	if (engine == 0) {
 		channel2 = Audio::Play("data/audio/bombersound.mp3", 1, BASS_SAMPLE_LOOP);
@@ -180,6 +195,7 @@ void World::update(float elapsed_time) {
 		radar = Audio::Play("data/audio/radar.wav", 1);
 		gameTimer -= elapsed_time;
 		messageText = "You have been discovered by the enemy radar! Missile coming";
+		playerEntity->startMissileSimulation();
 		//messageText = std::to_string(playerEntity->directionChangePoints);
 	}
 	if (missilelost) {
@@ -200,7 +216,11 @@ void World::update(float elapsed_time) {
 		gameTimer = 15;
 		Audio::Stop(alarm);
 		missilelost = true;
-		radarTimer = rand() % 5;
+		playerEntity->missileRefresh = true;
+		radarTimer = 0;
+	}
+	if (missileTimer == 0) {
+		playerEntity->missileRefresh = false;
 	}
 	//else {
 	//	std::ostringstream stream;
@@ -227,7 +247,7 @@ void World::update(float elapsed_time) {
 		planeexp = Audio::Play("data/audio/planeexp.mp3", 0.25);
 		messageText = "missile dodged, but you have been detected, be fast";
 		playerEntity->detectedonce = true;
-		missileTimer = rand() % 50 + 10;
+		missileTimer = rand() % 50 + 5;
 		radarTimer = 100;
 
 	}
@@ -330,7 +350,6 @@ void World::resetGame() {
 	gameTimer = 15.f;
 
 	messageText = "";
-	loseText1 = "";
 	loseText2 = "";
 	loseText3 = "";
 	

@@ -49,8 +49,9 @@ void EntityPlayer::update(float seconds_elapsed, EntityPlayer* player, EntityMes
     }
     speed = speed * (1.0f - smoothingFactor) + targetSpeed * smoothingFactor;
 
-    if (this->position.y > 33 and (rand() % 1111) == 1 and detected == false || this->position.y > 50 and (rand() % 1111) == 1 and detected == false) {
+    if (this->position.y > 27 and (rand() % 1111) == 1 and detected == false and missileRefresh == false || this->position.y > 50 and (rand() % 1111) == 1 and detected == false and missileRefresh == false) {
         detected = true;
+        missileLock = true;
         //randheight = rand() % 22 + 33;
     }
 
@@ -60,9 +61,7 @@ void EntityPlayer::update(float seconds_elapsed, EntityPlayer* player, EntityMes
 
     Vector3 gravity(0.0f, -9.81f, 0.0f);
     updateBombPhysics(bomb, seconds_elapsed, gravity, explosion, player->velocity);
-
-
-
+    updateMissileSimulation(seconds_elapsed);
 }
 
 //void EntityPlayer::handleDodgeActions(float seconds_elapsed) {
@@ -91,13 +90,16 @@ void EntityPlayer::handleInput(float seconds_elapsed, EntityMesh* skybox, Entity
         static Vector3 prevDirection = planeForward;
 
         bool moved = false;
+
         if (Input::isKeyPressed(SDL_SCANCODE_W) || Input::isKeyPressed(SDL_SCANCODE_UP)) {
             this->model.rotate(seconds_elapsed * rotation_speed, Vector3(-1.0f, 0.0f, 0.0f));
             moved = true;
+            missileLock = false;
         }
         if (Input::isKeyPressed(SDL_SCANCODE_S) || Input::isKeyPressed(SDL_SCANCODE_DOWN)) {
             this->model.rotate(seconds_elapsed * rotation_speed, Vector3(1.0f, 0.0f, 0.0f));
             moved = true;
+            missileLock = false;
         }
         if (Input::isKeyPressed(SDL_SCANCODE_A) || Input::isKeyPressed(SDL_SCANCODE_LEFT)) {
             this->model.rotate(seconds_elapsed * rotation_speed, Vector3(0.0f, 0.0f, 1.0f));
@@ -110,12 +112,13 @@ void EntityPlayer::handleInput(float seconds_elapsed, EntityMesh* skybox, Entity
         if (Input::isKeyPressed(SDL_SCANCODE_LSHIFT)) {
             targetSpeed = 8.0;
             model.translate(0, 0, seconds_elapsed * speed);
-            moved = true;
+            //moved = true;
         }
 
         if (Input::wasKeyPressed(SDL_SCANCODE_LSHIFT)) {
             Audio::Play("data/audio/accelerate.mp3", 0.7);
-            directionChangePoints += 1;
+            directionChangePoints += 0.5;
+            missileLock = false;
         }
 
         if (Input::wasKeyPressed(SDL_SCANCODE_Q)) {
@@ -138,7 +141,7 @@ void EntityPlayer::handleInput(float seconds_elapsed, EntityMesh* skybox, Entity
             //directionChange = std::min(directionChange, 1.0f); // Clamp the value between 0 and 1
 
             if (Input::isKeyPressed(SDL_SCANCODE_LSHIFT)) {
-                directionChangePoints += directionChange * 1.2;
+                directionChangePoints += directionChange * 1.4;
             }
             else {
                 directionChangePoints += directionChange;
@@ -148,6 +151,9 @@ void EntityPlayer::handleInput(float seconds_elapsed, EntityMesh* skybox, Entity
         }
         if (not detected) {
             directionChangePoints = 0;
+        }
+        if (detected and not moved) {
+            missileLock = true;
         }
     }
 }
@@ -297,6 +303,26 @@ void EntityPlayer::resetPlayer() {
 
     damaged = false;
     dmg = false;
+}
+
+void EntityPlayer::startMissileSimulation() {
+    missileTimer = 15.0f;
+    missileActive = true;
+}
+
+// Update method
+void EntityPlayer::updateMissileSimulation(float seconds_elapsed) {
+    if (missileActive) {
+        missileTimer -= seconds_elapsed;
+        if (missileTimer <= 0) {
+            missileActive = false;
+            missileDistance = 0.0f;
+            // Handle missile impact here, e.g., player damage or game over
+        }
+        else {
+            missileDistance = missileTimer * 100.0f; // Assume missile speed of 100 units/sec
+        }
+    }
 }
 
 //////void entityplayer::dropbomb(entitymesh* bomb, float seconds_elapsed) {

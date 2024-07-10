@@ -31,6 +31,10 @@ public:
     float directionChangePoints = 0;
     bool detected = false;
     bool detectedonce = false;
+    float missileDistance = 0.f; // Distance to the missile
+    float missileTimer = 0.f; // Timer for missile arrival
+    bool missileActive = false; // Whether the missile is active
+    bool missileLock = false;
 
     EntityPlayer(Vector3 positionx);
     void update(float seconds_elapsed, EntityPlayer* player, EntityMesh* skybox, EntityMesh* bomb, EntityCollider* collider, EntityMesh* explosion, float playerTimer);
@@ -46,6 +50,7 @@ public:
     bool bombused;
     bool bombin;
     bool bombout;
+    bool missileRefresh = false;
     float expdist;
     bool damaged = false;
     bool dmg = false;
@@ -54,6 +59,8 @@ public:
     // Update bomb physics
     void updateBombPhysics(EntityMesh* bomb, float seconds_elapsed, const Vector3& gravity, EntityMesh* explosion, Vector3& velocity);
     void resetPlayer();
+    void startMissileSimulation();
+    void updateMissileSimulation(float seconds_elapsed);
 
 private:
     std::vector<EntityMesh> activeBombs;  // Track active bombs

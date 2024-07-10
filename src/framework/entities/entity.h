@@ -14,6 +14,8 @@ public:
 
 	std::string name;
 
+	bool missileRefresh = false; 
+
 	Matrix44 model;
 
 	Entity* parent = nullptr;

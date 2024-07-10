@@ -136,18 +136,18 @@ void Game::onKeyDown( SDL_KeyboardEvent event )
 	{
 		case SDLK_ESCAPE: must_exit = true; break; //ESC key, kill the app
 		case SDLK_F1: Shader::ReloadAll(); break; 
-		case SDLK_SPACE:
-			if (currentStageType == StageType::INTRO)
-				changeStage(StageType::PLAY);
-			else if (currentStageType == StageType::PLAY)
-				changeStage(StageType::BADEND);
-			else if (currentStageType == StageType::BADEND)
-				changeStage(StageType::GOODEND);
-			else if (currentStageType == StageType::GOODEND)
-				changeStage(StageType::CREDITS);
-			else if (currentStageType == StageType::CREDITS)
-				changeStage(StageType::INTRO);
-			break;
+		//case SDLK_SPACE:
+		//	if (currentStageType == StageType::INTRO)
+		//		changeStage(StageType::PLAY);
+		//	else if (currentStageType == StageType::PLAY)
+		//		changeStage(StageType::BADEND);
+		//	else if (currentStageType == StageType::BADEND)
+		//		changeStage(StageType::GOODEND);
+		//	else if (currentStageType == StageType::GOODEND)
+		//		changeStage(StageType::CREDITS);
+		//	else if (currentStageType == StageType::CREDITS)
+		//		changeStage(StageType::INTRO);
+		//	break;
 	}
 }
 

@@ -78,9 +78,10 @@ public:
     HCHANNEL planeexp;
 
     std::string messageText;
-    std::string loseText1;
+    std::string radarInfo2;
     std::string loseText2;
     std::string loseText3;
+    std::string radarInfo;
 
     Camera* camera2D;
 

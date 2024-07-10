@@ -458,7 +458,8 @@ void IntroStage::update(float elapsed_time) {
         Audio::Play("data/audio/select.wav");
     }    
     if (currentSlot == 2 && (Input::wasKeyPressed(SDL_SCANCODE_RETURN) || Input::wasButtonPressed(A_BUTTON) || Input::wasMousePressed(SDL_BUTTON_LEFT))) {
-        Game::instance->changeStage(StageType::BADEND);
+        //Game::instance->changeStage(StageType::BADEND);
+        Game::instance->must_exit = true;
         Audio::Play("data/audio/GameOver.wav");
         Audio::Play("data/audio/select.wav");
     }
@@ -531,6 +532,9 @@ void HowToStage::render() {
     else if(howTo == 1) {
         shader->setUniform("u_texture", howtoBackground2, 1);
     }
+    else if(howTo == 2) {
+        shader->setUniform("u_texture", howtoBackground3, 1);
+    }
     else {
         shader->setUniform("u_texture", howtoBackground3, 1);
     }
@@ -552,9 +556,9 @@ void HowToStage::render() {
 void HowToStage::update(float elapsed_time) {
     blinkTime += elapsed_time;
 
-    if (Input::wasKeyPressed(SDL_SCANCODE_SPACE)) {
+    if (Input::wasKeyPressed(SDL_SCANCODE_SPACE) or Input::wasMousePressed(SDL_BUTTON_LEFT)) {
         howTo += 1;
-        if (howTo >= 3){ 
+        if (howTo >= 4){ 
             Game::instance->changeStage(StageType::INTRO);  // Go back to the intro stage
             Audio::Play("data/audio/change.wav");
             howTo = 0;
