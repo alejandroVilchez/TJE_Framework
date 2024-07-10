@@ -116,7 +116,7 @@ void CreditsStage::render() {
 }
 
 void CreditsStage::update(float elapsed_time) {
-    if (Input::wasKeyPressed(SDL_SCANCODE_RETURN) || Input::wasButtonPressed(A_BUTTON)) {
+    if (Input::wasKeyPressed(SDL_SCANCODE_RETURN) || Input::wasButtonPressed(A_BUTTON) || Input::wasMousePressed(SDL_BUTTON_LEFT)) {
         Game::instance->changeStage(StageType::INTRO);
         Game::instance->world->resetGame();
         Audio::Play("data/audio/select.wav");
@@ -202,13 +202,13 @@ void GoodEndStage::update(float elapsed_time) {
     if (goodEndSlot < 0)
         goodEndSlot = 1;
 
-    if (goodEndSlot == 1 && (Input::wasKeyPressed(SDL_SCANCODE_RETURN) || Input::wasButtonPressed(A_BUTTON))) {
+    if (goodEndSlot == 1 && (Input::wasKeyPressed(SDL_SCANCODE_RETURN) || Input::wasButtonPressed(A_BUTTON) || Input::wasMousePressed(SDL_BUTTON_LEFT))) {
         Game::instance->changeStage(StageType::CREDITS);
         Audio::Play("data/audio/select.wav");
         //Audio::Stop(channel1);
         //channel2 = Audio::Play("data/audio/bombersound.mp3", 1, BASS_SAMPLE_LOOP);
     }
-    if (goodEndSlot == 0 && (Input::wasKeyPressed(SDL_SCANCODE_RETURN) || Input::wasButtonPressed(A_BUTTON))) {
+    if (goodEndSlot == 0 && (Input::wasKeyPressed(SDL_SCANCODE_RETURN) || Input::wasButtonPressed(A_BUTTON) || Input::wasMousePressed(SDL_BUTTON_LEFT))) {
         Game::instance->changeStage(StageType::INTRO);
         //Game::instance->world->resetGame();
         Game::instance->restart();
@@ -222,6 +222,22 @@ void GoodEndStage::update(float elapsed_time) {
     if (Input::wasKeyPressed(SDL_SCANCODE_UP) || Input::wasKeyPressed(SDL_SCANCODE_W) || Input::wasButtonPressed(PAD_UP)) {
         goodEndSlot = (goodEndSlot - 1) % 2;
         Audio::Play("data/audio/change.wav");
+    }
+
+    float returnButtonX1 = width / 2 - 180;
+    float returnButtonX2 = width / 2 + 210;
+    float returnButtonY1 = height / 2 + 180;
+    float returnButtonY2 = returnButtonY1 + 40;
+    if ((Input::mouse_position.x >= returnButtonX1 && Input::mouse_position.x <= returnButtonX2) && (Input::mouse_position.y >= returnButtonY1 && Input::mouse_position.y <= returnButtonY2)) {
+        goodEndSlot = 0;
+    }
+
+    float creditsButtonX1 = width / 2 - 135;
+    float creditsButtonX2 = width / 2 + 150;
+    float creditsButtonY1 = height / 2 + 240;
+    float creditsButtonY2 = creditsButtonY1 + 40;
+    if ((Input::mouse_position.x >= creditsButtonX1 && Input::mouse_position.x <= creditsButtonX2) && (Input::mouse_position.y >= creditsButtonY1 && Input::mouse_position.y <= creditsButtonY2)) {
+        goodEndSlot = 1;
     }
 
 }
@@ -304,14 +320,14 @@ void BadEndStage::update(float elapsed_time) {
     if (badEndSlot < 0)
         badEndSlot = 1;
 
-    if (badEndSlot == 0 && (Input::wasKeyPressed(SDL_SCANCODE_RETURN) || Input::wasButtonPressed(A_BUTTON) || Input::isMousePressed(SDL_BUTTON_LEFT))) {
+    if (badEndSlot == 0 && (Input::wasKeyPressed(SDL_SCANCODE_RETURN) || Input::wasButtonPressed(A_BUTTON) || Input::wasMousePressed(SDL_BUTTON_LEFT))) {
         Game::instance->changeStage(StageType::INTRO);
         //Game::instance->world->resetGame();
         Game::instance->restart();
         Audio::Play("data/audio/select.wav");
     }
 
-    if (badEndSlot == 1 && (Input::wasKeyPressed(SDL_SCANCODE_RETURN) || Input::wasButtonPressed(A_BUTTON) || Input::isMousePressed(SDL_BUTTON_LEFT))) {
+    if (badEndSlot == 1 && (Input::wasKeyPressed(SDL_SCANCODE_RETURN) || Input::wasButtonPressed(A_BUTTON) || Input::wasMousePressed(SDL_BUTTON_LEFT))) {
         Game::instance->changeStage(StageType::CREDITS);
         Audio::Play("data/audio/select.wav");
         //Audio::Stop(channel1);
@@ -328,17 +344,17 @@ void BadEndStage::update(float elapsed_time) {
     }
     
     float returnButtonX1 = width / 2 - 180;
-    float returnButtonX2 = width / 2 + 180;
+    float returnButtonX2 = width / 2 + 210;
     float returnButtonY1 = height / 2 + 180;
     float returnButtonY2 = returnButtonY1 + 40;
     if ((Input::mouse_position.x >= returnButtonX1 && Input::mouse_position.x <= returnButtonX2) && (Input::mouse_position.y >= returnButtonY1 && Input::mouse_position.y <= returnButtonY2)) {
         badEndSlot = 0;
     }
-    // width / 2 - 135, height / 2 + 240
+   
     float creditsButtonX1 = width / 2 - 135;
-    float creditsButtonX2 = width / 2 + 135;
+    float creditsButtonX2 = width / 2 + 150;
     float creditsButtonY1 = height / 2 + 240;
-    float creditsButtonY2 = returnButtonY1 + 40;
+    float creditsButtonY2 = creditsButtonY1 + 40;
     if ((Input::mouse_position.x >= creditsButtonX1 && Input::mouse_position.x <= creditsButtonX2) && (Input::mouse_position.y >= creditsButtonY1 && Input::mouse_position.y <= creditsButtonY2)) {
         badEndSlot = 1;
     }
@@ -432,16 +448,16 @@ void IntroStage::update(float elapsed_time) {
     if (currentSlot < 0)
         currentSlot = 2;
 
-    if (currentSlot == 0 && (Input::wasKeyPressed(SDL_SCANCODE_RETURN) || Input::wasButtonPressed(A_BUTTON) || Input::isMousePressed(SDL_BUTTON_LEFT))) {
+    if (currentSlot == 0 && (Input::wasKeyPressed(SDL_SCANCODE_RETURN) || Input::wasButtonPressed(A_BUTTON) || Input::wasMousePressed(SDL_BUTTON_LEFT))) {
         Game::instance->changeStage(StageType::PLAY);
         Audio::Play("data/audio/select.wav");
         Audio::Stop(channel1);
     }
-    if (currentSlot == 1 && (Input::wasKeyPressed(SDL_SCANCODE_RETURN) || Input::wasButtonPressed(A_BUTTON) || Input::isMousePressed(SDL_BUTTON_LEFT))) {
+    if (currentSlot == 1 && (Input::wasKeyPressed(SDL_SCANCODE_RETURN) || Input::wasButtonPressed(A_BUTTON) || Input::wasMousePressed(SDL_BUTTON_LEFT))) {
         Game::instance->changeStage(StageType::HOWTO);
         Audio::Play("data/audio/select.wav");
     }    
-    if (currentSlot == 2 && (Input::wasKeyPressed(SDL_SCANCODE_RETURN) || Input::wasButtonPressed(A_BUTTON) || Input::isMousePressed(SDL_BUTTON_LEFT))) {
+    if (currentSlot == 2 && (Input::wasKeyPressed(SDL_SCANCODE_RETURN) || Input::wasButtonPressed(A_BUTTON) || Input::wasMousePressed(SDL_BUTTON_LEFT))) {
         Game::instance->changeStage(StageType::BADEND);
         Audio::Play("data/audio/GameOver.wav");
         Audio::Play("data/audio/select.wav");
