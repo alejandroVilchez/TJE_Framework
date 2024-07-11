@@ -44,7 +44,7 @@ World::World(int window_width, int window_height) {
 	"data/textures/skybox4/top.tga",
 	"data/textures/skybox4/bottom.tga",
 	"data/textures/skybox4/front.tga",
-	"data/textures/skybox4/back(old).tga"
+	"data/textures/skybox4/back.tga"
 		});
 
 
