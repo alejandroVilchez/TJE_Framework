@@ -69,7 +69,7 @@ private:
     std::vector<EntityMesh> activeBombs;  // Track active bombs
     Vector3 smoothedTarget;
     EntityMesh* playerEntity;
-    float rotation_speed = 0.7f;
+    float rotation_speed = 1.1f;
     std::vector<HCHANNEL> activeChannels;  // Track active sound channels for bomb drops
 };
 
