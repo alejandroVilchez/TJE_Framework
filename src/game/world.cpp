@@ -151,7 +151,7 @@ void World::render() {
 		Audio::Stop(channel2);
 	}
 	else {
-		drawText(50, this->world_window_height - 50, messageText, Vector3(0, 1, 0), 2);
+		drawText(50, this->world_window_height - 50, messageText, Vector3(0, 0.3, 0), 2);
 	}
 
 	if (playerEntity->detected) {
@@ -176,10 +176,10 @@ void World::render() {
 	std::ostringstream stream1;
 	stream1 << std::fixed << std::setprecision(2) << playerPosition.y * 10;
 	playerHeight = "Height: " + stream1.str() + " m.";
-	drawText(50, 50, playerHeight, Vector3(0, 1, 0), 2);
-	drawText(50, 100, radarInfo, Vector3(0, 1, 0), 2);
-	drawText(50, 100, radarInfo2, Vector3(1, 0, 0), 2);
-	drawText(this->world_window_width / 2 - 180, this->world_window_height / 2, loseText3, Vector3(1, 1, 1), 3);
+	drawText(50, 50, playerHeight, Vector3(0, 0.3, 0), 2);
+	drawText(50, 100, radarInfo, Vector3(0, 0.3, 0), 2);
+	drawText(50, 100, radarInfo2, Vector3(0.3, 0, 0), 2);
+	drawText(this->world_window_width / 2 - 250, this->world_window_height / 2, loseText3, Vector3(1, 1, 1), 3);
 	drawText(this->world_window_width / 2 - 250, this->world_window_height / 2, loseText2, Vector3(1, 1, 1), 3);
 
 	if (engine == 0) {
@@ -250,7 +250,7 @@ void World::update(float elapsed_time) {
 		Audio::Stop(radar);
 		Audio::Stop(alarm);
 		planeexp = Audio::Play("data/audio/planeexp.mp3", 0.25);
-		messageText = "missile dodged, but you have been detected, be fast";
+		messageText = "Missile dodged, but you have been detected, be fast";
 		playerEntity->detectedonce = true;
 		missileTimer = rand() % 50 + 5;
 		radarTimer = 100;
