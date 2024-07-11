@@ -50,7 +50,7 @@ void EntityPlayer::update(float seconds_elapsed, EntityPlayer* player, EntityMes
     }
     speed = speed * (1.0f - smoothingFactor) + targetSpeed * smoothingFactor;
 
-    if (this->position.y > 22 and (rand() % 1234) == 1 and detected == false and missileRefresh == false || this->position.y > 44 and (rand() % 1234) == 1 and detected == false and missileRefresh == false) {
+    if (this->position.y > 22 and (rand() % 1312) == 1 and detected == false and missileRefresh == false || this->position.y > 44 and (rand() % 1312) == 1 and detected == false and missileRefresh == false) {
         detected = true;
         missileLock = true;
         //randheight = rand() % 22 + 33;
@@ -260,6 +260,7 @@ void EntityPlayer::updateBombPhysics(EntityMesh* bomb, float seconds_elapsed, co
         Vector3 acceleration = gravity + (dragForce / bomb->mass);  // Assuming mass is a property of the bomb
 
         //Vector3 acceleration = gravity
+
         Vector3 newPos = currentPos + bomb->velocity * seconds_elapsed + 0.5f * acceleration * seconds_elapsed * seconds_elapsed;
         Vector3 posObjective = Vector3(-12.f, 0.f, 18.f);
         bomb->velocity += acceleration * seconds_elapsed;
@@ -275,7 +276,7 @@ void EntityPlayer::updateBombPhysics(EntityMesh* bomb, float seconds_elapsed, co
             nuclear = Audio::Play("data/audio/nuclearexp.wav", 1);
             expdist = newPos.distance(this->position);
             damaged = false;
-            if (expdist < 33) {
+            if (expdist < 36) {
                 damaged = true;
             }
             if (newPos.distance(posObjective) < 30) {

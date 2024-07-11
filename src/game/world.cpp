@@ -363,7 +363,7 @@ Vector2 World::worldToScreen(const Vector3& worldPos, Camera* cam) {
 }
 
 void World::drawHUDMarker(const Vector2& screenPos) {
-	drawText(screenPos.x - 5, screenPos.y - 5, "+", Vector3(1, 0, 0), 2);
+	drawText(screenPos.x, screenPos.y, "+", Vector3(1, 0, 0), 2);
 }
 
 void World::resetGame() {
