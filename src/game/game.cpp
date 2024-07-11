@@ -207,6 +207,7 @@ void Game::restart()
 	//delete world;
 
 	// Reinitialize the game stages
+	//Audio::Init();
 	introStage = new IntroStage();
 	playStage = new PlayStage();
 	howToStage = new HowToStage();

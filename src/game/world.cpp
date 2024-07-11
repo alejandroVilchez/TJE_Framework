@@ -370,8 +370,11 @@ void World::resetGame() {
 	
 	playerEntity->resetPlayer();
 
-	Audio::Destroy();
-	Audio::Init();
+	//Audio::Destroy();
+	//Audio::Init();
+	Audio::Stop(channel2);
+	Audio::Stop(radar);
+	Audio::Stop(alarm);
 	//cleanRoot();
 
 	//root->addChild(playerEntity);

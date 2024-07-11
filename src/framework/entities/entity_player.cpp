@@ -19,6 +19,7 @@ const size_t maxRecentPositions = 100;
 EntityPlayer::EntityPlayer(Vector3 positionx) {
 
     //playerEntity = new EntityMesh(nullptr, Material(), "Player");
+    //Audio::Init();
     this->position = positionx;
     model.setTranslation(Vector3(-200.0f, 22.0f, 200.0f));-
     smoothedTarget = position;
@@ -261,6 +262,7 @@ void EntityPlayer::updateBombPhysics(EntityMesh* bomb, float seconds_elapsed, co
         //Vector3 acceleration = gravity
 
         Vector3 newPos = currentPos + bomb->velocity * seconds_elapsed + 0.5f * acceleration * seconds_elapsed * seconds_elapsed;
+        Vector3 posObjective = Vector3(-12.f, 0.f, 18.f);
         bomb->velocity += acceleration * seconds_elapsed;
         bomb->model.setTranslation(newPos);
 
@@ -271,13 +273,13 @@ void EntityPlayer::updateBombPhysics(EntityMesh* bomb, float seconds_elapsed, co
             bomb->isLaunched = false;  // Mark bomb as no longer active
             bomb->isExploded = true;
             explosion->model.setTranslation(newPos);
-            Audio::Play("data/audio/nuclearexp.wav", 1);
+            nuclear = Audio::Play("data/audio/nuclearexp.wav", 1);
             expdist = newPos.distance(this->position);
             damaged = false;
             if (expdist < 33) {
                 damaged = true;
             }
-            if (newPos.x<42. and newPos.x>-42. and newPos.z < 42. and newPos.z > -42.) {
+            if (newPos.distance(posObjective) < 30) {
                 if (damaged == false) {
                     bombin = true;
                 }
@@ -305,6 +307,7 @@ void EntityPlayer::resetPlayer() {
 
     damaged = false;
     dmg = false;
+    Audio::Stop(nuclear);
 }
 
 void EntityPlayer::startMissileSimulation() {

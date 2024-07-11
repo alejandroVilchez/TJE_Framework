@@ -211,7 +211,8 @@ void GoodEndStage::update(float elapsed_time) {
     }
     if (goodEndSlot == 0 && (Input::wasKeyPressed(SDL_SCANCODE_RETURN) || Input::wasButtonPressed(A_BUTTON) || Input::wasMousePressed(SDL_BUTTON_LEFT))) {
         Game::instance->changeStage(StageType::INTRO);
-        //Game::instance->world->resetGame();
+        Game::instance->world->resetGame();
+        //Audio::Init();
         Game::instance->restart();
         Audio::Play("data/audio/select.wav");
     }
@@ -323,7 +324,8 @@ void BadEndStage::update(float elapsed_time) {
 
     if (badEndSlot == 0 && (Input::wasKeyPressed(SDL_SCANCODE_RETURN) || Input::wasButtonPressed(A_BUTTON) || Input::wasMousePressed(SDL_BUTTON_LEFT))) {
         Game::instance->changeStage(StageType::INTRO);
-        //Game::instance->world->resetGame();
+        Game::instance->world->resetGame();
+        //Audio::Init();
         Game::instance->restart();
         Audio::Play("data/audio/select.wav");
     }
@@ -372,6 +374,7 @@ IntroStage::IntroStage() {
     th = 1.0f;
     start = false;
     end = false;
+    //Audio::Init();
     channel1 = Audio::Play("data/audio/music.mp3",1, BASS_SAMPLE_LOOP);
 }
 

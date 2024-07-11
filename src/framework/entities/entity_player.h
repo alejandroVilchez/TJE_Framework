@@ -62,6 +62,7 @@ public:
     void resetPlayer();
     void startMissileSimulation();
     void updateMissileSimulation(float seconds_elapsed);
+    HCHANNEL nuclear;
 
 private:
     std::vector<EntityMesh> activeBombs;  // Track active bombs
