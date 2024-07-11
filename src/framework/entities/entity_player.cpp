@@ -49,7 +49,7 @@ void EntityPlayer::update(float seconds_elapsed, EntityPlayer* player, EntityMes
     }
     speed = speed * (1.0f - smoothingFactor) + targetSpeed * smoothingFactor;
 
-    if (this->position.y > 27 and (rand() % 1111) == 1 and detected == false and missileRefresh == false || this->position.y > 50 and (rand() % 1111) == 1 and detected == false and missileRefresh == false) {
+    if (this->position.y > 22 and (rand() % 1234) == 1 and detected == false and missileRefresh == false || this->position.y > 44 and (rand() % 1234) == 1 and detected == false and missileRefresh == false) {
         detected = true;
         missileLock = true;
         //randheight = rand() % 22 + 33;
@@ -113,6 +113,7 @@ void EntityPlayer::handleInput(float seconds_elapsed, EntityMesh* skybox, Entity
             targetSpeed = 8.0;
             model.translate(0, 0, seconds_elapsed * speed);
             //moved = true;
+            accelerating = true;
         }
 
         if (Input::wasKeyPressed(SDL_SCANCODE_LSHIFT)) {
@@ -154,6 +155,7 @@ void EntityPlayer::handleInput(float seconds_elapsed, EntityMesh* skybox, Entity
         }
         if (detected and not moved) {
             missileLock = true;
+            accelerating = false;
         }
     }
 }

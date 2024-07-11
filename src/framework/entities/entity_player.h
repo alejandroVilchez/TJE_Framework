@@ -35,6 +35,7 @@ public:
     float missileTimer = 0.f; // Timer for missile arrival
     bool missileActive = false; // Whether the missile is active
     bool missileLock = false;
+    bool accelerating = false;
 
     EntityPlayer(Vector3 positionx);
     void update(float seconds_elapsed, EntityPlayer* player, EntityMesh* skybox, EntityMesh* bomb, EntityCollider* collider, EntityMesh* explosion, float playerTimer);

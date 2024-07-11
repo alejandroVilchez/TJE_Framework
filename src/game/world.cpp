@@ -159,8 +159,12 @@ void World::render() {
 			radarInfo = " ";
 			radarInfo2 = "Danger! Enemy guided missile have locked onto you";
 		}
+		//else if (playerEntity->missileLock == false and playerEntity->accelerating) {
+		//	radarInfo = "You're breaking the missile lock!";
+		//	radarInfo2 = " ";
+		//}
 		else if(playerEntity->missileLock == false) {
-			radarInfo = "Missile lock is broken!";
+			radarInfo = "You're breaking the missile lock!";
 			radarInfo2 = " ";
 		}
 	}
@@ -170,7 +174,7 @@ void World::render() {
 	}
 
 	std::ostringstream stream1;
-	stream1 << std::fixed << std::setprecision(2) << playerPosition.y * 20;
+	stream1 << std::fixed << std::setprecision(2) << playerPosition.y * 10;
 	playerHeight = "Height: " + stream1.str() + " m.";
 	drawText(50, 50, playerHeight, Vector3(0, 1, 0), 2);
 	drawText(50, 100, radarInfo, Vector3(0, 1, 0), 2);
@@ -215,6 +219,7 @@ void World::update(float elapsed_time) {
 		playerEntity->detected = false;
 		gameTimer = 15;
 		Audio::Stop(alarm);
+		Audio::Stop(radar);
 		missilelost = true;
 		playerEntity->missileRefresh = true;
 		radarTimer = 0;
