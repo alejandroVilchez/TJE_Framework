@@ -117,6 +117,7 @@ void World::render() {
 	camera->enable();
 	scene->root.render(camera);
 	root->render(camera);
+
 	if (playerEntity) {
 		playerEntity->render(camera);
 	}
@@ -176,9 +177,9 @@ void World::render() {
 	std::ostringstream stream1;
 	stream1 << std::fixed << std::setprecision(2) << playerPosition.y * 10;
 	playerHeight = "Height: " + stream1.str() + " m.";
-	drawText(50, 50, playerHeight, Vector3(0, 0.3, 0), 2);
-	drawText(50, 100, radarInfo, Vector3(0, 0.3, 0), 2);
-	drawText(50, 100, radarInfo2, Vector3(0.3, 0, 0), 2);
+	drawText(50, 50, playerHeight, Vector3(0, 0.6, 0), 2);
+	drawText(50, 100, radarInfo, Vector3(0, 0.6, 0), 2);
+	drawText(50, 100, radarInfo2, Vector3(0.8, 0, 0), 2);
 	drawText(this->world_window_width / 2 - 250, this->world_window_height / 2, loseText3, Vector3(1, 1, 1), 3);
 	drawText(this->world_window_width / 2 - 250, this->world_window_height / 2, loseText2, Vector3(1, 1, 1), 3);
 
@@ -186,6 +187,11 @@ void World::render() {
 		channel2 = Audio::Play("data/audio/bombersound.mp3", 1, BASS_SAMPLE_LOOP);
 		engine = 1;
 	}
+
+	Vector2 screenPos = worldToScreen(playerEntity->posObjective, camera);
+
+	// Draw the HUD marker
+	drawHUDMarker(screenPos);
 
 }
 
@@ -346,6 +352,18 @@ Mesh* World::createFullscreenQuad(int windowWidth, int windowHeight) {
 	root->addChild(quadEntity);
 
 	return quadMesh;
+}
+
+Vector2 World::worldToScreen(const Vector3& worldPos, Camera* cam) {
+	Vector4 clipSpacePos = cam->viewprojection_matrix * Vector4(worldPos.x, worldPos.y, worldPos.z, 1.0);
+	Vector3 ndcPos = Vector3(clipSpacePos.x, clipSpacePos.y, clipSpacePos.z) / clipSpacePos.w;
+	float screenX = ((ndcPos.x + 1.0f) / 2.0f) * this->world_window_width;
+	float screenY = ((1.0f - ndcPos.y) / 2.0f) * this->world_window_height;
+	return Vector2(screenX, screenY);
+}
+
+void World::drawHUDMarker(const Vector2& screenPos) {
+	drawText(screenPos.x - 5, screenPos.y - 5, "+", Vector3(1, 0, 0), 2);
 }
 
 void World::resetGame() {
