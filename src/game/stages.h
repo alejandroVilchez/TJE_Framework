@@ -40,6 +40,7 @@ public:
     Texture* howtoBackground1;
     Texture* howtoBackground2;
     Texture* howtoBackground3;
+    Texture* howtoBackground4;
     Texture* introBackground;
     Texture* badEnd;
     Texture* goodEnd;

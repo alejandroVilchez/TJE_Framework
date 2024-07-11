@@ -10,6 +10,7 @@ Stages::Stages() {
     howtoBackground1 = Texture::Get("data/textures/howto.tga");
     howtoBackground2 = Texture::Get("data/textures/b2atom.tga");
     howtoBackground3 = Texture::Get("data/textures/How2Camera.tga");
+    howtoBackground4 = Texture::Get("data/textures/howto4.tga");
 
     badEnd = Texture::Get("data/textures/GAME-OVER.tga");
     goodEnd = Texture::Get("data/textures/YOUWIN.tga");
@@ -540,7 +541,7 @@ void HowToStage::render() {
         shader->setUniform("u_texture", howtoBackground3, 1);
     }
     else {
-        shader->setUniform("u_texture", howtoBackground3, 1);
+        shader->setUniform("u_texture", howtoBackground4, 1);
     }
     shader->setUniform("u_model", model);
     shader->setUniform("u_time", Game::instance->time);
