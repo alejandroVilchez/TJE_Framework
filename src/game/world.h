@@ -84,6 +84,7 @@ public:
     std::string radarInfo;
 
     Camera* camera2D;
+    Camera camera2D2;
 
     //Mesh* quad;
 
@@ -98,7 +99,8 @@ public:
     void startTransition();
     void renderTransition();
     void resetGame();
-
+    Vector2 worldToScreen(const Vector3& worldPos, Camera* cam);
+    void drawHUDMarker(const Vector2& screenPos);
 
 
     EntityCollider collider;
